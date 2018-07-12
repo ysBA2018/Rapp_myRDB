@@ -35,6 +35,8 @@ class TblUebersichtAfGfs(models.Model):
 		managed = False
 		db_table = 'tblÜbersichtAF_GFs'
 		unique_together = (('name_af_neu', 'name_gf_neu'), ('name_gf_neu', 'name_af_neu'),)
+		verbose_name = "Erlaubte AF/GF-Kombinationen"
+		verbose_name_plural = "Erlaubte AF/GF-Kombinationen-Übersicht (tblUebersichtAfGfs)"
 
 	def __str__(self) -> str:
 		return self.name_gf_neu + ' | ' + self.name_af_neu
@@ -51,6 +53,8 @@ class TblOrga(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'tblOrga'
+		verbose_name = "Orga-Information"
+		verbose_name_plural = "Organisations-Übersicht (tblOrga)"
 
 	def __str__(self) -> str:
 		return self.team
@@ -71,9 +75,12 @@ class TblUserIDundName(models.Model):
 		managed = False
 		db_table = 'tblUserIDundName'
 		unique_together = (('userid', 'name'),)
+		verbose_name = "UserID-Name-Kombinationen"
+		verbose_name_plural = "UserID-Name-Übersicht (tblUserIDundName)"
 
 	def __str__(self) -> str:
-		return self.userid + ' | ' + self.name
+		# return self.userid + ' | ' + self.name
+		return str(self.userid + ' | ' + self.name)
 
 	def get_active(self):
 		return not self.geloescht
@@ -100,9 +107,14 @@ class TblPlattform(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'tblPlattform'
+		verbose_name = "Plattformen"
+		verbose_name_plural = "Plattformen Übersicht (tblPlattform)"
+
 
 	def __str__(self) -> str:
 		return self.tf_technische_plattform
+
+
 
 # tblGesamt enthält alle Daten zu TFs in GFs in AFs für jeden User und seine UserIDen
 class TblGesamt(models.Model):
@@ -120,7 +132,7 @@ class TblGesamt(models.Model):
 	zufallsgenerator = models.CharField(db_column='Zufallsgenerator', max_length=150, blank=True, null=True)  # Field name made lowercase.
 	af_gueltig_ab = models.DateTimeField(db_column='AF Gültig ab', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	af_gueltig_bis = models.DateTimeField(db_column='AF Gültig bis', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	direct_connect = models.CharField(db_column='Direct Connect', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	direct_connect = models.CharField(db_column='Direct Connect', max_length=8, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	hoechste_kritikalitaet_tf_in_af = models.CharField(db_column='Höchste Kritikalität TF in AF', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	gf_beschreibung = models.CharField(db_column='GF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	af_zuweisungsdatum = models.DateTimeField(db_column='AF Zuweisungsdatum', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
@@ -138,7 +150,33 @@ class TblGesamt(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'tblGesamt'
+		verbose_name = "Einträge der Gesamttabelle (tblGesamt)"
+		verbose_name_plural = "Gesamttabelle Übersicht (tblGesamt)"
 
-	geloescht.boolean = True
-	gefunden.boolean = True
+	def __str__(self) -> str:
+		return str(self.userid_name)
+
+	def get_active(self):
+		return not self.geloescht
+	get_active.boolean = True
+	get_active.admin_order_field = 'geloescht'
+	get_active.short_description = 'aktiv'
+
+	def get_gefunden(self):
+		return self.gefunden
+	get_gefunden.boolean = True
+
+	def get_geaendert(self):
+		return self.geaendert
+	geaendert.boolean = True
+
+	def get_direct_connect(self):
+		return self.direct_connect == 'Ja'
+	get_direct_connect.boolean = True
+	get_direct_connect.admin_order_field = 'direct_connect'
+	get_direct_connect.short_description = 'direkt'
+
+	def get_ai(self):
+		return not self.nicht_ai
+	get_ai.boolean = True
 

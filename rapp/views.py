@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.views import generic
 
 from django.utils import timezone
-from rapp.models import TblUserIDundName
+from rapp.models import TblUserIDundName, TblGesamt
 
 class IndexView(generic.ListView):
 	template_name = 'rapp/index.html'
@@ -22,10 +22,19 @@ class IndexView(generic.ListView):
 
 	def get_queryset(self):
 		"""
-		Return the last five published questions
-		(not including those set to be published in the future).
+		Liefere nur diejenigen User-Einträge, die nicht gelöscht sind
 		"""
 		return TblUserIDundName.objects.filter(
 			geloescht = False,
-			abteilung = 'ZI-AI-BA',
-		).order_by('name')[:40]
+		) # .order_by('name')[:40]
+
+
+class IndexView(generic.ListView):
+	template_name = 'rapp/index.html'
+	context_object_name = 'first_list'
+
+	model = TblGesamt
+
+	def get_queryset(self):
+		return TblGesamt.objects.filter(geloescht != True) # Liefere nur nicht gelöschte Einträge
+

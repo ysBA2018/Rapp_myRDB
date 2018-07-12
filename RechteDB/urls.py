@@ -18,10 +18,14 @@ from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
-    # url(r'^$', rapp),
-    # url(r'^rapp/', rapp),
     url(r'^rapp/', include('rapp.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', admin.site.urls),
 
+]
+
+# Add URL maps to redirect the base URL to our application
+from django.views.generic import RedirectView
+urlpatterns += [
+    path('', RedirectView.as_view(url='/rapp/')),
 ]
