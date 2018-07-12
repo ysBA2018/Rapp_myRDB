@@ -37,6 +37,7 @@ class TblUebersichtAfGfs(models.Model):
 		unique_together = (('name_af_neu', 'name_gf_neu'), ('name_gf_neu', 'name_af_neu'),)
 		verbose_name = "Erlaubte AF/GF-Kombinationen"
 		verbose_name_plural = "Erlaubte AF/GF-Kombinationen-Übersicht (tblUebersichtAfGfs)"
+		ordering = ['-id']
 
 	def __str__(self) -> str:
 		return self.name_gf_neu + ' | ' + self.name_af_neu
@@ -55,11 +56,12 @@ class TblOrga(models.Model):
 		db_table = 'tblOrga'
 		verbose_name = "Orga-Information"
 		verbose_name_plural = "Organisations-Übersicht (tblOrga)"
+		ordering = ['team']
 
 	def __str__(self) -> str:
 		return self.team
 
-# Die ANmen aller aktiven und gelöschten UserIDen und der dazugehörenden Namen (Realnamen und Technische User)
+# Die Namen aller aktiven und gelöschten UserIDen und der dazugehörenden Namen (Realnamen und Technische User)
 class TblUserIDundName(models.Model):
 	id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
 	userid = models.CharField(db_column='UserID', unique=True, max_length=50)  # Field name made lowercase.
@@ -77,6 +79,7 @@ class TblUserIDundName(models.Model):
 		unique_together = (('userid', 'name'),)
 		verbose_name = "UserID-Name-Kombinationen"
 		verbose_name_plural = "UserID-Name-Übersicht (tblUserIDundName)"
+		ordering = ['geloescht', 'name', '-userid']
 
 	def __str__(self) -> str:
 		# return self.userid + ' | ' + self.name
@@ -109,6 +112,7 @@ class TblPlattform(models.Model):
 		db_table = 'tblPlattform'
 		verbose_name = "Plattformen"
 		verbose_name_plural = "Plattformen Übersicht (tblPlattform)"
+		ordering = ['tf_technische_plattform']
 
 
 	def __str__(self) -> str:
