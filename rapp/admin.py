@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from typing import Type, List
+
 from django.contrib import admin
 
 # Register your models here.
@@ -8,18 +10,8 @@ from django.contrib import admin
 # from .models import Bastel, TblAflisteZiaiba, TblCicsdetails, TblDb2
 # from .models import TblGesamtKomplett, Tblp0Gesamt, Tblgesamthistorie
 
-from rapp.models import TblUebersichtAfGfs, TblUserIDundName, TblOrga, TblPlattform, TblGesamt
-	# TblUserhatrolle, TblRollen, TblRollehataf
-
-admin.site.register(TblUebersichtAfGfs)
-admin.site.register(TblPlattform)
-#admin.site.register(TblUserIDundName)
-# admin.site.register(TblUserhatrolle)
-# admin.site.register(TblRollen)
-# admin.site.register(TblRollehataf)
-# admin.site.register(TblOrga)
-
-# Zeige einen Eintrag der Orga-Tabelle zeilenweise an
+from rapp.models import TblUebersichtAfGfs, TblUserIDundName, TblOrga, TblPlattform, \
+						TblGesamt, TblGesamtHistorie
 
 
 # ######################################################################################################
@@ -47,9 +39,10 @@ class Gesamt(admin.ModelAdmin):
 	list_display_links = ('id', )
 	list_editable = ('tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf', )
 	# search_fields = ['userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf']
-	search_fields = ['userid_name__name', 'tf',
+	search_fields = ['id', 'userid_name__name', 'tf',
 					 # 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf',
-					]
+	]
+
 
 # Inline function to show all Instances of Gesamt in UserIDundNameView or UebersichtAFGFs
 class GesamtInline(admin.TabularInline):
@@ -68,7 +61,6 @@ class UserIDundNameAdmin(admin.ModelAdmin):
 		('User-Informationen', {'fields': ['userid', 'name', 'orga', 'geloescht']}),
 		('Orga-Details      ', {'fields': ['zi_organisation', 'abteilung', 'gruppe'], 'classes': ['collapse']}),
 	]
-	# inlines = [OrgaInline]
 
 	list_display = ('id', 'userid', 'colored_name', 'orga', 'zi_organisation', 'get_active', 'abteilung', 'gruppe',)
 	list_display_links = ('userid', 'colored_name', 'get_active', )
@@ -81,7 +73,7 @@ class UserIDundNameAdmin(admin.ModelAdmin):
 	actions_on_bottom = True
 
 	# Nice idea, but VERY slow
-	inlines = [GesamtInline]
+	# inlines = [GesamtInline]
 
 
 # Inline function to show all Instances of UserIDundName in OrgaView
@@ -108,9 +100,73 @@ class Orga(admin.ModelAdmin):
 	inlines = [UserIDundNameInline]
 
 
+# ######################################################################################################
+# tbl Plattform
+# ######################################################################################################
+
+@admin.register(TblPlattform)
+class Plattform(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
+	list_display = ('id', 'tf_technische_plattform',)
+	# list_filter = ('tf_technische_plattform',)
+	# list_display_links = ('tf_technische_plattform')
+	list_editable = ('tf_technische_plattform',)
+	search_fields = ['tf_technische_plattform', ]
+
+	# Nette Idee, grottig lahm
+	# inlines = [GesamtInline]
+
 
 # ######################################################################################################
-# tbl Orga
+# tbl UebersichtAfGfs
 # ######################################################################################################
 
-# @admin.register(TblOrga)
+@admin.register(TblUebersichtAfGfs)
+class TblUebersichtAfGfs(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
+
+	fieldsets = [
+		('Standard       ', {'fields': ['name_af_neu', 'name_gf_neu', 'af_text', 'gf_text',
+										'geloescht', 'af_langtext', 'modelliert', ]}),
+		('Rechte-Details ', {'fields': ['zielperson', 'kommentar', 'af_ausschlussgruppen', 'af_einschlussgruppen',
+										'af_sonstige_vergabehinweise', 'kannweg', ],
+							 'classes': ['collapse']}),
+	]
+
+	list_display = ('id', 'name_af_neu', 'name_gf_neu', 'af_text', 'gf_text',
+					'geloescht', 'af_langtext', 'modelliert', 'zielperson',
+					'kommentar', 'af_ausschlussgruppen', 'af_einschlussgruppen',
+					'af_sonstige_vergabehinweise', 'kannweg', )
+
+	list_filter = ('geloescht', 'modelliert', 'zielperson', 'kannweg', )
+
+	list_display_links = ()
+
+	list_editable = ('name_af_neu', 'name_gf_neu', 'af_text', 'gf_text', 'af_langtext', 'zielperson', 'kommentar',
+					 'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise', )
+
+	search_fields = ['name_af_neu', 'name_gf_neu', 'af_text', 'gf_text', 'af_langtext', ]
+
+	# inlines = [GesamtInline]
+
+
+
+# ######################################################################################################
+# tbl GesatHistorie
+# ######################################################################################################
+
+@admin.register(TblGesamtHistorie)
+class TblGesamtHistorie(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
+
+	list_display = ('id', 'id_alt', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'gf',
+					'modell', 'tf_kritikalitaet', 'tf_eigentuemer_org', 'plattform',
+					'vip_kennzeichen', 'zufallsgenerator', 'datum', 'geloescht', 'gefunden', 'wiedergefunden', 'geaendert', 'neueaf',
+					'loeschdatum', )
+
+	search_fields = ['id_alt__id', 'userid_name__name', 'tf', 'tf_beschreibung', 'enthalten_in_af',]
+
+

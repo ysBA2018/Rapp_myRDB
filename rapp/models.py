@@ -27,7 +27,7 @@ class TblUebersichtAfGfs(models.Model):
 	af_ausschlussgruppen = 	models.CharField(db_column='AF Ausschlussgruppen', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	af_einschlussgruppen = 	models.CharField(db_column='AF Einschlussgruppen', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	af_sonstige_vergabehinweise = models.CharField(db_column='AF Sonstige Vergabehinweise', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	geloescht = 			models.IntegerField(db_column='gelöscht', blank=True, null=True)
+	geloescht =				models.IntegerField(db_column='gelöscht', blank=True, null=True)
 	kannweg = 				models.IntegerField(blank=True, null=True)
 	modelliert = 			models.DateTimeField(blank=True, null=True)
 
@@ -35,7 +35,7 @@ class TblUebersichtAfGfs(models.Model):
 		managed = False
 		db_table = 'tblÜbersichtAF_GFs'
 		unique_together = (('name_af_neu', 'name_gf_neu'), ('name_gf_neu', 'name_af_neu'),)
-		verbose_name = "Erlaubte AF/GF-Kombinationen"
+		verbose_name = "Erlaubte AF/GF-Kombination"
 		verbose_name_plural = "Erlaubte AF/GF-Kombinationen-Übersicht (tblUebersichtAfGfs)"
 		ordering = ['-id']
 
@@ -48,8 +48,8 @@ class TblUebersichtAfGfs(models.Model):
 # Die Tabelle enthält die Teambeschreibungen. Das eigentliche Team ist das Feld intern_extern
 class TblOrga(models.Model):
 	id = 				models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-	team = 				models.CharField(db_column='Intern - extern', unique=True, max_length=150, blank=False, null=False)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	themeneigentuemer =	models.CharField(db_column='Themeneigentümer', max_length=150, blank=False, null=False)  # Field name made lowercase.
+	team = 				models.CharField(db_column='Intern - extern', unique=True, max_length=50, blank=False, null=False, default='Hä???')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	themeneigentuemer =	models.CharField(db_column='Themeneigentümer', max_length=150, blank=False, null=False, default='Hä???')  # Field name made lowercase.
 
 	class Meta:
 		managed = True
@@ -77,7 +77,7 @@ class TblUserIDundName(models.Model):
 		managed = False
 		db_table = 'tblUserIDundName'
 		unique_together = (('userid', 'name'),)
-		verbose_name = "UserID-Name-Kombinationen"
+		verbose_name = "UserID-Name-Kombination"
 		verbose_name_plural = "UserID-Name-Übersicht (tblUserIDundName)"
 		ordering = ['geloescht', 'name', '-userid']
 
@@ -109,13 +109,13 @@ class TblPlattform(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'tblPlattform'
-		verbose_name = "Plattformen"
+		verbose_name = "Plattform"
 		verbose_name_plural = "Plattformen Übersicht (tblPlattform)"
 		ordering = ['tf_technische_plattform']
 
 
 	def __str__(self) -> str:
-		return self.tf_technische_plattform
+		return str(self.tf_technische_plattform)
 
 
 
@@ -154,11 +154,11 @@ class TblGesamt(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'tblGesamt'
-		verbose_name = "Einträge der Gesamttabelle (tblGesamt)"
+		verbose_name = "Eintrag der Gesamttabelle (tblGesamt)"
 		verbose_name_plural = "Gesamttabelle Übersicht (tblGesamt)"
 
 	def __str__(self) -> str:
-		return str(self.userid_name)
+		return str(self.id)
 
 	def get_active(self):
 		return not self.geloescht
@@ -183,4 +183,39 @@ class TblGesamt(models.Model):
 	def get_ai(self):
 		return not self.nicht_ai
 	get_ai.boolean = True
+
+
+# tblGesamtHistorie enthält alle Daten zu TFs in GFs in AFs für jeden User und seine UserIDen, wenn der User (mal) gelöscht wurde
+class TblGesamtHistorie(models.Model):
+	id = 				models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+	wiedergefunden = 	models.DateTimeField(blank=True, null=True)
+	# Das ist echt blöd, dass das hier zu lange dauert
+	# id_alt = 			models.ForeignKey('Tblgesamt', models.DO_NOTHING, db_column='ID-alt')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	id_alt = 			models.CharField(db_column='ID-alt', max_length=11)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	userid_name = 		models.ForeignKey('TblUserIDundName', on_delete=models.CASCADE, db_column='UserID + Name_ID', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	tf = 				models.CharField(db_column='TF', max_length=150)  # Field name made lowercase.
+	tf_beschreibung = 	models.CharField(db_column='TF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	enthalten_in_af = 	models.CharField(db_column='Enthalten in AF', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	modell = 			models.ForeignKey('TblUebersichtafGfs', on_delete=models.CASCADE, db_column='Modell')  # Field name made lowercase.
+	tf_kritikalitaet = 	models.CharField(db_column='TF Kritikalität', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	tf_eigentuemer_org =	models.CharField(db_column='TF Eigentümer Org', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	plattform = 		models.ForeignKey('TblPlattform', on_delete=models.CASCADE, db_column='Plattform_ID', blank=True, null=True)  # Field name made lowercase.
+	gf = 				models.CharField(db_column='GF', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	vip_kennzeichen = 	models.CharField(db_column='VIP Kennzeichen', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	zufallsgenerator =	models.CharField(db_column='Zufallsgenerator', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	datum = 			models.DateTimeField(db_column='Datum')  # Field name made lowercase.
+	geloescht =			models.TextField(db_column='gelöscht', blank=True, null=True)  # This field type is a guess.
+	gefunden = 			models.TextField(blank=True, null=True)  # This field type is a guess.
+	geaendert =			models.TextField(db_column='geändert', blank=True, null=True)  # This field type is a guess.
+	neueaf = 			models.CharField(db_column='NeueAF', max_length=50, blank=True, null=True)  # Field name made lowercase.
+	loeschdatum = 		models.DateTimeField(db_column='Löschdatum', blank=True, null=True)  # Field name made lowercase.
+
+	class Meta:
+		managed = True
+		db_table = 'tblGesamtHistorie'
+		verbose_name = "Historisierter Eintrag der Gesamttabelle (tblGesamtHistorie)"
+		verbose_name_plural = "Historisierte Einträge der Gesamttabelle (tblGesamtHistorie)"
+
+	def __str__(self) -> str:
+		return str(self.id)
 
