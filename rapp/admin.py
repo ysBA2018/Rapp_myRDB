@@ -17,44 +17,16 @@ admin.site.register(TblPlattform)
 # admin.site.register(TblUserhatrolle)
 # admin.site.register(TblRollen)
 # admin.site.register(TblRollehataf)
-admin.site.register(TblOrga)
+# admin.site.register(TblOrga)
 
 # Zeige einen Eintrag der Orga-Tabelle zeilenweise an
-
-
-class OrgaInline(admin.TabularInline):
-	model = TblOrga
-	extra = 1
-
-# ######################################################################################################
-# tbl UserIDundName
-# ######################################################################################################
-
-class UserIDundNameAdmin(admin.ModelAdmin):
-
-	fieldsets = [
-		('User-Informationen', {'fields': ['userid', 'name', 'orga', 'geloescht']}),
-		('Orga-Details      ', {'fields': ['zi_organisation', 'abteilung', 'gruppe'], 'classes': ['collapse']}),
-	]
-	# inlines = [OrgaInline]
-
-	list_display = ('id', 'userid', 'colored_name', 'orga', 'zi_organisation', 'get_active', 'abteilung', 'gruppe',)
-	list_display_links = ('userid', 'colored_name', 'get_active', )
-	list_editable = ('orga', 'zi_organisation', 'abteilung', 'gruppe', )
-	search_fields = ['name', 'zi_organisation', 'abteilung', 'gruppe', 'userid']
-
-	list_filter = ('geloescht', 'abteilung', 'gruppe', 'orga', )
-
-	actions_on_top = True
-	actions_on_bottom = True
-
-admin.site.register(TblUserIDundName, UserIDundNameAdmin)
 
 
 # ######################################################################################################
 # tbl Gesamt
 # ######################################################################################################
 
+@admin.register(TblGesamt)
 class Gesamt(admin.ModelAdmin):
 	actions_on_top = True
 	actions_on_bottom = True
@@ -79,20 +51,66 @@ class Gesamt(admin.ModelAdmin):
 					 # 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf',
 					]
 
-admin.site.register(TblGesamt, Gesamt)
-
-"""
-
-	def get_queryset(self):
-		return TblGesamt.objects.filter(geloescht != True) # Liefere nur nicht gelöschte Einträge
+# Inline function to show all Instances of Gesamt in UserIDundNameView or UebersichtAFGFs
+class GesamtInline(admin.TabularInline):
+	model = TblGesamt
+	extra = 0
 
 
+# ######################################################################################################
+# tbl UserIDundName
+# ######################################################################################################
 
-'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell',
-'plattform', 'gf', 'af_gueltig_bis', 'direct_connect',
-'af_zuweisungsdatum', 'datum', 'geloescht', 'tf_kritikalitaet', 'tf_eigentuemer_org', 'vip_kennzeichen', 'zufallsgenerator',
-'af_gueltig_ab', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung',
-'gefunden', 'wiedergefunden', 'geaendert', 'neueaf', 'nicht_ai',
-'patchdatum', 'wertmodellvorpatch', 'loeschdatum'
+@admin.register(TblUserIDundName)
+class UserIDundNameAdmin(admin.ModelAdmin):
 
-"""
+	fieldsets = [
+		('User-Informationen', {'fields': ['userid', 'name', 'orga', 'geloescht']}),
+		('Orga-Details      ', {'fields': ['zi_organisation', 'abteilung', 'gruppe'], 'classes': ['collapse']}),
+	]
+	# inlines = [OrgaInline]
+
+	list_display = ('id', 'userid', 'colored_name', 'orga', 'zi_organisation', 'get_active', 'abteilung', 'gruppe',)
+	list_display_links = ('userid', 'colored_name', 'get_active', )
+	list_editable = ('orga', 'zi_organisation', 'abteilung', 'gruppe', )
+	search_fields = ['name', 'zi_organisation', 'abteilung', 'gruppe', 'userid']
+
+	list_filter = ('geloescht', 'abteilung', 'gruppe', 'orga', )
+
+	actions_on_top = True
+	actions_on_bottom = True
+
+	# Nice idea, but VERY slow
+	inlines = [GesamtInline]
+
+
+# Inline function to show all Instances of UserIDundName in OrgaView
+class UserIDundNameInline(admin.TabularInline):
+	model = TblUserIDundName
+	extra = 0
+
+
+
+# ######################################################################################################
+# tbl Orga
+# ######################################################################################################
+
+@admin.register(TblOrga)
+class Orga(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
+	list_display = ('team', 'themeneigentuemer', )
+	list_filter = ('themeneigentuemer', )
+	list_display_links = ('team', )
+	list_editable = ('themeneigentuemer', )
+	search_fields = ['team',]
+
+	inlines = [UserIDundNameInline]
+
+
+
+# ######################################################################################################
+# tbl Orga
+# ######################################################################################################
+
+# @admin.register(TblOrga)
