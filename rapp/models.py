@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.db.models.expressions import F
 
 # Create your models here.
 
@@ -11,8 +12,9 @@ from __future__ import unicode_literals
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-
 from django.utils.html import format_html
+from django.urls import reverse		# Used to generate URLs by reversing the URL patterns
+
 
 # Tabelle enthält die aktuell genehmigten (modellierten und in Modellierung befindlichen) AF + GF-Kombinationen
 class TblUebersichtAfGfs(models.Model):
@@ -99,6 +101,33 @@ class TblUserIDundName(models.Model):
 	colored_name.admin_order_field= 'name'
 	colored_name.short_description = 'Name, Vorname'
 
+	def get_absolute_url(self):
+		# Returns the url for the whole list.
+		return reverse('userliste', args=[])
+
+	def get_absolute_update_url(self):
+		# Returns the url to access a particular instance of the model.
+		# return reverse('user-detail', args=[str(self.id)])
+		return reverse('user-update', args=[str(self.id)])
+
+	def get_absolute_toggle_geloescht_url(self):
+		# Returns the url to access a particular instance of the model.
+		# return reverse('user-detail', args=[str(self.id)])
+		return reverse('user-toggle-geloescht', args=[str(self.id)])
+
+	def get_absolute_delete_url(self):
+		# Returns the url to access a particular instance of the model.
+		# return reverse('user-detail', args=[str(self.id)])
+		return reverse('user-delete', args=[str(self.id)])
+
+	def get_absolute_create_url(self):
+		# Returns the url to open the create-instance of the model (no ID given, the element does not exist yet).
+		return reverse('user-create', args=[])
+
+
+	# Todo: Löschen-Link in Ändern-Dialog einbauen
+	# Todo: Suchfelder in die Listenanzeige einbauen
+	# Todo: Als nächsten den Team-Dioalog bauen, dann die User hat Rolle-Kette weiter ausbauen
 
 
 # Die verschiedenen technischne Plattformen (RACF, CICS, Unix, Win, AD, LDAP, test/Prod usw.)
@@ -184,14 +213,18 @@ class TblGesamt(models.Model):
 		return not self.nicht_ai
 	get_ai.boolean = True
 
+	def get_absolute_url(self):
+		# Returns the url to access a particular instance of the model.
+		return reverse('gesamt-detail', args=[str(self.id)])
+
 
 # tblGesamtHistorie enthält alle Daten zu TFs in GFs in AFs für jeden User und seine UserIDen, wenn der User (mal) gelöscht wurde
 class TblGesamtHistorie(models.Model):
 	id = 				models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
 	wiedergefunden = 	models.DateTimeField(blank=True, null=True)
 	# Das ist echt blöd, dass das hier zu lange dauert
-	# id_alt = 			models.ForeignKey('Tblgesamt', models.DO_NOTHING, db_column='ID-alt')  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	id_alt = 			models.CharField(db_column='ID-alt', max_length=11)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	id_alt = 			models.ForeignKey('Tblgesamt', models.DO_NOTHING, db_column='ID-alt')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	# id_alt = 			models.CharField(db_column='ID-alt', max_length=11)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	userid_name = 		models.ForeignKey('TblUserIDundName', on_delete=models.CASCADE, db_column='UserID + Name_ID', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	tf = 				models.CharField(db_column='TF', max_length=150)  # Field name made lowercase.
 	tf_beschreibung = 	models.CharField(db_column='TF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.

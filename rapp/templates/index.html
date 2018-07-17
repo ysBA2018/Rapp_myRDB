@@ -1,0 +1,22 @@
+{% extends "base_generic.html" %}
+
+{% block title %}<title>RechteDB für ZI-AI-BA</title>{% endblock %}
+
+{% block content %}
+<h1>Hauptseite</h1>
+
+<p>Willkommen in der <em>RechteDB</em>,
+	einer sehr einfachen Django Website zur Pflege der Berechtigungsdaten für die Abteilung
+</p>
+
+<h2>Inhalt </h2>
+
+  <p>Derzeit enthält die RechteDB folgende Datenmengen:</p>
+  <ul>
+    <li><strong>Administrierte Berechtigungen:</strong> {{ num_rights }}</li>
+    <li><strong>Integrierte UserIDs:</strong> {{ num_userIDs }}</li>
+    <li><strong>UserIDs der Abteilung:</strong> {{ num_userIDsInDepartment }}</li>
+    <li><strong>Anwender der RechteDB:</strong> {{ num_users }}</li>
+  </ul>
+
+{% endblock %}

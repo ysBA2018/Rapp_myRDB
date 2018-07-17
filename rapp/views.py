@@ -3,27 +3,84 @@ from __future__ import unicode_literals
 
 # Create your views here.
 
-# from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-# from django.urls import reverse
+from rapp.models import TblUserIDundName, TblGesamt
 from django.views import generic
 
-from django.utils import timezone
-from rapp.models import TblUserIDundName, TblGesamt
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
-def rapp(request):
-    return render(request, "index.html")
+def index(request):
+	"""
+	View function for home page of site.
 
-class IndexView(generic.ListView):
-	template_name = 'rapp/index.html'
-	context_object_name = 'first_list'
+	Zeige ein paar Statistik-Infos über die RechteDB.
+	Das stellt sicher, dass die Anbidnung an die Datenbank funzt
 
-	def get_queryset(self):
-		"""
-		Liefere nur diejenigen User-Einträge, die nicht gelöscht sind
-		"""
-		return TblUserIDundName.objects.filter(
-			geloescht = False,
-		) # .order_by('name')[:40]
+	# Render the HTML template index.html with the data in the context variable
+	"""
+	num_rights = TblGesamt.objects.all().count()
+	num_userids = TblUserIDundName.objects.all().count
+	num_active_userids = TblUserIDundName.objects.filter(geloescht=False).count
+
+	return render(
+		request,
+		'index.html',
+		context={'num_rights': num_rights,  # Todo: Korrekte Daten einpflegen
+				 'num_userIDs': num_userids,
+				 'num_activeUserIDs': num_active_userids,
+				 'num_userIDsInDepartment': 42,
+				 'num_users': 23,
+		},
+	)
+
+
+
+# Die Gesamtliste der Rechte ungefiltert
+class GesamtListView(generic.ListView):
+	model = TblGesamt
+	paginate_by = 100
+
+# Die Detailsicht eines einzelnen Rechts
+class GesamtDetailView(generic.DetailView):
+	model = TblGesamt
+
+# Die Gesamtliste der User ungefiltert
+class UserIDundNameListView(generic.ListView):
+	model = TblUserIDundName
+	paginate_by = 100
+
+# Die Detailsicht eines einzelnen Users
+# class UserIDundNameDetailView(generic.DetailView):
+#	model = TblUserIDundName
+
+
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+
+class TblUserIDundNameCreate(CreateView):
+	model = TblUserIDundName
+	fields = '__all__'
+	initial = {'geloscht' : 'False',}
+
+class TblUserIDundNameUpdate(UpdateView):
+	model = TblUserIDundName
+	fields = '__all__'
+
+class TblUserIDundNameDelete(DeleteView):
+	model = TblUserIDundName
+	success_url = reverse_lazy('userliste')
+
+def userToggleGeloescht(request, pk):
+	# View function zum Togglen des Gelöscht-Flags in der DB für eine konkrete Instanz.
+	# Dieser Aufruf wird nicht in zwei Schritten als GET / POST-Kombination durchgeführt.
+	# sondern ausschließlich als GET.
+	user_inst = get_object_or_404(TblUserIDundName, pk = pk)
+
+	user_inst.geloescht = not user_inst.geloescht
+	user_inst.save()
+
+	# redirect to a new URL:
+	return HttpResponseRedirect(reverse('userliste') )
 

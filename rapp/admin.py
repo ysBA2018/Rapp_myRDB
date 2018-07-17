@@ -59,7 +59,7 @@ class UserIDundNameAdmin(admin.ModelAdmin):
 
 	fieldsets = [
 		('User-Informationen', {'fields': ['userid', 'name', 'orga', 'geloescht']}),
-		('Orga-Details      ', {'fields': ['zi_organisation', 'abteilung', 'gruppe'], 'classes': ['collapse']}),
+		('Orga-Details      ', {'fields': ['zi_organisation', 'abteilung', 'gruppe'], 'classes': ['collapse'] }),
 	]
 
 	list_display = ('id', 'userid', 'colored_name', 'orga', 'zi_organisation', 'get_active', 'abteilung', 'gruppe',)
