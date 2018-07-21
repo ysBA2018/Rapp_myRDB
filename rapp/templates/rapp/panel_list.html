@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <form method="get">
+    {{ filter.form.as_table }}
+    <button type="submit">Search</button>
+  </form>
+  <ul>
+  {% for line in filter.qs %}
+    <li>{{ line.tf }} - {{ line.enhalten_in_af }} - {{ line.plattform }} - {{ line.geloescht }}</li>
+  {% endfor %}
+  </ul>
+{% endblock %}

@@ -83,9 +83,6 @@ class TblOrga(models.Model):
 
 
 
-
-
-
 # Die Namen aller aktiven und gelöschten UserIDen und der dazugehörenden Namen (Realnamen und Technische User)
 class TblUserIDundName(models.Model):
 	id = 				models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
@@ -207,6 +204,7 @@ class TblGesamt(models.Model):
 		db_table = 'tblGesamt'
 		verbose_name = "Eintrag der Gesamttabelle (tblGesamt)"
 		verbose_name_plural = "Gesamttabelle Übersicht (tblGesamt)"
+		# ordering = ['userid_name']
 
 	def __str__(self) -> str:
 		return str(self.id)
@@ -238,6 +236,7 @@ class TblGesamt(models.Model):
 	def get_absolute_url(self):
 		# Returns the url to access a particular instance of the model.
 		return reverse('gesamt-detail', args=[str(self.id)])
+
 
 
 # tblGesamtHistorie enthält alle Daten zu TFs in GFs in AFs für jeden User und seine UserIDen, wenn der User (mal) gelöscht wurde

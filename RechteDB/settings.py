@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
 	'rapp',
-	# 'django_filters',
+	'django_filters',
 	'django.contrib.admindocs',
 	'django.contrib.admin',
 	'django.contrib.auth',

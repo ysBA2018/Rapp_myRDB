@@ -1,10 +1,10 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-	<h1>Gesamtliste</h1>
-    <h2>Ungefiltert mit allen aktiven und gelöschten Rechten jedes Users</h2>
+	<h1>BA-Liste</h1>
+    <h2>Gefiltert mit allen aktiven Rechten jedes Users von ZI-AI-BA</h2>
 
-	{% if tblgesamt_list %}
+	{% if ba_list %}
         <table width="100%">
             <th>TF</th>
             <th>AF</th>
@@ -12,7 +12,7 @@
             <th>UserID, Name</th>
             <th>weiteres</th>
 
-            {% for recht in tblgesamt_list %}
+            {% for recht in ba_list %}
                 <tr>
                     <td> <a href="{{ recht.get_absolute_url }}">{{ recht.tf }} </a> </td>
                     <td>{{recht.enthalten_in_af}}</td>
@@ -24,6 +24,6 @@
 
         </table>
     {% else %}
-        <p>Es gibt keine Rechte in der Gesamtliste.</p>
+        <p>Es gibt keine Rechte in der Liste.</p>
     {% endif %}
 {% endblock %}

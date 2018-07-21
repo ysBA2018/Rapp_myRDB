@@ -15,12 +15,14 @@ Including another URLconf
 """
 from django.urls import path
 from . import views
-from . import admin
 
 # app_name = 'rapp'		# Wird nur benötigt als namespace, falls mehrere Apps dieselbe Teil-URL haben
 
 urlpatterns = [
+	# klassenbasierter Aufruf
 	path('', views.IndexView.as_view(), name='index'),
+
+	# die alte, funktionsorientierte Form des Aufrufs
 	# path('', views.index, name='index'),
 ]
 
@@ -34,6 +36,11 @@ urlpatterns += [
 # Der Link auf ein einzelnes Recht aus der Gesamtliste mit seiner generierten Detailsicht
 urlpatterns += [
 	path('gesamtliste/<int:pk>', views.GesamtDetailView.as_view(), name='gesamt-detail'),
+]
+
+# Der Link auf ein die Liste der aktiven Recht in ZI-AI-BA
+urlpatterns += [
+	path('baliste/', views.BaListView.as_view(), name='baliste'),
 ]
 
 # Der Link auf die User-liste
@@ -61,5 +68,14 @@ urlpatterns += [
 	path('team/create/', views.TblOrgaCreate.as_view(), name='team-create'),
 	path('team/<int:pk>/update/', views.TblOrgaUpdate.as_view(), name='team-update'),
 	# Todo Wird das benötigt? path('team/<int:pk>/toggle_geloescht/', views.userToggleGeloescht, name='user-toggle-geloescht'),
+]
+
+# Der Link auf das Eingabepanel zur freien Selektion
+urlpatterns += [
+	path('panel/', views.panel, name='panel'),
+]
+
+urlpatterns += [
+	# path('search/', views.search, name='search'),
 ]
 

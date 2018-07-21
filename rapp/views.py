@@ -5,41 +5,43 @@ from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404, render
 from rapp.models import TblUserIDundName, TblGesamt, TblOrga
-from django.views import generic
+from django.views import generic, View
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
+from django.db.models import Min
 
-def index(request):
-	"""
-	View function for home page of site.
+###################################################################
+# Die Einstiegsseite
+class IndexView(View):
+	def get(self, request):
 
-	Zeige ein paar Statistik-Infos über die RechteDB.
-	Das stellt sicher, dass die Anbidnung an die Datenbank funzt
+		# Zeige ein paar Statistik-Infos über die RechteDB.
+		# Das stellt sicher, dass die Anbidnung an die Datenbank funzt
+		num_rights = TblGesamt.objects.all().count()
+		num_userids = TblUserIDundName.objects.all().count
+		num_active_userids = TblUserIDundName.objects.filter(geloescht=False).count
+		num_userids_in_department = TblUserIDundName.objects.filter(geloescht=False, abteilung__icontains='ZI-AI-BA').count
+		num_teams = TblOrga.objects.all().count
 
-	# Render the HTML template index.html with the data in the context variable
-	"""
-	num_rights = TblGesamt.objects.all().count()
-	num_userids = TblUserIDundName.objects.all().count
-	num_active_userids = TblUserIDundName.objects.filter(geloescht=False).count
-	num_userids_in_department = TblUserIDundName.objects.filter(geloescht=False, abteilung__icontains='ZI-AI-BA').count
-	num_teams = TblOrga.objects.all().count
-
-	return render(
-		request,
-		'index.html',
-		context={'num_rights': num_rights,  # Todo: Korrekte Daten einpflegen
-				 'num_userIDs': num_userids,
-				 'num_activeUserIDs': num_active_userids,
-				 'num_userIDsInDepartment': num_userids_in_department,
-				 'num_teams': num_teams,
-				 'num_users': 23,
-		},
-	)
-
+		return HttpResponse(
+			render(
+				request,
+				'index.html',
+				context={'num_rights': num_rights,  # Todo: Korrekte Daten einpflegen
+						 'num_userIDs': num_userids,
+						 'num_activeUserIDs': num_active_userids,
+						 'num_userIDsInDepartment': num_userids_in_department,
+						 'num_teams': num_teams,
+						 'num_users': 23,
+						 },
+			)
+		)
 
 
+
+###################################################################
 # Die Gesamtliste der Rechte ungefiltert
 class GesamtListView(generic.ListView):
 	model = TblGesamt
@@ -48,6 +50,15 @@ class GesamtListView(generic.ListView):
 # Die Detailsicht eines einzelnen Rechts
 class GesamtDetailView(generic.DetailView):
 	model = TblGesamt
+
+# Die Gesamtliste der Abteilung BA
+class BaListView(generic.ListView):
+	context_object_name = 'ba_list'
+	template_name = 'rapp/ba_list.html'		# Das ist ja blöd, dass der Pfad angegeben werden muss
+	queryset = TblGesamt.objects.filter(userid_name__geloescht=False).filter(userid_name__abteilung='ZI-AI-BA').filter(geloescht=False)
+	paginate_by = 20
+
+
 
 ###################################################################
 # Die Gesamtliste der User ungefiltert
@@ -107,4 +118,24 @@ class TblOrgaUpdate(UpdateView):
 class TblOrgaDelete(DeleteView):
 	model = TblOrga
 	success_url = reverse_lazy('teamliste')
+
+###################################################################
+# Die Ab hier kommen die Views für das Panel
+
+from django.contrib.auth.models import User
+from django.shortcuts import render
+# from .filters import UserFilter
+from .filters import PanelFilter
+
+"""
+def search(request):
+    user_list = User.objects.all()
+    user_filter = UserFilter(request.GET, queryset=user_list)
+    return render(request, 'rapp/user_list.html', {'filter': user_filter})
+"""
+
+def panel(request):
+    panel_list = TblGesamt.objects.all()
+    panel_filter = PanelFilter(request.GET, queryset=panel_list)
+    return render(request, 'rapp/panel_list.html', {'filter': panel_filter})
 
