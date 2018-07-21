@@ -63,6 +63,29 @@ class TblOrga(models.Model):
 	def __str__(self) -> str:
 		return self.team
 
+	def get_absolute_url(self):
+		# Returns the url for the item.
+		return reverse('teamliste', args=[])
+
+	def get_absolute_update_url(self):
+		# Returns the url to access a particular instance of the model.
+		# return reverse('user-detail', args=[str(self.id)])
+		return reverse('team-update', args=[str(self.id)])
+
+	def get_absolute_delete_url(self):
+		# Returns the url to access a particular instance of the model.
+		# return reverse('user-detail', args=[str(self.id)])
+		return reverse('team-delete', args=[str(self.id)])
+
+	def get_absolute_create_url(self):
+		# Returns the url to open the create-instance of the model (no ID given, the element does not exist yet).
+		return reverse('team-create', args=[])
+
+
+
+
+
+
 # Die Namen aller aktiven und gelöschten UserIDen und der dazugehörenden Namen (Realnamen und Technische User)
 class TblUserIDundName(models.Model):
 	id = 				models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
@@ -125,7 +148,6 @@ class TblUserIDundName(models.Model):
 		return reverse('user-create', args=[])
 
 
-	# Todo: Löschen-Link in Ändern-Dialog einbauen
 	# Todo: Suchfelder in die Listenanzeige einbauen
 	# Todo: Als nächsten den Team-Dioalog bauen, dann die User hat Rolle-Kette weiter ausbauen
 

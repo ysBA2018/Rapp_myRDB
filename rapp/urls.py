@@ -20,8 +20,8 @@ from . import admin
 # app_name = 'rapp'		# Wird nur benötigt als namespace, falls mehrere Apps dieselbe Teil-URL haben
 
 urlpatterns = [
-	# path('', views.IndexView.as_view(), name='index'),
-	path('', views.index, name='index'),
+	path('', views.IndexView.as_view(), name='index'),
+	# path('', views.index, name='index'),
 ]
 
 
@@ -41,14 +41,25 @@ urlpatterns += [
 	path('userliste/', views.UserIDundNameListView.as_view(), name='userliste'),
 ]
 
-
-# Todo: Von den generischen Formularen für den User wird derzeit nur ...-update genutzt, der Rest geht über die Admin-Page --> Einbauen in Seiten überlegen
-
 # Generische Formulare für CUD UserIDundName (werden im Frontend bedient)
 urlpatterns += [
 	path('user/<int:pk>/delete/', views.TblUserIDundNameDelete.as_view(), name='user-delete'),
 	path('user/create/', views.TblUserIDundNameCreate.as_view(), name='user-create'),
 	path('user/<int:pk>/update/', views.TblUserIDundNameUpdate.as_view(), name='user-update'),
 	path('user/<int:pk>/toggle_geloescht/', views.userToggleGeloescht, name='user-toggle-geloescht'),
+]
+
+
+# Der Link auf die Team-liste
+urlpatterns += [
+	path('teamliste/', views.TeamListView.as_view(), name='teamliste'),
+]
+
+# Generische Formulare für CUD Orga (werden im Frontend bedient)
+urlpatterns += [
+	path('team/<int:pk>/delete/', views.TblOrgaDelete.as_view(), name='team-delete'),
+	path('team/create/', views.TblOrgaCreate.as_view(), name='team-create'),
+	path('team/<int:pk>/update/', views.TblOrgaUpdate.as_view(), name='team-update'),
+	# Todo Wird das benötigt? path('team/<int:pk>/toggle_geloescht/', views.userToggleGeloescht, name='user-toggle-geloescht'),
 ]
 
