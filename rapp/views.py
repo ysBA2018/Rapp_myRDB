@@ -138,8 +138,8 @@ def search(request):
 
 
 def panel(request):
-	# panel_list = TblGesamt.objects.all()
-	panel_list = TblUserIDundName.objects.all()
+	panel_list = TblGesamt.objects.all()
+	# panel_list = TblUserIDundName.objects.all()
 	panel_filter = PanelFilter(request.GET, queryset=panel_list)
 	panel_list = panel_filter.qs
 
@@ -151,6 +151,7 @@ def panel(request):
 		pages = paginator.page(1)
 	except EmptyPage:
 		pages = paginator.page(paginator.num_pages)
+
 	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, }
 	return render(request, 'rapp/panel_list.html', args)
 

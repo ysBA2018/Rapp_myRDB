@@ -154,7 +154,7 @@ class TblUserIDundName(models.Model):
 # Die verschiedenen technischne Plattformen (RACF, CICS, Unix, Win, AD, LDAP, test/Prod usw.)
 class TblPlattform(models.Model):
 	id = 						models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-	tf_technische_plattform = 	models.CharField(db_column='TF Technische Plattform', unique=True, max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	tf_technische_plattform = 	models.CharField(db_column='TF Technische Plattform', unique=True, max_length=150, blank=True, null=True, verbose_name='Plattform')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 
 	class Meta:
 		managed = False
@@ -191,7 +191,7 @@ class TblGesamt(models.Model):
 	gf_beschreibung = 		models.CharField(db_column='GF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	af_zuweisungsdatum = 	models.DateTimeField(db_column='AF Zuweisungsdatum', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	datum = 				models.DateTimeField(db_column='Datum')  # Field name made lowercase.
-	geloescht = 			models.IntegerField(db_column='gelöscht', blank=True, null=True)
+	geloescht = 			models.IntegerField(db_column='gelöscht', blank=True, null=True, verbose_name='gelöscht')
 	gefunden = 				models.IntegerField(blank=True, null=True)
 	wiedergefunden = 		models.DateTimeField(blank=True, null=True)
 	geaendert = 			models.IntegerField(db_column='geändert', blank=True, null=True)  # This field type is a guess.
