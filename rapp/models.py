@@ -90,7 +90,7 @@ class TblUserIDundName(models.Model):
 	name = 				models.CharField(db_column='Name', max_length=150, blank=True, null=True)  # Field name made lowercase.
 	orga = 				models.ForeignKey('TblOrga', on_delete=models.CASCADE, db_column='Orga_ID')  # Field name made lowercase.
 	zi_organisation =	models.CharField(db_column='ZI-Organisation', max_length=50, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	geloescht = 		models.IntegerField(db_column='gelöscht', blank=True, null=True)
+	geloescht = 		models.IntegerField(db_column='gelöscht', blank=True, null=True, verbose_name='gelöscht')
 	abteilung = 		models.CharField(db_column='Abteilung', max_length=50, blank=True, null=True)  # Field name made lowercase.
 	gruppe = 			models.CharField(db_column='Gruppe', max_length=50, blank=True, null=True)  # Field name made lowercase.
 
@@ -111,6 +111,8 @@ class TblUserIDundName(models.Model):
 	get_active.boolean = True
 	get_active.admin_order_field = 'geloescht'
 	get_active.short_description = 'aktiv'
+
+	geloescht.boolean = True
 
 	def colored_name(self):
 		return format_html(

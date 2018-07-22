@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.urls import path
 from . import views
+from django.conf.urls import url
+from django_filters.views import FilterView
+from .filters import UserFilter
 
 # app_name = 'rapp'		# Wird nur benötigt als namespace, falls mehrere Apps dieselbe Teil-URL haben
 
@@ -70,12 +73,18 @@ urlpatterns += [
 	# Todo Wird das benötigt? path('team/<int:pk>/toggle_geloescht/', views.userToggleGeloescht, name='user-toggle-geloescht'),
 ]
 
+
+# Nur zum Testen der Filter-Funktionen
+urlpatterns += [
+	path('search2/', views.search, name='search2'),
+    url(r'^search/$', FilterView.as_view(filterset_class=UserFilter,
+        template_name='rapp/user_list.html'), name='search'),
+]
+
+
 # Der Link auf das Eingabepanel zur freien Selektion
 urlpatterns += [
 	path('panel/', views.panel, name='panel'),
 ]
 
-urlpatterns += [
-	# path('search/', views.search, name='search'),
-]
 

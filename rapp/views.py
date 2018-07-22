@@ -3,14 +3,13 @@ from __future__ import unicode_literals
 
 # Create your views here.
 
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404 #, render
 from rapp.models import TblUserIDundName, TblGesamt, TblOrga
 from django.views import generic, View
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
-
-from django.db.models import Min
+from .filters import UserFilter
 
 ###################################################################
 # Die Einstiegsseite
@@ -126,16 +125,33 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 # from .filters import UserFilter
 from .filters import PanelFilter
+from django.core.paginator import Paginator
 
-"""
+
+###################################################################
+# Nur zum Zeigen, wie das mit den Panels gehen könnte....
+
 def search(request):
-    user_list = User.objects.all()
-    user_filter = UserFilter(request.GET, queryset=user_list)
-    return render(request, 'rapp/user_list.html', {'filter': user_filter})
-"""
+	user_list = User.objects.all()
+	user_filter = UserFilter(request.GET, queryset=user_list)
+	return render(request, 'rapp/user_list.html', {'filter': user_filter})
+
 
 def panel(request):
-    panel_list = TblGesamt.objects.all()
-    panel_filter = PanelFilter(request.GET, queryset=panel_list)
-    return render(request, 'rapp/panel_list.html', {'filter': panel_filter})
+	# panel_list = TblGesamt.objects.all()
+	panel_list = TblUserIDundName.objects.all()
+	panel_filter = PanelFilter(request.GET, queryset=panel_list)
+	panel_list = panel_filter.qs
+
+	paginator = Paginator(panel_list, 10)
+	page = request.GET.get('page', 1)
+	try:
+		pages = paginator.page(page)
+	except PageNotAnInteger:
+		pages = paginator.page(1)
+	except EmptyPage:
+		pages = paginator.page(paginator.num_pages)
+	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, }
+	return render(request, 'rapp/panel_list.html', args)
+
 

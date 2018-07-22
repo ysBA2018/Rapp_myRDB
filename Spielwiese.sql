@@ -139,3 +139,11 @@ FROM
   	 `ZI-organisation` = 'AI-BA'
      	AND NOT `tblGesamt`.`gelöscht`
         AND NOT `tblUserIDundName`.`gelöscht`
+
+
+SET global general_log = 1;
+SET global log_output = 'table';
+SET global general_log = 0;
+
+SELECT * FROM `general_log` WHERE event_time  > (now() - INTERVAL 8 SECOND) AND `user_host` LIKE 'RechteFuzzi[RechteFuzzi]%' ORDER BY `event_time` DESC
+SELECT * FROM `general_log` WHERE `user_host` LIKE 'RechteFuzzi[RechteFuzzi]%' ORDER BY `event_time` DESC
