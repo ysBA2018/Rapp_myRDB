@@ -30,7 +30,6 @@ urlpatterns = [
 ]
 
 
-
 # Der Link auf die Gesamtliste
 urlpatterns += [
 	path('gesamtliste/', views.GesamtListView.as_view(), name='gesamtliste'),

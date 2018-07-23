@@ -13,8 +13,8 @@
 
 			<div class="row">
 				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.id_user_name.label_tag }}
-					{% render_field filter.form.id_user_name class="form-control" %}
+					{{ filter.form.user_name.label_tag }}
+					{% render_field filter.form.user_name class="form-control" %}
 				</div>
 				<div class="form-group col-sm-4 col-md-2">
 					{{ filter.form.orga.label_tag }}
@@ -60,7 +60,7 @@
 		<tbody>
 			{% for row in pages %}
 				<tr>
-					<td>{{ row.userid_name__name }}</td>
+					<td>{{ row.userid_name }}</td>
 					<td>{{ row.orgaid__team }}</td>
 					<td>{{ row.tf }}</td>
 					<td>{{ row.enthalten_in_af }}</td>
@@ -151,11 +151,7 @@
         </div>
     </div>
 
-    <p>
-        {% for k in filter.form %}
-            {{ k }} <br />
-        {% endfor %}
-    </p>
 
+    {{ debug }}
 
 {% endblock %}

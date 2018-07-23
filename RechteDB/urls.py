@@ -21,12 +21,16 @@ from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 # Admin page URL for Project (not only app?)
 urlpatterns = [
 	url('admin/', admin.site.urls),
 ]
 
+if settings.DEBUG:
+	import debug_toolbar
+	urlpatterns += [
+		url(r'^__debug__/', include(debug_toolbar.urls)),
+	]
 
 # Use include() to add paths from the rapp application
 urlpatterns += [
