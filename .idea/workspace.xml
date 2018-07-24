@@ -2,15 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9041f750-6594-46a9-8f9c-6349ba68a303" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/qryF3_Mehrfachverwendung.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RechteDB/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RechteDB/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spielwiese.sql" beforeDir="false" afterPath="$PROJECT_DIR$/Spielwiese.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rapp/filters.py" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/filters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rapp/templates/rapp/panel_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/templates/rapp/panel_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rapp/templates/rapp/userIDpanel_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/templates/rapp/userIDpanel_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <ignored path="db.sqlite3" />
     <ignored path=".directory" />
@@ -26,41 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/rapp/urls.py">
+      <file leaf-file-name="base_generic.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/rapp/templates/base_generic.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="31" selection-start-line="31" selection-end-line="31" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/rapp/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2565">
-              <caret line="145" column="40" selection-start-line="145" selection-start-column="40" selection-end-line="145" selection-end-column="40" />
-              <folding>
-                <element signature="e#24#63#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Spielwiese.sql" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Spielwiese.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1805">
-              <caret line="95" column="26" selection-start-line="95" selection-start-column="26" selection-end-line="95" selection-end-column="26" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="qryF3_Mehrfachverwendung.sql" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/qryF3_Mehrfachverwendung.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="5" column="14" lean-forward="true" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
+            <state relative-caret-position="448">
+              <caret line="81" column="51" selection-start-line="81" selection-start-column="51" selection-end-line="81" selection-end-column="51" />
             </state>
           </provider>
         </entry>
@@ -68,10 +37,22 @@
       <file leaf-file-name="filters.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rapp/filters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="741">
-              <caret line="43" column="42" selection-start-line="43" selection-start-column="18" selection-end-line="43" selection-end-column="42" />
+            <state relative-caret-position="114">
+              <caret line="6" selection-start-line="6" selection-end-line="6" />
               <folding>
                 <element signature="e#0#50#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/rapp/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="809">
+              <caret line="145" column="19" lean-forward="true" selection-start-line="145" selection-start-column="19" selection-end-line="145" selection-end-column="28" />
+              <folding>
+                <element signature="e#24#63#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -80,8 +61,8 @@
       <file leaf-file-name="panel_list.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rapp/templates/rapp/panel_list.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
+            <state relative-caret-position="57">
+              <caret line="3" column="43" selection-start-line="3" selection-start-column="43" selection-end-line="3" selection-end-column="43" />
               <folding>
                 <element signature="n#style#0;n#h4#0;n#div#0;n#form#0;n#!!top" expanded="true" />
               </folding>
@@ -110,8 +91,8 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RechteDB/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="798">
-              <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
+            <state relative-caret-position="1064">
+              <caret line="71" column="61" selection-start-line="71" selection-start-column="61" selection-end-line="71" selection-end-column="61" />
             </state>
           </provider>
         </entry>
@@ -145,6 +126,7 @@
       <find>recht</find>
       <find>rTable</find>
       <find>reverse</find>
+      <find>&quot;container&quot;</find>
       <find />
     </findStrings>
     <replaceStrings>
@@ -189,19 +171,19 @@
         <option value="$PROJECT_DIR$/rapp/templates/rapp/tblgesamt_list.html" />
         <option value="$PROJECT_DIR$/rapp/templates/rapp/ba_list.html" />
         <option value="$PROJECT_DIR$/rapp/templates/search/user_list.html" />
-        <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/rapp/templates/rapp/user_list.html" />
         <option value="$PROJECT_DIR$/rapp/static/paginator.js" />
-        <option value="$PROJECT_DIR$/rapp/filters.py" />
         <option value="$PROJECT_DIR$/rapp/models.py" />
         <option value="$PROJECT_DIR$/Spielwiese.sql" />
         <option value="$PROJECT_DIR$/rapp/urls.py" />
         <option value="$PROJECT_DIR$/rapp/templates/base_generic.html" />
-        <option value="$PROJECT_DIR$/rapp/views.py" />
-        <option value="$PROJECT_DIR$/RechteDB/settings.py" />
         <option value="$PROJECT_DIR$/RechteDB/urls.py" />
-        <option value="$PROJECT_DIR$/rapp/templates/rapp/panel_list.html" />
         <option value="$PROJECT_DIR$/qryF3_Mehrfachverwendung.sql" />
+        <option value="$PROJECT_DIR$/rapp/filters.py" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/rapp/templates/rapp/panel_list.html" />
+        <option value="$PROJECT_DIR$/RechteDB/settings.py" />
+        <option value="$PROJECT_DIR$/rapp/views.py" />
       </list>
     </option>
   </component>
@@ -379,7 +361,14 @@
       <option name="project" value="LOCAL" />
       <updated>1532295832433</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="add first view to DB (vw_mehrfach)">
+      <created>1532382415034</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1532382415034</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TodoView">
@@ -403,10 +392,11 @@
       <window_info anchor="bottom" id="Python Console" order="0" weight="0.32899022" />
       <window_info anchor="bottom" id="Run" order="6" />
       <window_info anchor="bottom" id="Terminal" order="1" weight="0.32899022" />
-      <window_info content_ui="combo" id="Project" order="2" sideWeight="0.4957667" visible="true" weight="0.19665273" />
+      <window_info active="true" content_ui="combo" id="Project" order="2" sideWeight="0.4957667" visible="true" weight="0.19665273" />
       <window_info id="Project Explorer" order="2" />
       <window_info id="Job Explorer" order="2" />
       <window_info anchor="bottom" id="Console" order="11" />
+      <window_info anchor="bottom" id="Find" order="5" weight="0.32980457" />
       <window_info id="Structure" order="1" sideWeight="0.5024582" side_tool="true" weight="0.26969856" />
       <window_info id="Favorites" order="0" sideWeight="0.5042333" side_tool="true" weight="0.22384937" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.4" />
@@ -416,7 +406,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="4" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="5" weight="0.32980457" />
     </layout>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -462,7 +451,8 @@
     <MESSAGE value="add first experiments with filters" />
     <MESSAGE value="add pagination 1st step to users list" />
     <MESSAGE value="add pagination to panel for Gesamt." />
-    <option name="LAST_COMMIT_MESSAGE" value="add pagination to panel for Gesamt." />
+    <MESSAGE value="add first view to DB (vw_mehrfach)" />
+    <option name="LAST_COMMIT_MESSAGE" value="add first view to DB (vw_mehrfach)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -470,17 +460,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/rapp/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1155">
-          <caret line="88" column="34" lean-forward="true" selection-start-line="88" selection-start-column="34" selection-end-line="88" selection-end-column="34" />
-          <folding>
-            <element signature="e#24#63#0" expanded="true" />
-            <element signature="e#917#3325#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -650,13 +629,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="6" column="29" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/rapp/templates/rapp/ba_list.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="551">
@@ -712,49 +684,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/templates/base_generic.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="10" lean-forward="true" selection-start-column="10" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="31" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/rapp/templates/rapp/userIDpanel_list.html">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/filters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="741">
-          <caret line="43" column="42" selection-start-line="43" selection-start-column="18" selection-end-line="43" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#50#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2565">
-          <caret line="145" column="40" selection-start-line="145" selection-start-column="40" selection-end-line="145" selection-end-column="40" />
-          <folding>
-            <element signature="e#24#63#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="798">
-          <caret line="42" column="11" selection-start-line="42" selection-start-column="11" selection-end-line="42" selection-end-column="11" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/urls.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -762,16 +693,6 @@
           <caret line="34" selection-start-line="34" selection-end-line="34" />
           <folding>
             <element signature="e#621#662#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/templates/rapp/panel_list.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
-          <folding>
-            <element signature="n#style#0;n#h4#0;n#div#0;n#form#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -786,8 +707,73 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/qryF3_Mehrfachverwendung.sql">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="14" lean-forward="true" selection-start-line="5" selection-start-column="14" selection-end-line="5" selection-end-column="14" />
+        <state relative-caret-position="969">
+          <caret line="51" selection-end-line="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myvenv/lib64/python3.5/site-packages/django/contrib/admin/templates/admin/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="411">
+          <caret line="22" column="8" selection-start-line="22" selection-start-column="8" selection-end-line="22" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/templates/base_generic.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="448">
+          <caret line="81" column="51" selection-start-line="81" selection-start-column="51" selection-end-line="81" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="7" column="14" selection-start-line="7" selection-start-column="14" selection-end-line="7" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1064">
+          <caret line="71" column="61" selection-start-line="71" selection-start-column="61" selection-end-line="71" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/templates/rapp/panel_list.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="3" column="43" selection-start-line="3" selection-start-column="43" selection-end-line="3" selection-end-column="43" />
+          <folding>
+            <element signature="n#style#0;n#h4#0;n#div#0;n#form#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/filters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
+          <folding>
+            <element signature="e#0#50#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="809">
+          <caret line="145" column="19" lean-forward="true" selection-start-line="145" selection-start-column="19" selection-end-line="145" selection-end-column="28" />
+          <folding>
+            <element signature="e#24#63#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

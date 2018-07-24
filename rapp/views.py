@@ -143,6 +143,8 @@ def panel(request):
 	panel_filter = PanelFilter(request.GET, queryset=panel_list)
 	panel_list = panel_filter.qs
 
+	meineTabelle = TblGesamt.objects.all()
+
 	paginator = Paginator(panel_list, 10)
 	page = request.GET.get('page', 1)
 	try:
@@ -152,7 +154,7 @@ def panel(request):
 	except EmptyPage:
 		pages = paginator.page(paginator.num_pages)
 
-	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, }
+	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, 'meineTabelle': meineTabelle}
 	return render(request, 'rapp/panel_list.html', args)
 
 
