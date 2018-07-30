@@ -21,6 +21,7 @@ from .filters import UserFilter
 
 # app_name = 'rapp'		# Wird nur benötigt als namespace, falls mehrere Apps dieselbe Teil-URL haben
 
+# Der Index als zentraler Einstieg
 urlpatterns = [
 	# klassenbasierter Aufruf
 	path('', views.IndexView.as_view(), name='index'),
@@ -81,9 +82,15 @@ urlpatterns += [
 ]
 
 
-# Der Link auf das Eingabepanel zur freien Selektion
+# Der Link auf das Eingabepanel zur freien Selektion direkt auf der Gesamttabelle
 urlpatterns += [
 	path('panel/', views.panel, name='panel'),
+]
+
+
+# Der Link auf das Eingabepanel zur freien Selektion auf der View VwMehrfach
+urlpatterns += [
+	path('selektion/', views.selektion, name='selektion'),
 ]
 
 

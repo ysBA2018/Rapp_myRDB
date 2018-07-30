@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from .models import TblGesamt, TblOrga, TblUserIDundName, TblUebersichtAfGfs, TblPlattform
+from .models import TblGesamt, TblOrga, TblUserIDundName, VwMehrfach
 
 import django_filters
 from django import forms
@@ -45,11 +45,23 @@ class PanelFilter(django_filters.FilterSet):
 	tf = django_filters.CharFilter(lookup_expr='icontains')
 	enthalten_in_af = django_filters.CharFilter(lookup_expr='icontains')
 	userid_name__userID = django_filters.CharFilter(lookup_expr='istartswith')
+	# plattform = django_filters.ChoiceFilter()
+	geloescht = django_filters.BooleanFilter()
+
+	class Meta:
+		model = TblGesamt
+		fields = '__all__'
+
+
+class SelektionFilter(django_filters.FilterSet):
+	tf = django_filters.CharFilter(lookup_expr='icontains')
+	enthalten_in_af = django_filters.CharFilter(lookup_expr='icontains')
+	userid_name__userID = django_filters.CharFilter(lookup_expr='istartswith')
 	plattform = django_filters.BooleanFilter(lookup_expr='exact')
 	geloescht = django_filters.BooleanFilter(lookup_expr='exact')
 
 	class Meta:
-		model = TblUserIDundName
+		model = VwMehrfach
 		fields = '__all__'
 
 

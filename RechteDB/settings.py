@@ -25,7 +25,7 @@ SECRET_KEY = 'itc%syf=c5pv0wtk1rp=1%+ngib3t(6lu&tp3-1!qv_1rs384+'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1','192.168.21.36','192.168.21.29','192.168.21.30')
 
 # Application definition
 
@@ -84,7 +84,7 @@ DATABASES = {
 	'default': {
 		# 'ENGINE': 'django.db.backends.sqlite3',
 		# 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-		'ENGINE': 'django.db.backends.mysql',
+		'ENGINE': 'django.db.backends.mysql',		# ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
 		# 'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
 		'NAME': 'RechteDB',
 		'USER': 'RechteFuzzi',

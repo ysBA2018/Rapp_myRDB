@@ -147,3 +147,32 @@ SET global general_log = 0;
 
 SELECT * FROM `mysql`.`general_log` WHERE event_time  > (now() - INTERVAL 8 SECOND) AND `user_host` LIKE 'RechteFuzzi[RechteFuzzi]%' ORDER BY `event_time` DESC
 SELECT * FROM `mysql`.`general_log` WHERE `user_host` LIKE 'RechteFuzzi[RechteFuzzi]%' ORDER BY `event_time` DESC
+
+
+-- Die Selektionsmaske in panel_list.html
+			<div class="row">
+				<div class="form-group col-sm-4 col-md-2">
+                    {{ filter.form.user_name__name.id_for_label }}
+					{% render_field filter.form.user_name_id_name class="form-control" %}
+				</div>
+				<div class="form-group col-sm-4 col-md-2">
+					{{ filter.form.orga.label_tag }}
+					{% render_field filter.form.orga class="form-control" %}
+				</div>
+				<div class="form-group col-sm-4 col-md-2">
+					{{ filter.form.tf.label_tag }}
+					{% render_field filter.form.tf class="form-control" %}
+				</div>
+				<div class="form-group col-sm-4 col-md-2">
+					{{ filter.form.enthalten_in_af.label_tag }}
+					{% render_field filter.form.enthalten_in_af class="form-control" %}
+				</div>
+				<div class="form-group col-sm-4 col-md-2">
+					{{ filter.form.plattform.label_tag }}
+					{% render_field filter.form.plattform class="form-control" %}
+				</div>
+				<div class="form-group col-sm-4 col-md-2">
+					{{ filter.form.geloescht.label_tag }}
+					{% render_field filter.form.geloescht class="form-control" %}
+				</div>
+			</div>

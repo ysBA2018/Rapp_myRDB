@@ -78,14 +78,16 @@
 	  <div class="col-sm-2">
 	  {% block sidebar %}
 	  <ul class="sidebar-nav">
-		  <li><a href="{% url 'index' %}">Home</a></li>
+		  <li><a href="{% url 'index' %}">Startseite</a></li>
 		  <li><a href="">Import neue Daten</a></li>
 		  <li><a href="{% url 'userliste' %}">User-Liste</a></li>
 		  <li><a href="{% url 'teamliste' %}">Team-Liste</a></li>
 		  <li><a href="{% url 'gesamtliste' %}">Gesamtliste</a></li>
 		  <li>&nbsp;</li>
 		  <li><a href="{% url 'baliste' %}">Aktive Liste AI-BA</a></li>
-		  <li><a href="{% url 'panel' %}">Selektions-Panel</a></li>
+		  <li><a href="{% url 'panel' %}">Gesamt-Panel</a></li>
+		  <li>&nbsp;</li>
+		  <li><a href="{% url 'selektion' %}">Selektions-Panel</a></li>
 		  <li>&nbsp;</li>
 		  <li><a href="/admin/rapp/">Admin-Sichten</a></li>
 
@@ -102,26 +104,7 @@
 	 {% endblock %}
 	  </div>
 	  <div class="col-sm-10 ">
-	  {% block content %}{% endblock %}
-
-	  {% block pagination %}
-		{% if is_paginated %}
-		<div class="pagination">
-			<span class="page-links">
-				{% if page_obj.has_previous %}
-					<a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
-				{% endif %}
-				<span class="page-current">
-					Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-				</span>
-				{% if page_obj.has_next %}
-					<a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
-				{% endif %}
-			</span>
-		</div>
-		{% endif %}
-	  {% endblock %}
-
+		  {% block content %}{% endblock %}
 	  </div>
 	</div>
 

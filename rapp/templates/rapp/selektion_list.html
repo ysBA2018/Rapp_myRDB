@@ -8,26 +8,14 @@
 	<form method="get">
 		<div class="well">
 			<h4 style="margin-top: 0">Filter</h4>
-                {% for hidden in filter.form.hidden_fields %}
-                    {{ hidden }}
-                {% endfor %}
-
-                {% for field in filter.form.visible_fields %}
-                    <div class="form-group">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}, {{ field.name }}</label>
-                            {{ field | add_class:'form-control' }}
-                        {% for error in field.errors %}
-                            <span class="help-block">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-
-            <p>Hier endet die 1. Schleife</p>
+						{% for hidden in form.hidden_fields %}
+								{{ hidden }}
+						{% endfor %}
 
 			<div class="row">
 				<div class="form-group col-sm-4 col-md-2">
-                    {{ filter.form.userid_name.label_tag }}
-					{% render_field filter.form.userid_name class="form-control" %}
+					{{ filter.form.user_name.label_tag }}
+					{% render_field filter.form.user_name class="form-control" %}
 				</div>
 				<div class="form-group col-sm-4 col-md-2">
 					{{ filter.form.orga.label_tag }}
@@ -50,7 +38,6 @@
 					{% render_field filter.form.geloescht class="form-control" %}
 				</div>
 			</div>
-
 						<div class="form-group">
 								<button type="submit" class="btn btn-primary">
 										<span class="glyphicon glyphicon-search"></span> Suche
@@ -88,11 +75,6 @@
 			{% endfor %}
 		</tbody>
 	</table>
-
-
-    {% comment %}
-        Ab hier geht es nur noch um Paginierung
-    {% endcomment %}
 
     <div class = "container-fluid">
         <div class = "col-md-6">
@@ -171,7 +153,7 @@
     </div>
 
     <div>
-        { % render_table meineTabelle %}
+        {% render_table meineTabelle %}
     </div>
 
 {% endblock %}
