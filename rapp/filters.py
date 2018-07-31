@@ -57,7 +57,6 @@ class PanelFilter(django_filters.FilterSet):
 
 	class Meta:
 		model = TblGesamt
-		#fields = '__all__'
 		fields = [
 			'id', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell', 'tf_kritikalitaet', \
 			'tf_eigentuemer_org', 'plattform', 'gf', 'af_gueltig_ab', 'af_gueltig_bis', 'direct_connect', \

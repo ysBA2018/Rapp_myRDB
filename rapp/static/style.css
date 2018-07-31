@@ -19,7 +19,6 @@ body {
 
 .login {
     color: magenta;
-
 }
 
 # Table DIVs from https://html-cleaner.com/features/replace-html-table-tags-with-divs/
@@ -87,8 +86,12 @@ body {
      height: 0;
 }
 
-td {
-    padding-right: 1rem;
+.knappeTabelle {
+    padding-right: 1rem !important;
+    padding-top:   0rem !important;
+    padding-left:  0rem !important;
+    padding-bottom:0rem !important;
+    color: #0B173B;
 }
 
 -breiteTabelle {

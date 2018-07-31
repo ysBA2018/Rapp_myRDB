@@ -151,7 +151,15 @@ def panel(request):
 	panel_filter = PanelFilter(request.GET, queryset=panel_list)
 	panel_list = panel_filter.qs
 
-	paginator = Paginator(panel_list, 10)
+	pagesize = request.GET.get('paginator_id')
+	foo = type(pagesize)
+
+	if type(pagesize) == type(None):
+		pagesize = 10
+	elif pagesize < 1:
+		pagesize = 20
+	#debug()
+	paginator = Paginator(panel_list, pagesize)
 	page = request.GET.get('page', 1)
 	try:
 		pages = paginator.page(page)
@@ -160,5 +168,5 @@ def panel(request):
 	except EmptyPage:
 		pages = paginator.page(paginator.num_pages)
 
-	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, 'meineTabelle': panel_list}
+	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, 'meineTabelle': panel_list, 'pagesize': pagesize}
 	return render(request, 'rapp/panel_list.html', args)

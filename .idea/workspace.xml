@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9041f750-6594-46a9-8f9c-6349ba68a303" name="Default" comment="use table2 for diplaying panel search results&#10;&#10;But this is too slow (even ms-access has better timing...)&#10;&#10;Revert this - maybe for">
-      <change afterPath="$PROJECT_DIR$/starte" afterDir="false" />
+    <list default="true" id="9041f750-6594-46a9-8f9c-6349ba68a303" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rapp/filters.py" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/filters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rapp/static/delete.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/static/delete.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rapp/tables.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rapp/templates/base_generic.html" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/templates/base_generic.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rapp/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/static/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rapp/templates/rapp/panel_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/templates/rapp/panel_list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/rapp/views.py" afterDir="false" />
     </list>
@@ -29,7 +26,7 @@
       <file leaf-file-name="base_generic.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rapp/templates/base_generic.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
+            <state relative-caret-position="1083">
               <caret line="108" column="81" selection-start-line="108" selection-start-column="81" selection-end-line="108" selection-end-column="81" />
               <folding>
                 <element signature="n#script#0;n#body#0;n#html#0;n#!!top" />
@@ -41,8 +38,8 @@
       <file leaf-file-name="filters.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rapp/filters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1018">
-              <caret line="69" column="36" lean-forward="true" selection-start-line="69" selection-start-column="36" selection-end-line="69" selection-end-column="36" />
+            <state relative-caret-position="1254">
+              <caret line="70" selection-start-line="70" selection-end-line="70" />
               <folding>
                 <element signature="e#0#50#0" expanded="true" />
               </folding>
@@ -53,8 +50,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rapp/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3952">
-              <caret line="208" lean-forward="true" selection-start-line="208" selection-end-line="208" />
+            <state relative-caret-position="4294">
+              <caret line="240" selection-start-line="240" selection-end-line="240" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -65,8 +62,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rapp/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="619">
-              <caret line="139" column="20" lean-forward="true" selection-start-line="139" selection-start-column="20" selection-end-line="139" selection-end-column="20" />
+            <state relative-caret-position="866">
+              <caret line="160" column="5" selection-start-line="160" selection-start-column="5" selection-end-line="160" selection-end-column="5" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -74,29 +71,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="panel_list.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="panel_list.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/rapp/templates/rapp/panel_list.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1273">
-              <caret line="67" column="87" selection-start-line="67" selection-start-column="87" selection-end-line="67" selection-end-column="87" />
+            <state relative-caret-position="467">
+              <caret line="87" column="33" selection-start-line="87" selection-start-column="26" selection-end-line="87" selection-end-column="33" />
+              <folding>
+                <element signature="e#6002#6009#1" expanded="true" />
+                <element signature="e#6176#6183#1" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Spielwiese.sql" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Spielwiese.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-374">
-              <caret line="152" lean-forward="true" selection-start-line="152" selection-end-line="152" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="style.css" pinned="false" current-in-tab="false">
+      <file leaf-file-name="style.css" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/rapp/static/style.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1786">
-              <caret line="94" column="24" selection-start-line="94" selection-start-column="4" selection-end-line="94" selection-end-column="24" />
+            <state relative-caret-position="892">
+              <caret line="93" column="18" selection-start-line="93" selection-start-column="18" selection-end-line="93" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -173,16 +165,16 @@
         <option value="$PROJECT_DIR$/requirements.txt" />
         <option value="$PROJECT_DIR$/RechteDB/settings.py" />
         <option value="$PROJECT_DIR$/Spielwiese.sql" />
-        <option value="$PROJECT_DIR$/rapp/static/style.css" />
         <option value="$PROJECT_DIR$/rapp/templates/rapp/tbluseridundname_list.html" />
         <option value="$PROJECT_DIR$/rapp/templates/rapp/tblorga_list.html" />
         <option value="$PROJECT_DIR$/rapp/templates/rapp/ba_list.html" />
         <option value="$PROJECT_DIR$/rapp/templates/base_generic.html" />
-        <option value="$PROJECT_DIR$/rapp/models.py" />
-        <option value="$PROJECT_DIR$/rapp/filters.py" />
         <option value="$PROJECT_DIR$/rapp/tables.py" />
+        <option value="$PROJECT_DIR$/rapp/filters.py" />
+        <option value="$PROJECT_DIR$/rapp/models.py" />
         <option value="$PROJECT_DIR$/rapp/views.py" />
         <option value="$PROJECT_DIR$/rapp/templates/rapp/panel_list.html" />
+        <option value="$PROJECT_DIR$/rapp/static/style.css" />
       </list>
     </option>
   </component>
@@ -414,7 +406,14 @@
       <option name="project" value="LOCAL" />
       <updated>1533061626836</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Revert Usage of table2 for panel">
+      <created>1533062895574</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1533062895574</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TodoView">
@@ -503,7 +502,8 @@
     <MESSAGE value="Django widget tweaks found error with plattform" />
     <MESSAGE value="set widgets and first use of table2&#10;&#10;The widgets for panel_lilst.html look kind of pretty.&#10;In this version two result tables are generatet via panel_list.html:&#10;- manual generated table&#10;- automatically generated table2 &#10;&#10;Next step ist the customization of table2-classes for the panel view." />
     <MESSAGE value="use table2 for diplaying panel search results&#10;&#10;But this is too slow (even ms-access has better response-time...)&#10;&#10;Revert this - maybe for small standard-tables ok" />
-    <option name="LAST_COMMIT_MESSAGE" value="use table2 for diplaying panel search results&#10;&#10;But this is too slow (even ms-access has better response-time...)&#10;&#10;Revert this - maybe for small standard-tables ok" />
+    <MESSAGE value="Revert Usage of table2 for panel" />
+    <option name="LAST_COMMIT_MESSAGE" value="Revert Usage of table2 for panel" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -605,13 +605,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="76">
           <caret line="4" column="29" selection-start-line="4" selection-start-column="29" selection-end-line="4" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" column="19" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="19" />
         </state>
       </provider>
     </entry>
@@ -734,16 +727,9 @@
     <entry file="file://$PROJECT_DIR$/starte">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/static/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1786">
-          <caret line="94" column="24" selection-start-line="94" selection-start-column="4" selection-end-line="94" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/rapp/templates/base_generic.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="1083">
           <caret line="108" column="81" selection-start-line="108" selection-start-column="81" selection-end-line="108" selection-end-column="81" />
           <folding>
             <element signature="n#script#0;n#body#0;n#html#0;n#!!top" />
@@ -751,36 +737,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/tables.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3952">
-          <caret line="208" lean-forward="true" selection-start-line="208" selection-end-line="208" />
-          <folding>
-            <element signature="e#24#63#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/rapp/filters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1018">
-          <caret line="69" column="36" lean-forward="true" selection-start-line="69" selection-start-column="36" selection-end-line="69" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#50#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/tables.py" />
     <entry file="file://$PROJECT_DIR$/Spielwiese.sql">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-374">
@@ -788,10 +745,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="7" column="19" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/filters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1254">
+          <caret line="70" selection-start-line="70" selection-end-line="70" />
+          <folding>
+            <element signature="e#0#50#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4294">
+          <caret line="240" selection-start-line="240" selection-end-line="240" />
+          <folding>
+            <element signature="e#24#63#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/rapp/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="619">
-          <caret line="139" column="20" lean-forward="true" selection-start-line="139" selection-start-column="20" selection-end-line="139" selection-end-column="20" />
+        <state relative-caret-position="866">
+          <caret line="160" column="5" selection-start-line="160" selection-start-column="5" selection-end-line="160" selection-end-column="5" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
           </folding>
@@ -800,8 +784,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/rapp/templates/rapp/panel_list.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1273">
-          <caret line="67" column="87" selection-start-line="67" selection-start-column="87" selection-end-line="67" selection-end-column="87" />
+        <state relative-caret-position="467">
+          <caret line="87" column="33" selection-start-line="87" selection-start-column="26" selection-end-line="87" selection-end-column="33" />
+          <folding>
+            <element signature="e#6002#6009#1" expanded="true" />
+            <element signature="e#6176#6183#1" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/rapp/static/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="892">
+          <caret line="93" column="18" selection-start-line="93" selection-start-column="18" selection-end-line="93" selection-end-column="18" />
         </state>
       </provider>
     </entry>

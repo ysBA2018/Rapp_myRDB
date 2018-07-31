@@ -8,6 +8,18 @@
 	<form method="get">
 		<div class="well">
 
+
+           {% comment for field in filter.form.visible_fields %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}, {{ field.name }}</label>
+                        {{ field | add_class:'form-control' }}
+                    {% for error in field.errors %}
+                        <span class="help-block">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            {% endcomment %}
+
 			<div class="row">
 
 				<div class="form-group col-12 col-sm-6 col-md-3 col-lg-2 col-xl-1">
@@ -52,6 +64,11 @@
 					{% render_field filter.form.modell__name_gf_neu class="form-control" %}
 				</div>
 
+				<div class="form-group col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
+					<label for="paginator_id">Pagination</label>
+					{% render_field ddddpagesize class="form-control" %}
+				</div>
+
 			</div>
 
             {% comment %} Suche und Abbruch-Buttons {% endcomment %}
@@ -68,7 +85,7 @@
     {% comment %} Die alte Ergebnismenge, manuell zu einer Tabelle zusammengestellt {% endcomment %}
 	<table class="table table-bordered vllzulangertext">
 		<thead>
-			<tr>
+			<tr class="bg-primary">
 				<th>Name</th>
 				<th>Team</th>
 				<th>TF</th>
@@ -84,16 +101,16 @@
 		<tbody>
 			{% for row in pages %}
 				<tr>
-					<td class="vllzulangertext">{{ row.userid_name }}</td>
-                    <td class="vllzulangertext">{{ row.userid_name.orga }}</td>
-					<td class="vllzulangertext">{{ row.tf }}</td>
-					<td class="vllzulangertext">{{ row.enthalten_in_af }}</td>
-					<td class="vllzulangertext">{{ row.gf }}</td>
-                    <td class="vllzulangertext">{{ row.userid_name.zi_organisation }}</td>
-					<td class="vllzulangertext">{{ row.plattform }}</td>
-					<td class="vllzulangertext">{{ row.modell.name_af_neu }}</td>
-					<td class="vllzulangertext">{{ row.modell.name_gf_neu }}</td>
-					<td class="vllzulangertext">{{ row.geloescht }}</td>
+					<td class="vllzulangertext knappeTabelle">{{ row.userid_name }}</td>
+                    <td class="vllzulangertext knappeTabelle">{{ row.userid_name.orga }}</td>
+					<td class="vllzulangertext knappeTabelle">{{ row.tf }}</td>
+					<td class="vllzulangertext knappeTabelle">{{ row.enthalten_in_af }}</td>
+					<td class="vllzulangertext knappeTabelle">{{ row.gf }}</td>
+                    <td class="vllzulangertext knappeTabelle">{{ row.userid_name.zi_organisation }}</td>
+					<td class="vllzulangertext knappeTabelle">{{ row.plattform }}</td>
+					<td class="vllzulangertext knappeTabelle">{{ row.modell.name_af_neu }}</td>
+					<td class="vllzulangertext knappeTabelle">{{ row.modell.name_gf_neu }}</td>
+					<td class="vllzulangertext knappeTabelle text-center">{{ row.geloescht }}</td>
 				</tr>
 			{% empty %}
 				<tr>
