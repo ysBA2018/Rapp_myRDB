@@ -87,10 +87,3 @@ urlpatterns += [
 	path('panel/', views.panel, name='panel'),
 ]
 
-
-# Der Link auf das Eingabepanel zur freien Selektion auf der View VwMehrfach
-urlpatterns += [
-	path('selektion/', views.selektion, name='selektion'),
-]
-
-

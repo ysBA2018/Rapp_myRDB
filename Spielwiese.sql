@@ -149,30 +149,80 @@ SELECT * FROM `mysql`.`general_log` WHERE event_time  > (now() - INTERVAL 8 SECO
 SELECT * FROM `mysql`.`general_log` WHERE `user_host` LIKE 'RechteFuzzi[RechteFuzzi]%' ORDER BY `event_time` DESC
 
 
--- Die Selektionsmaske in panel_list.html
-			<div class="row">
-				<div class="form-group col-sm-4 col-md-2">
-                    {{ filter.form.user_name__name.id_for_label }}
-					{% render_field filter.form.user_name_id_name class="form-control" %}
-				</div>
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.orga.label_tag }}
-					{% render_field filter.form.orga class="form-control" %}
-				</div>
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.tf.label_tag }}
-					{% render_field filter.form.tf class="form-control" %}
-				</div>
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.enthalten_in_af.label_tag }}
-					{% render_field filter.form.enthalten_in_af class="form-control" %}
-				</div>
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.plattform.label_tag }}
-					{% render_field filter.form.plattform class="form-control" %}
-				</div>
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.geloescht.label_tag }}
-					{% render_field filter.form.geloescht class="form-control" %}
-				</div>
-			</div>
+
+
+
+class VwMehrfach(models.Model):
+	id = 					models.IntegerField(db_column='ID', primary_key=True)
+	userid = 				models.CharField(db_column='UserID', max_length=50)  # Field name made lowercase.
+	name = 					models.CharField(db_column='Name', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	gruppe = 				models.CharField(max_length=50, blank=True, null=True)
+	team = 					models.CharField(max_length=50, blank=True, null=True)
+	tf = 					models.CharField(db_column='TF', max_length=150)  # Field name made lowercase.
+	tf_beschreibung = 		models.CharField(db_column='TF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	enthalten_in_af = 		models.CharField(db_column='Enthalten IN AF', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	afneu = 				models.CharField(max_length=50)
+	gfneu = 				models.CharField(max_length=50, blank=True, null=True)
+	plattform = 			models.CharField(max_length=150, blank=True, null=True)
+	gf = 					models.CharField(db_column='GF', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	gf_beschreibung = 		models.CharField(db_column='GF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	orga_id = 				models.IntegerField(db_column='Orga_ID')  # Field name made lowercase.
+	useridundname_id = 		models.IntegerField(db_column='UserIDundName_ID', blank=True, null=True)  # Field name made lowercase.
+	modell = 				models.IntegerField(db_column='Modell')  # Field name made lowercase.
+	plattform_id = 			models.IntegerField(db_column='Plattform_ID', blank=True, null=True)  # Field name made lowercase.
+	geloescht = 			models.IntegerField(blank=True, null=True)
+	loeschdatum = 			models.DateTimeField(blank=True, null=True)
+	af_gueltig_ab = 		models.DateTimeField(db_column='AF Gueltig ab', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	af_gueltig_bis = 		models.DateTimeField(db_column='AF Gueltig bis', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	direct_connect = 		models.CharField(db_column='Direct Connect', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	hoechste_kritikalitaet_tf_in_af = \
+							models.CharField(db_column='Hoechste Kritikalitaet TF IN AF', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	af_zuweisungsdatum = 	models.DateTimeField(db_column='AF Zuweisungsdatum', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	test = 					models.TextField(db_column='Test', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+	produktion = 			models.TextField(db_column='Produktion', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+	readonly = 				models.TextField(db_column='Readonly', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+	tf_kritikalitaet = 		models.CharField(db_column='TF_Kritikalitaet', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	tf_eigentuemer_org = 	models.CharField(db_column='TF_Eigentuemer Org', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	zi_organisation = 		models.CharField(db_column='ZI_Organisation', max_length=50, blank=True, null=True)  # Field name made lowercase.
+	vip = 					models.CharField(db_column='VIP', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	zufallsgenerator = 		models.CharField(db_column='Zufallsgenerator', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	datum = 				models.DateTimeField(db_column='Datum')  # Field name made lowercase.
+	gefunden = 				models.IntegerField(blank=True, null=True)
+	wiedergefunden = 		models.DateTimeField(blank=True, null=True)
+	geaendert = 			models.TextField(blank=True, null=True)  # This field type is a guess.
+	neueaf = 				models.CharField(db_column='NeueAF', max_length=50, blank=True, null=True)  # Field name made lowercase.
+
+	class Meta:
+		managed = False
+		db_table = 'vw_mehrfach'
+		verbose_name = "Selektierte Zeile"
+		verbose_name_plural = "Selektierte Menge"
+		# ordering = ['userid_name']
+
+	def __str__(self) -> str:
+		return str(self.id)
+
+	def get_active(self):
+		return not self.geloescht
+	get_active.boolean = True
+	get_active.admin_order_field = 'geloescht'
+	get_active.short_description = 'aktiv'
+
+	def get_gefunden(self):
+		return self.gefunden
+	get_gefunden.boolean = True
+
+	def get_geaendert(self):
+		return self.geaendert
+	geaendert.boolean = True
+
+	def get_direct_connect(self):
+		return self.direct_connect == 'Ja'
+	get_direct_connect.boolean = True
+	get_direct_connect.admin_order_field = 'direct_connect'
+	get_direct_connect.short_description = 'direkt'
+
+	def get_absolute_url(self):
+		# Returns the url to access a particular instance of the model.
+		return reverse('mehrfach-detail', args=[str(self.id)])
+

@@ -72,6 +72,19 @@
         </script>
     {% endblock %}
 
+	{% comment %}
+	{# Load the tag library for Bootstrap-4#}
+	{% load bootstrap4 %}
+
+	{# Load CSS and JavaScript #}
+	{% bootstrap_css %}
+	{% bootstrap_javascript jquery='full' %}
+
+	{# Display django.contrib.messages as Bootstrap alerts #}
+	{% bootstrap_messages %}
+	{% endcomment %}
+
+
   <div class="container-fluid">
 
 	<div class="row">
@@ -87,8 +100,6 @@
 		  <li><a href="{% url 'baliste' %}">Aktive Liste AI-BA</a></li>
 		  <li><a href="{% url 'panel' %}">Gesamt-Panel</a></li>
 		  <li>&nbsp;</li>
-		  <li><a href="{% url 'selektion' %}">Selektions-Panel</a></li>
-		  <li>&nbsp;</li>
 		  <li><a href="/admin/rapp/">Admin-Sichten</a></li>
 
 	      <li>&nbsp;</li>
@@ -103,11 +114,30 @@
 	  </ul>
 	 {% endblock %}
 	  </div>
+
 	  <div class="col-sm-10 ">
-		  {% block content %}{% endblock %}
+  	  {% block content %}{% endblock %}
+    	{% comment Altes, eigenes Paginieren%}
+			{% block pagination %}
+			  {% if is_paginated %}
+				<div class="pagination col-12">
+				  <div class="page-links ">
+					{% if page_obj.has_previous %}
+					  <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+					{% endif %}
+					Page {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}
+					{% if page_obj.has_next %}
+					  <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
+					{% endif %}
+				  </div>
+				</div>
+			  {% endif %}
+			{% endblock %}
+		{% endcomment %}
 	  </div>
 	</div>
 
   </div>
+
 </body>
 </html>

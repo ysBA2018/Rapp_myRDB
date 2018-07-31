@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 # Create your views here.
 
 from django.shortcuts import get_object_or_404
-from rapp.models import TblUserIDundName, TblGesamt, TblOrga, VwMehrfach, TblPlattform
+from rapp.models import TblUserIDundName, TblGesamt, TblOrga, TblPlattform
 from django.views import generic, View
 
 from django.http import HttpResponseRedirect, HttpResponse
@@ -15,7 +15,7 @@ from .filters import UserFilter
 from django.contrib.auth.models import User
 from django.shortcuts import render
 # from .filters import UserFilter
-from .filters import PanelFilter, SelektionFilter
+from .filters import PanelFilter
 from django.core.paginator import Paginator
 
 
@@ -63,9 +63,9 @@ class GesamtDetailView(generic.DetailView):
 # Die Gesamtliste der Abteilung BA
 class BaListView(generic.ListView):
 	context_object_name = 'ba_list'
-	template_name = 'rapp/ba_list.html'		# Das ist ja blöd, dass der Pfad angegeben werden muss
+	template_name = 'rapp/ba_list.html'		# ToDo: Das ist ja blöd, dass der Pfad angegeben werden muss
 	queryset = TblGesamt.objects.filter(userid_name__geloescht=False).filter(userid_name__abteilung='ZI-AI-BA').filter(geloescht=False)
-	paginate_by = 20
+	# paginate_by = 50
 
 
 
@@ -161,29 +161,4 @@ def panel(request):
 
 	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, 'meineTabelle': panel_list}
 	return render(request, 'rapp/panel_list.html', args)
-
-
-###################################################################
-# selektion geht auf die View VwMehrfach.
-# In der View sind nur die Rechte aktiver User und die relvanten Felder gejointer Tabellen aufgelöst
-
-def selektion(request):
-	selektion_list = VwMehrfach.objects.all()
-	selektion_filter = SelektionFilter(request.GET, queryset=selektion_list)
-	selektion_list = selektion_filter.qs
-
-	meineTabelle = VwMehrfach.objects.all()
-
-	paginator = Paginator(selektion_list, 3)
-	page = request.GET.get('page', 1)
-	try:
-		pages = paginator.page(page)
-	except PageNotAnInteger:
-		pages = paginator.page(1)
-	except EmptyPage:
-		pages = paginator.page(paginator.num_pages)
-
-	args = {'paginator': paginator, 'filter': selektion_filter, 'pages': pages, 'meineTabelle': meineTabelle}
-	return render(request, 'rapp/selektion_list.html', args)
-
 

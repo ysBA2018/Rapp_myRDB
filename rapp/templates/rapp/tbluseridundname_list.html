@@ -1,5 +1,6 @@
 {% extends "base_generic.html" %}
 {% load static %}
+
 {% block content %}
 	<h1>User-Liste</h1>
 
@@ -68,4 +69,21 @@
     {% else %}
         <p>Es gibt keine UserIDen in der Gesamtliste (!??)</p>
     {% endif %}
+
+    {% block pagination %}
+      {% if is_paginated %}
+        <div class="pagination col-12">
+          <div class="page-links ">
+            {% if page_obj.has_previous %}
+              <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">zurück</a>
+            {% endif %}
+            Page {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}
+            {% if page_obj.has_next %}
+              <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">weiter</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endblock %}
+
 {% endblock %}

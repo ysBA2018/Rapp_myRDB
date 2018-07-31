@@ -88,5 +88,16 @@ body {
 }
 
 td {
-    padding-right: 2 em;
+    padding-right: 1rem;
+}
+
+-breiteTabelle {
+	white-space: nowrap;
+	overflow: scroll;
+}
+
+.vllzulangertext {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
