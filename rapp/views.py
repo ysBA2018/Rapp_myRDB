@@ -14,10 +14,12 @@ from .filters import UserFilter
 # Imports für die Selektions-Views panel, slektion u.a.
 from django.contrib.auth.models import User
 from django.shortcuts import render
-# from .filters import UserFilter
 from .filters import PanelFilter
 from django.core.paginator import Paginator
 
+# Manuelle Konfigurieren der Table2
+# from django_tables2 import RequestConfig
+# from .tables import PanelTable
 
 ###################################################################
 # Die Einstiegsseite
@@ -146,7 +148,6 @@ def search(request):
 
 def panel(request):
 	panel_list = TblGesamt.objects.all()
-	# panel_list = TblUserIDundName.objects.all()
 	panel_filter = PanelFilter(request.GET, queryset=panel_list)
 	panel_list = panel_filter.qs
 
@@ -161,4 +162,3 @@ def panel(request):
 
 	args = {'paginator': paginator, 'filter': panel_filter, 'pages': pages, 'meineTabelle': panel_list}
 	return render(request, 'rapp/panel_list.html', args)
-

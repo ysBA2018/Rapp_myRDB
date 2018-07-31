@@ -174,32 +174,32 @@ class TblGesamt(models.Model):
 	id = 					models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
 	userid_name = 			models.ForeignKey('TblUserIDundName', on_delete=models.CASCADE, db_column='UserID + Name_ID', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	tf = 					models.CharField(db_column='TF', max_length=150, verbose_name='TF')  # Field name made lowercase.
-	tf_beschreibung = 		models.CharField(db_column='TF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	tf_beschreibung = 		models.CharField(db_column='TF Beschreibung', max_length=150, blank=True, null=True, verbose_name='TF-Beschreibung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	enthalten_in_af = 		models.CharField(db_column='Enthalten in AF', max_length=150, blank=True, null=True, verbose_name='AF')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	modell = 				models.ForeignKey('TblUebersichtafGfs', on_delete=models.CASCADE, db_column='Modell')  # Field name made lowercase.
-	tf_kritikalitaet = 		models.CharField(db_column='TF Kritikalität', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	tf_eigentuemer_org = 	models.CharField(db_column='TF Eigentümer Org', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	tf_kritikalitaet = 		models.CharField(db_column='TF Kritikalität', max_length=150, blank=True, null=True, verbose_name='TF-Kritikalität')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	tf_eigentuemer_org = 	models.CharField(db_column='TF Eigentümer Org', max_length=150, blank=True, null=True, verbose_name='TF-Eigentümer-orga')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	plattform = 			models.ForeignKey('TblPlattform', on_delete=models.CASCADE, db_column='Plattform_ID', blank=True, null=True, verbose_name='Plattform')  # Field name made lowercase.
-	gf = 					models.CharField(db_column='GF', max_length=150, blank=True, null=True)  # Field name made lowercase.
-	vip_kennzeichen = 		models.CharField(db_column='VIP Kennzeichen', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	zufallsgenerator = 		models.CharField(db_column='Zufallsgenerator', max_length=150, blank=True, null=True)  # Field name made lowercase.
-	af_gueltig_ab = 		models.DateTimeField(db_column='AF Gültig ab', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	af_gueltig_bis = 		models.DateTimeField(db_column='AF Gültig bis', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	direct_connect = 		models.CharField(db_column='Direct Connect', max_length=8, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	gf = 					models.CharField(db_column='GF', max_length=150, blank=True, null=True, verbose_name='GF')  # Field name made lowercase.
+	vip_kennzeichen = 		models.CharField(db_column='VIP Kennzeichen', max_length=150, blank=True, null=True, verbose_name='VIP')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	zufallsgenerator = 		models.CharField(db_column='Zufallsgenerator', max_length=150, blank=True, null=True, verbose_name='Zufallsgenerator')  # Field name made lowercase.
+	af_gueltig_ab = 		models.DateTimeField(db_column='AF Gültig ab', blank=True, null=True, verbose_name='AF gültig ab')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	af_gueltig_bis = 		models.DateTimeField(db_column='AF Gültig bis', blank=True, null=True, verbose_name='AF gültig bis')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	direct_connect = 		models.CharField(db_column='Direct Connect', max_length=8, blank=True, null=True, verbose_name='Direktverbindung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	hoechste_kritikalitaet_tf_in_af = \
-							models.CharField(db_column='Höchste Kritikalität TF in AF', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	gf_beschreibung = 		models.CharField(db_column='GF Beschreibung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	af_zuweisungsdatum = 	models.DateTimeField(db_column='AF Zuweisungsdatum', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	datum = 				models.DateTimeField(db_column='Datum')  # Field name made lowercase.
+							models.CharField(db_column='Höchste Kritikalität TF in AF', max_length=150, blank=True, null=True, verbose_name='max. Krit. TF in AF')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	gf_beschreibung = 		models.CharField(db_column='GF Beschreibung', max_length=150, blank=True, null=True, verbose_name='GF Kurzbeschreibung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	af_zuweisungsdatum = 	models.DateTimeField(db_column='AF Zuweisungsdatum', blank=True, null=True, verbose_name='AF Zuweisung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	datum = 				models.DateTimeField(db_column='Datum', verbose_name='Recht gefunden am')  # Field name made lowercase.
 	geloescht = 			models.IntegerField(db_column='gelöscht', blank=True, null=True, verbose_name='gelöscht')
 	gefunden = 				models.IntegerField(blank=True, null=True)
 	wiedergefunden = 		models.DateTimeField(blank=True, null=True)
-	geaendert = 			models.IntegerField(db_column='geändert', blank=True, null=True)  # This field type is a guess.
+	geaendert = 			models.IntegerField(db_column='geändert', blank=True, null=True, verbose_name='AF geändert')  # This field type is a guess.
 	neueaf = 				models.CharField(db_column='NeueAF', max_length=50, blank=True, null=True)  # Field name made lowercase.
 	nicht_ai = 				models.IntegerField(db_column='Nicht AI', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	patchdatum = 			models.DateTimeField(db_column='Patchdatum', blank=True, null=True)  # Field name made lowercase.
 	wertmodellvorpatch =	models.TextField(db_column='WertModellVorPatch', blank=True, null=True)  # Field name made lowercase.
-	loeschdatum = 			models.DateTimeField(db_column='löschdatum', blank=True, null=True)
+	loeschdatum = 			models.DateTimeField(db_column='löschdatum', blank=True, null=True, verbose_name='Löschdatum')
 
 	class Meta:
 		managed = False

@@ -7,24 +7,9 @@
 
 	<form method="get">
 		<div class="well">
-			<h4 style="margin-top: 0">Filter</h4>
-                {% comment %}
-                    {% for hidden in filter.form.hidden_fields %}
-                        {{ hidden }}
-                    {% endfor %}
-                    {% for field in filter.form.visible_fields %}
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}">{{ field.label }}, {{ field.name }}</label>
-                                {{ field | add_class:'form-control' }}
-                            {% for error in field.errors %}
-                                <span class="help-block">{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                    <p>Hier endet die 1. Schleife</p>
-                {% endcomment %}
 
 			<div class="row">
+
 				<div class="form-group col-12 col-sm-6 col-md-3 col-lg-2 col-xl-1">
                     <label for="{{ filter.form.userid_name__userid.id_for_label }}">UserID</label>
                     {%comment%}{{ kein_filter.form.userid_name__userid.label_tag }}{%endcomment%}
@@ -46,18 +31,17 @@
 					{{ filter.form.tf.label_tag }}
 					{% render_field filter.form.tf class="form-control" %}
 				</div>
-				<div class="form-group col-12 col-sm-4 col-md-3 col-lg-3 col-xl-1">
-					{{ filter.form.plattform.label_tag }}
-					{% render_field filter.form.plattform class="form-control" %}
+				<div class="form-group col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
+                    <label for="{{ filter.form.userid_name__zi_organisation.id_for_label }}">ZI-Organisation</label>
+					{% render_field filter.form.userid_name__zi_organisation class="form-control" %}
 				</div>
 				<div class="form-group col-12 col-sm-4 col-md-3 col-lg-3 col-xl-1">
 					{{ filter.form.geloescht.label_tag }}
 					{% render_field filter.form.geloescht class="form-control" %}
 				</div>
-
-				<div class="form-group col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
-                    <label for="{{ filter.form.userid_name__zi_organisation.id_for_label }}">ZI-Organisation</label>
-					{% render_field filter.form.userid_name__zi_organisation class="form-control" %}
+				<div class="form-group col-12 col-sm-4 col-md-3 col-lg-3 col-xl-1">
+					{{ filter.form.plattform.label_tag }}
+					{% render_field filter.form.plattform class="form-control" %}
 				</div>
 				<div class="form-group col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
 					{{ filter.form.modell__name_af_neu.label_tag }}
@@ -69,15 +53,19 @@
 				</div>
 
 			</div>
+
+            {% comment %} Suche und Abbruch-Buttons {% endcomment %}
+
             <div class="form-group marin-top-3">
                     <button type="submit" class="btn btn-primary">
                             <span class="glyphicon glyphicon-search"></span> Suche
                     </button>
-                    <a href="{% url 'index' %}" class="btn btn-default">Cancel</a>
+                    <a href="{% url 'index' %}" class="btn btn-default">Abbruch</a>
             </div>
         </div>
 	</form>
 
+    {% comment %} Die alte Ergebnismenge, manuell zu einer Tabelle zusammengestellt {% endcomment %}
 	<table class="table table-bordered vllzulangertext">
 		<thead>
 			<tr>
@@ -115,6 +103,12 @@
 		</tbody>
 	</table>
 
+    {% comment %} Ergebnismenge über table.py eigen-konfigurierbar { % endcomment %}
+        <div class="breiteTabelle" style="white-space: nowrap;">
+            { % comment %} render_table meineTabelle { % endcomment %}
+            {% render_table table %}
+        </div>
+    {% endcomment %}
 
     {% comment %}
         Ab hier geht es nur noch um Paginierung
@@ -122,7 +116,7 @@
     {% endcomment %}
 
     <div class = "container-fluid">
-        <div class = "col-md-6">
+        <div class = "col-12 col-md-6">
           <nav aria-label="Page navigation example">
             <ul class="pagination">
 
@@ -195,10 +189,6 @@
             </ul>
           </nav>
         </div>
-    </div>
-
-    <div class="vllzulangertext">
-        {% render_table meineTabelle %}
     </div>
 
 {% endblock %}

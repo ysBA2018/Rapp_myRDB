@@ -1,0 +1,5 @@
+#!/bin/bash
+docker rm -f rapp 2>/dev/null
+docker run -d -p 8087:8000 --name rapp -v $(pwd):/code rapp 
+docker logs -f rapp
+

@@ -46,7 +46,7 @@ class PanelFilter(django_filters.FilterSet):
 	enthalten_in_af = 				django_filters.CharFilter(lookup_expr='icontains')
 	userid_name__name = 			django_filters.CharFilter(lookup_expr='istartswith')
 	userid_name__userid = 			django_filters.CharFilter(lookup_expr='istartswith')
-	geloescht = 					django_filters.BooleanFilter()
+	geloescht = 					django_filters.BooleanFilter(initial = False)
 
 	userid_name__zi_organisation = 	django_filters.CharFilter(lookup_expr='icontains')
 	modell__name_af_neu = 			django_filters.CharFilter(lookup_expr='icontains')
