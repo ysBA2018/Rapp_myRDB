@@ -10,8 +10,14 @@ from django.contrib import admin
 # from .models import Bastel, TblAflisteZiaiba, TblCicsdetails, TblDb2
 # from .models import TblGesamtKomplett, Tblp0Gesamt, Tblgesamthistorie
 
+# Zum Verändern der Standardeigenschaften eines Textpanes
+from django.db import models
+from django.forms import Textarea
+
+# Die Datenbanken / Models
 from rapp.models import TblUebersichtAfGfs, TblUserIDundName, TblOrga, TblPlattform, \
-						TblGesamt, TblGesamtHistorie
+						TblGesamt, TblGesamtHistorie, \
+						TblRollen
 
 
 # ######################################################################################################
@@ -38,7 +44,6 @@ class Gesamt(admin.ModelAdmin):
 	list_filter = ('geloescht', 'direct_connect', 'userid_name__gruppe', 'plattform', )
 	list_display_links = ('id', )
 	list_editable = ('tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf', )
-	# search_fields = ['userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf']
 	search_fields = ['id', 'userid_name__name', 'tf',
 					 # 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf',
 	]
@@ -169,4 +174,35 @@ class TblGesamtHistorie(admin.ModelAdmin):
 
 	search_fields = ['id_alt__id', 'userid_name__name', 'tf', 'tf_beschreibung', 'enthalten_in_af',]
 
+
+# ######################################################################################################
+# tbl Rollen
+# ######################################################################################################
+
+@admin.register(TblRollen)
+class Rollen(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
+
+	formfield_overrides = {
+		models.TextField: {
+			'widget': Textarea (
+				attrs = {
+						'rows': 1,
+						'cols': 50,
+						'style': 'height: 1.4em;'
+		})},
+	}
+
+	list_display = ('rollenname', 'system', 'rollenbeschreibung', 'datum', )
+	list_filter = ('system', )
+	list_display_links = ('rollenname', )
+	list_editable = ('system', 'rollenbeschreibung', 'rollenbeschreibung', )
+	search_fields = ['rollenname', 'system', 'rollenbeschreibung', ]
+
+
+# Inline function to show all Instances of Rollen who ever it needs
+class RollenInline(admin.TabularInline):
+	model = TblGesamt
+	extra = 0
 

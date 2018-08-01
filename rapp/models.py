@@ -147,10 +147,6 @@ class TblUserIDundName(models.Model):
 		return reverse('user-create', args=[])
 
 
-	# Todo: Suchfelder in die Listenanzeige einbauen
-	# Todo: Als nächsten den Team-Dioalog bauen, dann die User hat Rolle-Kette weiter ausbauen
-
-
 # Die verschiedenen technischne Plattformen (RACF, CICS, Unix, Win, AD, LDAP, test/Prod usw.)
 class TblPlattform(models.Model):
 	id = 						models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
@@ -272,4 +268,81 @@ class TblGesamtHistorie(models.Model):
 
 	def __str__(self) -> str:
 		return str(self.id)
+
+# Die drei Rollentabellen sowie die AF.-Liste hängen inhaltlich zusammen
+# Die Definition der Rollen
+class TblRollen(models.Model):
+	rollenname = 			models.CharField(db_column='RollenName', primary_key=True, max_length=150, verbose_name='Rollen-Name')  # Field name made lowercase.
+	system = 				models.CharField(db_column='System', max_length=150, verbose_name='System')  # Field name made lowercase.
+	rollenbeschreibung = 	models.TextField(db_column='RollenBeschreibung', blank=True, null=True)  # Field name made lowercase.
+	datum = 				models.DateTimeField(db_column='Datum')  # Field name made lowercase.
+
+	class Meta:
+		managed = True
+		db_table = 'tbl_Rollen'
+		verbose_name = "Rollenliste"
+		verbose_name_plural = "Rollen-Übersicht (tbl_Rollen)"
+		ordering = [ 'rollenname' ]
+
+
+	def __str__(self) -> str:
+		return str(self.rollenname)
+
+
+
+# Meta-Tabelle, welceh Arbeitsplaftzunktion in welcher Rolle enthalten ist (n:m Beziehung)
+class TblRollehataf(models.Model):
+	rollenmappingid = 		models.AutoField(db_column='RollenMappingID', primary_key=True)  # Field name made lowercase.
+	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
+	afname = 				models.ForeignKey('TblAfliste', models.DO_NOTHING, db_column='AFName', blank=True, null=True)  # Field name made lowercase.
+	mussfeld = 				models.TextField(db_column='Mussfeld', blank=True, null=True, verbose_name='Muss')  # Field name made lowercase. This field type is a guess.
+	bemerkung = 			models.CharField(db_column='Bemerkung', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	nurxv = 				models.TextField(db_column='nurXV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+	xabcv = 				models.TextField(db_column='XABCV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+	dv = 					models.TextField(db_column='DV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+
+	class Meta:
+		managed = False
+		db_table = 'tbl_RolleHatAF'
+		unique_together = (('rollenname', 'afname'),)
+
+	def __str__(self) -> str:
+		return str(self.rollenmappingid)		# ToDo: Stimmt das?
+
+
+# Referenz der User auf die ihnen zur Verfüung stehenden Rollen
+class TblUserhatrolle(models.Model):
+	userundrollenid = 		models.AutoField(db_column='UserUndRollenID', primary_key=True)  # Field name made lowercase.
+	userid = 				models.ForeignKey('Tbluseridundname', models.DO_NOTHING, db_column='UserID', blank=True, null=True)  # Field name made lowercase.
+	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
+	schwerpunkt_vertretung = \
+							models.CharField(db_column='Schwerpunkt/Vertretung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	bemerkung = 			models.CharField(db_column='Bemerkung', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	letzte_aenderung = 		models.DateTimeField(db_column='Letzte Änderung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+
+	class Meta:
+		managed = False
+		db_table = 'tbl_UserHatRolle'
+
+	def __str__(self) -> str:
+		return str(self.userundrollenid)		# ToDo: Stimmt das?
+
+# Dies ist nur eine Hilfstabelle.
+# Sie besteht aus dem `tblÜbersichtAF_GFs`.`Name AF Neu` für alle Felder, bei denen `modelliert` nicht null ist.
+# (das automatisch ergänzte Datum wird nicht benötigt, hier könnte auch das `modelliert`genommen werden)
+# Original Query im Access:_
+#
+# INSERT INTO tbl_AFListe ( [AF-Name] )
+#  SELECT tblÜbersichtAF_GFs.[Name AF Neu]
+#  FROM tblÜbersichtAF_GFs LEFT JOIN tbl_AFListe ON tblÜbersichtAF_GFs.[Name AF Neu] = tbl_AFListe.[AF-Name]
+#  WHERE (((tblÜbersichtAF_GFs.modelliert) Is Not Null) AND ((tbl_AFListe.[AF-Name]) Is Null))
+#  GROUP BY tblÜbersichtAF_GFs.[Name AF Neu];
+
+class TblAfliste(models.Model):		# ToDo: Wegwerfen, Tabelle ist redundant
+	af_name = models.CharField(db_column='AF-Name', primary_key=True, max_length=150, verbose_name='AF-Name')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+	neu_ab = models.DateTimeField(db_column='neu ab')  # Field renamed to remove unsuitable characters.
+
+	class Meta:
+		managed = False
+		db_table = 'tbl_AFListe'
 

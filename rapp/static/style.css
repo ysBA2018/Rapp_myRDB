@@ -21,6 +21,7 @@ body {
     color: magenta;
 }
 
+
 # Table DIVs from https://html-cleaner.com/features/replace-html-table-tags-with-divs/
 
 .rTable {
@@ -104,3 +105,4 @@ body {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+

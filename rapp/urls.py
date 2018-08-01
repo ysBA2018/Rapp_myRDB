@@ -41,11 +41,6 @@ urlpatterns += [
 	path('gesamtliste/<int:pk>', views.GesamtDetailView.as_view(), name='gesamt-detail'),
 ]
 
-# Der Link auf ein die Liste der aktiven Recht in ZI-AI-BA
-urlpatterns += [
-	path('baliste/', views.BaListView.as_view(), name='baliste'),
-]
-
 # Der Link auf die User-liste
 urlpatterns += [
 	path('userliste/', views.UserIDundNameListView.as_view(), name='userliste'),
@@ -73,14 +68,14 @@ urlpatterns += [
 	# Todo Wird das benötigt? path('team/<int:pk>/toggle_geloescht/', views.userToggleGeloescht, name='user-toggle-geloescht'),
 ]
 
-
+"""
 # Nur zum Testen der Filter-Funktionen
 urlpatterns += [
 	path('search2/', views.search, name='search2'),
     url(r'^search/$', FilterView.as_view(filterset_class=UserFilter,
         template_name='rapp/user_list.html'), name='search'),
 ]
-
+"""
 
 # Der Link auf das Eingabepanel zur freien Selektion direkt auf der Gesamttabelle
 urlpatterns += [

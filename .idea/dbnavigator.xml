@@ -23,7 +23,12 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes />
+    <loaded-nodes>
+      <connection connection-id="e0fab069-c80d-452e-b415-f960623fdbac">
+        <schema name="RechteDB" object-types="table, view" />
+        <schema name="mysql" object-types="column, table, view" />
+      </connection>
+    </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="e0fab069-c80d-452e-b415-f960623fdbac">
@@ -35,6 +40,9 @@
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
+  </component>
+  <component name="DBNavigator.Project.FileConnectionMappingManager">
+    <mapping file-url="file://$PROJECT_DIR$/Spielwiese.sql" connection-id="e0fab069-c80d-452e-b415-f960623fdbac" session-id="MAIN" current-schema="RECHTEFUZZI" />
   </component>
   <component name="DBNavigator.Project.MethodExecutionManager">
     <method-browser />
@@ -58,7 +66,7 @@
     <connections>
       <connection id="e0fab069-c80d-452e-b415-f960623fdbac" active="true">
         <database>
-          <name value="mySQL 1" />
+          <name value="RechteDB auf NasChef" />
           <description value="mySQL / MariaDB auf NasChef" />
           <database-type value="MYSQL" />
           <config-type value="BASIC" />

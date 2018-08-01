@@ -9,7 +9,7 @@ from django.views import generic, View
 
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
-from .filters import UserFilter
+#from .filters import UserFilter
 
 # Imports für die Selektions-Views panel, slektion u.a.
 from django.contrib.auth.models import User
@@ -34,19 +34,22 @@ class IndexView(View):
 		num_plattforms = TblPlattform.objects.count
 		num_userids_in_department = TblUserIDundName.objects.filter(geloescht=False, abteilung__icontains='ZI-AI-BA').count
 		num_teams = TblOrga.objects.all().count
+		num_active_rights = TblGesamt.objects.filter(geloescht=False).count
 
 		return HttpResponse(
 			render(
 				request,
 				'index.html',
-				context={'num_rights': num_rights,  # Todo: Korrekte Daten einpflegen
-						 'num_userIDs': num_userids,
-						 'num_activeUserIDs': num_active_userids,
-						 'num_plattforms': num_plattforms,
-						 'num_userIDsInDepartment': num_userids_in_department,
-						 'num_teams': num_teams,
-						 'num_users': User.objects.all().count,
-						 },
+				context = {
+					'num_rights': num_rights,
+					'num_active_rights': num_active_rights,
+					'num_userIDs': num_userids,
+					'num_activeUserIDs': num_active_userids,
+					'num_plattforms': num_plattforms,
+					'num_userIDsInDepartment': num_userids_in_department,
+					'num_teams': num_teams,
+					'num_users': User.objects.all().count,
+				},
 			)
 		)
 
@@ -61,14 +64,6 @@ class GesamtListView(generic.ListView):
 # Die Detailsicht eines einzelnen Rechts
 class GesamtDetailView(generic.DetailView):
 	model = TblGesamt
-
-# Die Gesamtliste der Abteilung BA
-class BaListView(generic.ListView):
-	context_object_name = 'ba_list'
-	template_name = 'rapp/ba_list.html'		# ToDo: Das ist ja blöd, dass der Pfad angegeben werden muss
-	queryset = TblGesamt.objects.filter(userid_name__geloescht=False).filter(userid_name__abteilung='ZI-AI-BA').filter(geloescht=False)
-	# paginate_by = 50
-
 
 
 ###################################################################
@@ -133,7 +128,7 @@ class TblOrgaDelete(DeleteView):
 ###################################################################
 # Die Ab hier kommen die Views für das Panel
 
-
+"""
 ###################################################################
 # Nur zum Zeigen, wie das mit den Panels gehen könnte....
 
@@ -141,7 +136,7 @@ def search(request):
 	user_list = User.objects.all()
 	user_filter = UserFilter(request.GET, queryset=user_list)
 	return render(request, 'rapp/user_list.html', {'filter': user_filter})
-
+"""
 
 ###################################################################
 # Panel geht direkt auf die Gesamt Datentabelle

@@ -34,13 +34,13 @@ SELECT
     `tblGesamt`.`Zufallsgenerator` AS `Zufallsgenerator`
 FROM
     (
-        `tblÜbersichtAF_GFs`
+    `tblÜbersichtAF_GFs`
     JOIN(
             `tblPlattform`
         JOIN(
                 (
                     (
-                        `tblUserIDundName`
+                    `tblUserIDundName`
                     JOIN `tblGesamt` ON
                         (
                             (
@@ -226,3 +226,45 @@ class VwMehrfach(models.Model):
 		# Returns the url to access a particular instance of the model.
 		return reverse('mehrfach-detail', args=[str(self.id)])
 
+
+-- Löschen von Einträgen ind er RechteDB, bei denen die User bereits belöscht wurden (ca. 900 Stück)
+
+CREATE TEMPORARY TABLE test (
+    select `tblGesamt`.`id`
+    FROM `tblGesamt`
+        INNER JOIN `tblUserIDundName`
+        ON (
+            `tblGesamt`.`gelöscht` = 0 and
+            `tblGesamt`.`UserID + Name_ID` = `tblUserIDundName`.`ID`
+            and `tblUserIDundName`.`gelöscht` = 1
+            and `tblUserIDundName`.`userid` = 'AV93323'
+        )
+);
+
+select * from test;
+
+SELECT `tblGesamt`.*
+    from `tblGesamt`
+        INNER JOIN `test`
+        ON (`tblGesamt`.`ID` = `test`.`ID`);
+
+UPDATE `tblGesamt` ges
+    INNER JOIN `test`
+    ON (`ges`.`ID` = `test`.`id` and `test`.`id` = '1')
+    SET `ges`.`gelöscht` = '1';
+
+SELECT `tblGesamt`.*
+    from `tblGesamt`
+        INNER JOIN `test`
+        ON (`tblGesamt`.`ID` = `test`.`ID`);
+
+
+    select `tblGesamt`.`id`
+    FROM `tblGesamt`
+        INNER JOIN `tblUserIDundName`
+        ON (
+            `tblGesamt`.`gelöscht` = 0 and
+            `tblGesamt`.`UserID + Name_ID` = `tblUserIDundName`.`ID`
+            and `tblUserIDundName`.`gelöscht` = 1
+            and `tblUserIDundName`.`userid` = 'AV93323'
+        )
