@@ -1,75 +1,11 @@
-{% extends 'base_generic.html' %}
+{% comment %}
+    Ab hier geht es nur noch um Paginierung
+    Inhalte, die nicht paginiert werden müssen, brauchen die Footerzeile nicht
+{% endcomment %}
 
-{% load widget_tweaks %}
-
-{% block content %}
-
-	<form method="get">
-		<div class="well">
-			<h4 style="margin-top: 0">Filter</h4>
-
-			<div class="row">
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.userid.label_tag }}
-					{% render_field filter.form.userid class="form-control" %}
-				</div>
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.name.label_tag }}
-					{% render_field filter.form.name class="form-control" %}
-				</div>
-				<div class="form-group col-sm-4 col-md-2">
-					{{ filter.form.geloescht.label_tag }}
-					{% render_field filter.form.geloescht class="form-control" %}
-				</div>
-			</div>
-						<div class="form-group">
-								<button type="submit" class="btn btn-primary">
-										<span class="glyphicon glyphicon-search"></span> Suche
-								</button>
-								<a href="{% url 'index' %}" class="btn btn-default">Cancel</a>
-						</div>
-				</div>
-	</form>
-
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th>UserID</th>
-				<th>Name</th>
-				<th>Gelöscht</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for user in pages %}
-				<tr>
-					<td>{{ user.userid }}</td>
-					<td>{{ user.name }}</td>
-					<td>{{ user.geloescht }}</td>
-				</tr>
-			{% empty %}
-				<tr>
-					<td colspan="5">Keine Treffer</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-
-    <div>
-        <p>
-            has prev {{ pages.has_previous }}
-            pages {{ pages }}
-            page_range {{ pages.paginator.page_range }}
-            has next {{ pages.has_next }}
-            Parameterliste: {{ request.GET }}
-            URI : {{ request.build_absolute_uri }}
-            URI2 : {{ request.get_full_path }}
-            #URI2 : {{ request.get_full_path|length }}
-
-        </p>
-    </div>
-
+{% if pages.has_other_pages %}
     <div class = "container-fluid">
-        <div class = "col-md-6">
+        <div class = "col-12 col-md-6">
           <nav aria-label="Page navigation example">
             <ul class="pagination">
 
@@ -143,6 +79,4 @@
           </nav>
         </div>
     </div>
-
-
-{% endblock %}
+{% endif %}

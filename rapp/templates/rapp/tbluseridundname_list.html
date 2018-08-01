@@ -31,7 +31,7 @@
                     <th>Name</th>
                     <th>Team</th>
                     <th>ZI-Organisation</th>
-                    <th>gelöscht</th>
+                    <th>aktiv</th>
                     <th>Abteilung</th>
                     <th>Gruppe</th>
                     <th>&nbsp;</th>
@@ -44,7 +44,7 @@
                         <td> <a href="{{ user.get_absolute_update_url }}" >{{ user.name }} </a> </td>
                         <td>{{user.orga}}</td>
                         <td>{{user.zi_organisation}}</td>
-                        <td>
+                        <td align="center">
                         {% if user.geloescht %}
                             <a href="{{ user.get_absolute_toggle_geloescht_url }}" >
                                 <img src="{% static 'admin/img/icon-no.svg' %}">

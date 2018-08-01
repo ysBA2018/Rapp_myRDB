@@ -151,14 +151,13 @@ def panel(request):
 	panel_filter = PanelFilter(request.GET, queryset=panel_list)
 	panel_list = panel_filter.qs
 
-	pagesize = request.GET.get('paginator_id')
-	foo = type(pagesize)
+	pagesize = request.GET.get('pagesize')
 
-	if type(pagesize) == type(None):
-		pagesize = 10
-	elif pagesize < 1:
+	if type(pagesize) == type(None) or int(pagesize) < 1:
 		pagesize = 20
-	#debug()
+	else:
+		pagesize = int(pagesize)
+
 	paginator = Paginator(panel_list, pagesize)
 	page = request.GET.get('page', 1)
 	try:
