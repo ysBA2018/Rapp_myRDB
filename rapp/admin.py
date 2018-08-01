@@ -14,10 +14,14 @@ from django.contrib import admin
 from django.db import models
 from django.forms import Textarea
 
+# Für den Maxwert zum Paginieren
+import sys
+
 # Die Datenbanken / Models
 from rapp.models import TblUebersichtAfGfs, TblUserIDundName, TblOrga, TblPlattform, \
 						TblGesamt, TblGesamtHistorie, \
-						TblRollen
+						TblRollen, TblAfliste, TblUserhatrolle, TblRollehataf
+
 
 
 # ######################################################################################################
@@ -55,9 +59,13 @@ class GesamtInline(admin.TabularInline):
 	extra = 0
 
 
+
+
+
 # ######################################################################################################
 # tbl UserIDundName
 # ######################################################################################################
+
 
 @admin.register(TblUserIDundName)
 class UserIDundNameAdmin(admin.ModelAdmin):
@@ -79,6 +87,8 @@ class UserIDundNameAdmin(admin.ModelAdmin):
 
 	# Nice idea, but VERY slow
 	# inlines = [GesamtInline]
+
+	list_per_page = 25
 
 
 # Inline function to show all Instances of UserIDundName in OrgaView
@@ -128,7 +138,7 @@ class Plattform(admin.ModelAdmin):
 # ######################################################################################################
 
 @admin.register(TblUebersichtAfGfs)
-class TblUebersichtAfGfs(admin.ModelAdmin):
+class UebersichtAfGfs(admin.ModelAdmin):
 	actions_on_top = True
 	actions_on_bottom = True
 
@@ -155,6 +165,11 @@ class TblUebersichtAfGfs(admin.ModelAdmin):
 	search_fields = ['name_af_neu', 'name_gf_neu', 'af_text', 'gf_text', 'af_langtext', ]
 
 	# inlines = [GesamtInline]
+
+# Inline function to show all Instances of AF/GF who ever it needs
+class UebersichtAfGfsInline(admin.TabularInline):
+	model = TblUebersichtAfGfs
+	extra = 0
 
 
 
@@ -203,6 +218,76 @@ class Rollen(admin.ModelAdmin):
 
 # Inline function to show all Instances of Rollen who ever it needs
 class RollenInline(admin.TabularInline):
-	model = TblGesamt
+	model = TblRollen
+	extra = 0
+
+
+# ######################################################################################################
+# tbl Userhatrolle
+# ######################################################################################################
+
+@admin.register(TblUserhatrolle)
+class Userhatrolle(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
+
+	list_display = ('userundrollenid', 'userid', 'rollenname', 'schwerpunkt_vertretung', 'bemerkung', 'letzte_aenderung', )
+	list_filter = ('schwerpunkt_vertretung', )
+	list_display_links = ('userid', 'rollenname', )
+	list_editable = ('schwerpunkt_vertretung', 'bemerkung', )
+	search_fields = [ 'schwerpunkt_vertretung', 'rollenname__rollenname', 'bemerkung', 'userid__name', 'userid__userid', ]
+
+	list_per_page = 25 # sys.maxsize
+
+# Inline function to show all Instances in other view
+class UserhatrolleInline(admin.TabularInline):
+	model = TblRollehataf
+	extra = 0
+
+
+
+# ######################################################################################################
+# tbl Rollen
+# ######################################################################################################
+
+@admin.register(TblAfliste)
+class Afliste(admin.ModelAdmin):
+
+	list_display = ('af_name', 'neu_ab',)
+	# list_display_links = ( )
+	# list_editable = ('af_name', )
+	search_fields = ['af_name', ]
+
+	# list_filter = ( )
+
+	actions_on_top = True
+	actions_on_bottom = True
+
+# Inline function to show all Instances in other view
+class AflisteInline(admin.TabularInline):
+	model = TblAfliste
+	extra = 0
+
+
+# ######################################################################################################
+# tbl RolleHatAF
+# ######################################################################################################
+
+@admin.register(TblRollehataf)
+class Rollehataf(admin.ModelAdmin):
+
+	list_display = ('rollenmappingid', 'rollenname', 'afname', 'mussfeld', 'bemerkung', 'nurxv', 'xabcv', 'dv', )
+	list_display_links = ('rollenname', )
+	list_editable = ('afname', 'mussfeld', 'bemerkung', 'nurxv', 'xabcv', 'dv', )
+	search_fields = ['rollenname', 'bemerkung', ]
+
+	list_filter = ('mussfeld', 'nurxv', 'xabcv', 'dv', )
+
+	actions_on_top = True
+	actions_on_bottom = True
+
+# Inline function to show all Instances in other view
+class RollehatafInline(admin.TabularInline):
+	model = TblRollehataf
 	extra = 0
 

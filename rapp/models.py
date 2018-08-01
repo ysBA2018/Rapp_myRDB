@@ -292,9 +292,9 @@ class TblRollen(models.Model):
 
 # Meta-Tabelle, welceh Arbeitsplaftzunktion in welcher Rolle enthalten ist (n:m Beziehung)
 class TblRollehataf(models.Model):
-	rollenmappingid = 		models.AutoField(db_column='RollenMappingID', primary_key=True)  # Field name made lowercase.
-	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
-	afname = 				models.ForeignKey('TblAfliste', models.DO_NOTHING, db_column='AFName', blank=True, null=True)  # Field name made lowercase.
+	rollenmappingid = 		models.AutoField(db_column='RollenMappingID', primary_key=True, verbose_name='ID')  # Field name made lowercase.
+	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, to_field='rollenname', db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
+	afname = 				models.ForeignKey('TblAfliste', models.DO_NOTHING, to_field='af_name', db_column='AFName', blank=True, null=True, verbose_name='AF')  # Field name made lowercase.
 	mussfeld = 				models.TextField(db_column='Mussfeld', blank=True, null=True, verbose_name='Muss')  # Field name made lowercase. This field type is a guess.
 	bemerkung = 			models.CharField(db_column='Bemerkung', max_length=150, blank=True, null=True)  # Field name made lowercase.
 	nurxv = 				models.TextField(db_column='nurXV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
@@ -305,15 +305,18 @@ class TblRollehataf(models.Model):
 		managed = False
 		db_table = 'tbl_RolleHatAF'
 		unique_together = (('rollenname', 'afname'),)
+		verbose_name = "Rolle und ihre Arbeitsplatzfunktionen"
+		verbose_name_plural = "Rollen und ihre Arbeitsplatzfunktionen (tbl_RolleHatAF)"
+		ordering = [ 'rollenname__rollenname', 'afname__af_name', ]
 
 	def __str__(self) -> str:
-		return str(self.rollenmappingid)		# ToDo: Stimmt das?
+		return str(self.rollenname)		# ToDo: Stimmt das?
 
 
 # Referenz der User auf die ihnen zur Verfüung stehenden Rollen
 class TblUserhatrolle(models.Model):
-	userundrollenid = 		models.AutoField(db_column='UserUndRollenID', primary_key=True)  # Field name made lowercase.
-	userid = 				models.ForeignKey('Tbluseridundname', models.DO_NOTHING, db_column='UserID', blank=True, null=True)  # Field name made lowercase.
+	userundrollenid = 		models.AutoField(db_column='UserUndRollenID', primary_key=True, verbose_name='ID')  # Field name made lowercase.
+	userid = 				models.ForeignKey('Tbluseridundname', models.DO_NOTHING, to_field='userid', db_column='userid', blank=True, null=True, verbose_name='UserID, Name')  # Field name made lowercase.
 	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
 	schwerpunkt_vertretung = \
 							models.CharField(db_column='Schwerpunkt/Vertretung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
@@ -323,9 +326,13 @@ class TblUserhatrolle(models.Model):
 	class Meta:
 		managed = False
 		db_table = 'tbl_UserHatRolle'
+		verbose_name = "User und Ihre Rollen"
+		verbose_name_plural = "User und Ihre Rollen (tbl_UserHatRolle)"
+		ordering = [ 'userid__name', '-userid__userid', 'schwerpunkt_vertretung', 'rollenname', ]
 
 	def __str__(self) -> str:
 		return str(self.userundrollenid)		# ToDo: Stimmt das?
+
 
 # Dies ist nur eine Hilfstabelle.
 # Sie besteht aus dem `tblÜbersichtAF_GFs`.`Name AF Neu` für alle Felder, bei denen `modelliert` nicht null ist.
@@ -345,4 +352,8 @@ class TblAfliste(models.Model):		# ToDo: Wegwerfen, Tabelle ist redundant
 	class Meta:
 		managed = False
 		db_table = 'tbl_AFListe'
+		verbose_name = "Gültige AF"
+		verbose_name_plural = "Übersicht gültiger AFen (tbl_AFListe)"
+		ordering = [ 'af_name' ]
+
 

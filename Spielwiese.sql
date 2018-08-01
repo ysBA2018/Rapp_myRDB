@@ -248,23 +248,12 @@ SELECT `tblGesamt`.*
         INNER JOIN `test`
         ON (`tblGesamt`.`ID` = `test`.`ID`);
 
+Select count(*) FROM `tblGesamt` ges
+    INNER JOIN `test`
+    ON (`ges`.`ID` = `test`.`id`);
+
 UPDATE `tblGesamt` ges
     INNER JOIN `test`
     ON (`ges`.`ID` = `test`.`id` and `test`.`id` = '1')
     SET `ges`.`gelöscht` = '1';
 
-SELECT `tblGesamt`.*
-    from `tblGesamt`
-        INNER JOIN `test`
-        ON (`tblGesamt`.`ID` = `test`.`ID`);
-
-
-    select `tblGesamt`.`id`
-    FROM `tblGesamt`
-        INNER JOIN `tblUserIDundName`
-        ON (
-            `tblGesamt`.`gelöscht` = 0 and
-            `tblGesamt`.`UserID + Name_ID` = `tblUserIDundName`.`ID`
-            and `tblUserIDundName`.`gelöscht` = 1
-            and `tblUserIDundName`.`userid` = 'AV93323'
-        )
