@@ -284,33 +284,10 @@ class TblRollen(models.Model):
 		verbose_name_plural = "Rollen-Übersicht (tbl_Rollen)"
 		ordering = [ 'rollenname' ]
 
-
 	def __str__(self) -> str:
 		return str(self.rollenname)
 
 
-
-# Meta-Tabelle, welceh Arbeitsplaftzunktion in welcher Rolle enthalten ist (n:m Beziehung)
-class TblRollehataf(models.Model):
-	rollenmappingid = 		models.AutoField(db_column='RollenMappingID', primary_key=True, verbose_name='ID')  # Field name made lowercase.
-	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, to_field='rollenname', db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
-	afname = 				models.ForeignKey('TblAfliste', models.DO_NOTHING, to_field='af_name', db_column='AFName', blank=True, null=True, verbose_name='AF')  # Field name made lowercase.
-	mussfeld = 				models.TextField(db_column='Mussfeld', blank=True, null=True, verbose_name='Muss')  # Field name made lowercase. This field type is a guess.
-	bemerkung = 			models.CharField(db_column='Bemerkung', max_length=150, blank=True, null=True)  # Field name made lowercase.
-	nurxv = 				models.TextField(db_column='nurXV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
-	xabcv = 				models.TextField(db_column='XABCV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
-	dv = 					models.TextField(db_column='DV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
-
-	class Meta:
-		managed = False
-		db_table = 'tbl_RolleHatAF'
-		unique_together = (('rollenname', 'afname'),)
-		verbose_name = "Rolle und ihre Arbeitsplatzfunktionen"
-		verbose_name_plural = "Rollen und ihre Arbeitsplatzfunktionen (tbl_RolleHatAF)"
-		ordering = [ 'rollenname__rollenname', 'afname__af_name', ]
-
-	def __str__(self) -> str:
-		return str(self.rollenname)		# ToDo: Stimmt das?
 
 
 # Referenz der User auf die ihnen zur Verfüung stehenden Rollen
@@ -320,7 +297,7 @@ class TblUserhatrolle(models.Model):
 	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
 	schwerpunkt_vertretung = \
 							models.CharField(db_column='Schwerpunkt/Vertretung', max_length=150, blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	bemerkung = 			models.CharField(db_column='Bemerkung', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	bemerkung = 			models.TextField(db_column='Bemerkung', max_length=150, blank=True, null=True)  # Field name made lowercase.
 	letzte_aenderung = 		models.DateTimeField(db_column='Letzte Änderung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 
 	class Meta:
@@ -356,4 +333,56 @@ class TblAfliste(models.Model):		# ToDo: Wegwerfen, Tabelle ist redundant
 		verbose_name_plural = "Übersicht gültiger AFen (tbl_AFListe)"
 		ordering = [ 'af_name' ]
 
+	def __str__(self) -> str:
+		return str(self.af_name)
+
+# Meta-Tabelle, welceh Arbeitsplaftzunktion in welcher Rolle enthalten ist (n:m Beziehung)
+class TblRollehataf(models.Model):
+	rollenmappingid = 		models.AutoField(db_column='RollenMappingID', primary_key=True, verbose_name='ID')  # Field name made lowercase.
+	rollenname = 			models.ForeignKey('TblRollen', models.DO_NOTHING, to_field='rollenname', db_column='RollenName', blank=True, null=True)  # Field name made lowercase.
+	afname = 				models.ForeignKey('TblAfliste', models.DO_NOTHING, to_field='af_name', db_column='AFName', blank=True, null=True, verbose_name='AF')  # Field name made lowercase.
+	mussfeld = 				models.IntegerField(db_column='Mussfeld', blank=True, null=True, verbose_name='Muss')  # Field name made lowercase. This field type is a guess.
+	bemerkung = 			models.CharField(db_column='Bemerkung', max_length=150, blank=True, null=True)  # Field name made lowercase.
+	nurxv = 				models.IntegerField(db_column='nurXV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+	xabcv = 				models.IntegerField(db_column='XABCV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+	dv = 					models.IntegerField(db_column='DV', blank=True, null=True)  # Field name made lowercase. This field type is a guess.
+
+	class Meta:
+		managed = False
+		db_table = 'tbl_RolleHatAF'
+		unique_together = (('rollenname', 'afname'),)
+		verbose_name = "Rolle und ihre Arbeitsplatzfunktionen"
+		verbose_name_plural = "Rollen und ihre Arbeitsplatzfunktionen (tbl_RolleHatAF)"
+		ordering = [ 'rollenname__rollenname', 'afname__af_name', ]
+
+	def __str__(self) -> str:
+		return str(self.rollenname)		# ToDo: Stimmt das?
+
+	def get_muss(self):
+		return self.mussfeld
+	get_muss.boolean = True
+	get_muss.admin_order_field = 'mussfeld'
+	get_muss.short_description = 'Muss'
+	mussfeld.boolean = True
+
+	def get_nurxv(self):
+		return self.nurxv
+	get_nurxv.boolean = True
+	get_nurxv.admin_order_field = 'nurxv'
+	get_nurxv.short_description = 'Nur XV'
+	nurxv.boolean = True
+
+	def get_xabcv(self):
+		return self.xabcv
+	get_xabcv.boolean = True
+	get_xabcv.admin_order_field = 'xabcv'
+	get_xabcv.short_description = 'Erst+ZweitUID'
+	xabcv.boolean = True
+
+	def get_dv(self):
+		return self.dv
+	get_dv.boolean = True
+	get_dv.admin_order_field = 'dv'
+	get_dv.short_description = 'DV-User'
+	dv.boolean = True
 

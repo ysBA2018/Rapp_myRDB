@@ -22,6 +22,11 @@ from rapp.models import TblUebersichtAfGfs, TblUserIDundName, TblOrga, TblPlattf
 						TblGesamt, TblGesamtHistorie, \
 						TblRollen, TblAfliste, TblUserhatrolle, TblRollehataf
 
+# Vorwärtsreferenzen gehen nicht in python :-(
+# Inline function to show all Instances in other view
+class UserhatrolleInline(admin.TabularInline):
+	model = TblRollehataf
+	extra = 1
 
 
 # ######################################################################################################
@@ -89,6 +94,8 @@ class UserIDundNameAdmin(admin.ModelAdmin):
 	# inlines = [GesamtInline]
 
 	list_per_page = 25
+	# inlines = [UserhatrolleInline]
+
 
 
 # Inline function to show all Instances of UserIDundName in OrgaView
@@ -190,6 +197,42 @@ class TblGesamtHistorie(admin.ModelAdmin):
 	search_fields = ['id_alt__id', 'userid_name__name', 'tf', 'tf_beschreibung', 'enthalten_in_af',]
 
 
+ ######################################################################################################
+# tbl Userhatrolle
+# ######################################################################################################
+
+@admin.register(TblUserhatrolle)
+class Userhatrolle(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
+	actions_selection_counter = True
+	list_select_related = True
+
+	formfield_overrides = {
+		models.TextField: {
+			'widget': Textarea (
+				attrs = {
+						'rows': 1,
+						'cols': 60,
+						'style': 'height: 1.4em;'
+		})},
+	}
+
+	list_display = ('userundrollenid', 'userid', 'rollenname', 'schwerpunkt_vertretung', 'bemerkung', 'letzte_aenderung', )
+	list_filter = ('schwerpunkt_vertretung', )
+	list_display_links = ('userundrollenid', 'rollenname', )
+	list_editable = ('schwerpunkt_vertretung', 'bemerkung', )
+	search_fields = [ 'schwerpunkt_vertretung', 'rollenname__rollenname', 'bemerkung', 'userid__name', 'userid__userid', ]
+
+	list_per_page = 25 # sys.maxsize
+
+
+# Inline function to show all Instances in other view
+class UserhatrolleInline(admin.TabularInline):
+	model = TblRollehataf
+	extra = 1
+
+
 # ######################################################################################################
 # tbl Rollen
 # ######################################################################################################
@@ -201,19 +244,21 @@ class Rollen(admin.ModelAdmin):
 
 	formfield_overrides = {
 		models.TextField: {
-			'widget': Textarea (
-				attrs = {
-						'rows': 1,
-						'cols': 50,
-						'style': 'height: 1.4em;'
-		})},
+			'widget': Textarea(
+				attrs={
+					'rows': 1,
+					'cols': 50,
+					'style': 'height: 1.4em;'
+				})},
 	}
 
-	list_display = ('rollenname', 'system', 'rollenbeschreibung', 'datum', )
-	list_filter = ('system', )
-	list_display_links = ('rollenname', )
-	list_editable = ('system', 'rollenbeschreibung', 'rollenbeschreibung', )
+	list_display = ('rollenname', 'system', 'rollenbeschreibung', 'datum',)
+	list_filter = ('system',)
+	list_display_links = ('rollenname',)
+	list_editable = ('system', 'rollenbeschreibung', 'rollenbeschreibung',)
 	search_fields = ['rollenname', 'system', 'rollenbeschreibung', ]
+
+	inlines = [UserhatrolleInline]
 
 
 # Inline function to show all Instances of Rollen who ever it needs
@@ -222,46 +267,21 @@ class RollenInline(admin.TabularInline):
 	extra = 0
 
 
-# ######################################################################################################
-# tbl Userhatrolle
-# ######################################################################################################
-
-@admin.register(TblUserhatrolle)
-class Userhatrolle(admin.ModelAdmin):
-	actions_on_top = True
-	actions_on_bottom = True
-
-	list_display = ('userundrollenid', 'userid', 'rollenname', 'schwerpunkt_vertretung', 'bemerkung', 'letzte_aenderung', )
-	list_filter = ('schwerpunkt_vertretung', )
-	list_display_links = ('userid', 'rollenname', )
-	list_editable = ('schwerpunkt_vertretung', 'bemerkung', )
-	search_fields = [ 'schwerpunkt_vertretung', 'rollenname__rollenname', 'bemerkung', 'userid__name', 'userid__userid', ]
-
-	list_per_page = 25 # sys.maxsize
-
-# Inline function to show all Instances in other view
-class UserhatrolleInline(admin.TabularInline):
-	model = TblRollehataf
-	extra = 0
-
-
-
+#
 # ######################################################################################################
 # tbl Rollen
 # ######################################################################################################
 
 @admin.register(TblAfliste)
 class Afliste(admin.ModelAdmin):
+	actions_on_top = True
+	actions_on_bottom = True
 
 	list_display = ('af_name', 'neu_ab',)
 	# list_display_links = ( )
 	# list_editable = ('af_name', )
 	search_fields = ['af_name', ]
-
 	# list_filter = ( )
-
-	actions_on_top = True
-	actions_on_bottom = True
 
 # Inline function to show all Instances in other view
 class AflisteInline(admin.TabularInline):
@@ -275,16 +295,26 @@ class AflisteInline(admin.TabularInline):
 
 @admin.register(TblRollehataf)
 class Rollehataf(admin.ModelAdmin):
-
-	list_display = ('rollenmappingid', 'rollenname', 'afname', 'mussfeld', 'bemerkung', 'nurxv', 'xabcv', 'dv', )
-	list_display_links = ('rollenname', )
-	list_editable = ('afname', 'mussfeld', 'bemerkung', 'nurxv', 'xabcv', 'dv', )
-	search_fields = ['rollenname', 'bemerkung', ]
-
-	list_filter = ('mussfeld', 'nurxv', 'xabcv', 'dv', )
-
 	actions_on_top = True
 	actions_on_bottom = True
+
+	formfield_overrides = {
+		models.TextField: {
+			'widget': Textarea (
+				attrs = {
+						'rows': 1,
+						'cols': 40,
+						'style': 'height: 1.4em;'
+		})},
+	}
+
+	list_display = ('rollenmappingid', 'rollenname', 'afname', 'get_muss', 'get_nurxv', 'get_xabcv', 'get_dv', 'bemerkung', )
+	list_display_links = ('rollenname', )
+	list_editable = ('afname', 'bemerkung', )		# ToDo die vier Kreuzfelder muss..dv als klickable implementieren
+	search_fields = ['rollenname__rollenname', 'afname__af_name', 'bemerkung', ]
+	list_filter = ('mussfeld', 'nurxv', 'xabcv', 'dv', )
+
+	list_per_page = 20 # sys.maxsize
 
 # Inline function to show all Instances in other view
 class RollehatafInline(admin.TabularInline):
