@@ -5,5 +5,5 @@ db.sqlite3
 *.swp
 __pycache__
 .directory
-venv
+myvenv
 01\ Mitarbeiterberechtigungen\ ZI-AI-BA.csv
