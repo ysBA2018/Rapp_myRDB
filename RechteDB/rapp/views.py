@@ -11,7 +11,7 @@ from django.urls import reverse
 # Imports für die Selektions-Views panel, selektion u.a.
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .filters import PanelFilter, UseridFilter
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -289,12 +289,12 @@ def panel_UhR(request, id = 0):
 	"""
 	# Ein paar Testzugriffe über das komplette Modell
 	#   Hier ist die korrekte Hierarchie abgebildet von UserID bis AF:
-    #   TblUserIDundName ethält Userid
-    #       TblUserHatRolle hat FK 'userid' auf TblUserIDundName
-    #       -> tbluserhatrolle_set.all auf eine aktuelle UserID-row liefert die Menge der relevanten Rollen
-    #           Rolle hat ForeignKey 'rollenname' auf TblRolle und erhält damit die nicht-User-spezifischen Rollen-Parameter
-    #               TblRolleHatAF hat ebenfalls einen ForeignKey 'rollennname' auf TblRollen
-    #               -> rollenname.tblrollehataf_set.all liefert für eine konkrete Rolle die Liste der zugehörigen AF-Detailinformationen
+	#   TblUserIDundName ethält Userid
+	#       TblUserHatRolle hat FK 'userid' auf TblUserIDundName
+	#       -> tbluserhatrolle_set.all auf eine aktuelle UserID-row liefert die Menge der relevanten Rollen
+	#           Rolle hat ForeignKey 'rollenname' auf TblRolle und erhält damit die nicht-User-spezifischen Rollen-Parameter
+	#               TblRolleHatAF hat ebenfalls einen ForeignKey 'rollennname' auf TblRollen
+	#               -> rollenname.tblrollehataf_set.all liefert für eine konkrete Rolle die Liste der zugehörigen AF-Detailinformationen
 	#
 	#		TblGesamt hat FK 'userid_name' auf TblUserIDundName
 	#		-> .tblgesamt_set.filter(geloescht = False) liefert die akiven Arbeitsplatzfunktionen
@@ -646,6 +646,7 @@ def import2(request):
 			try:
 				cursor.callproc ("behandleUser") # diese SProc benötigt die Orga nicht als Parameter
 			except:
+				error = sys.exc_info()
 				e = sys.exc_info()[0]
 				fehler = format("Error: %s" % e)
 				print('Fehler in import_schritt2, StoredProc behandleUser', fehler)
@@ -703,6 +704,7 @@ def import2_quittung(request):
 					retval += cursor.callproc ("loescheDoppelteRechte", [False, ]) # False = Nicht nur lesen
 
 			except:
+				error = sys.exc_info()
 				e = sys.exc_info()[0]
 				fehler = format("Error: %s" % e)
 				print ('Fehler in import_schritt2, StoredProc behandleUser oder loescheDoppelteRechte', fehler)

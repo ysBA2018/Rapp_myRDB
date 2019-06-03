@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/RechteDB.iml" filepath="$PROJECT_DIR$/.idea/RechteDB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Rapp_myRDB.iml" filepath="$PROJECT_DIR$/.idea/Rapp_myRDB.iml" />
     </modules>
   </component>
 </project>

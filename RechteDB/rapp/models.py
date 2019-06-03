@@ -91,7 +91,7 @@ class TblUserhatrolle(models.Model):
 	)
 
 	userundrollenid = 		models.AutoField(db_column='userundrollenid', primary_key=True, verbose_name='ID')  # Field name made lowercase.
-	userid = 				models.ForeignKey('Tbluseridundname', models.PROTECT, to_field='userid', db_column='userid', verbose_name='UserID, Name')  # Field name made lowercase.
+	userid = 				models.ForeignKey('TblUserIDundName', models.PROTECT, to_field='userid', db_column='userid', verbose_name='UserID, Name')  # Field name made lowercase.
 	rollenname = 			models.ForeignKey('TblRollen', models.PROTECT, db_column='rollenname')  # Field name made lowercase.
 
 	schwerpunkt_vertretung = \
@@ -270,7 +270,7 @@ class TblUserIDundName(models.Model):
 def hole_organisationen():
 	# Liefert eine Liste an Tupeln mit Choices für die Orga-Auswahl zurück. Die Liste stammt aus tblUserIDundName.
 	with connection.cursor() as cursor:
-		cursor.execute("SELECT DISTINCT zi_organisation FROM tblUserIDundName")
+		cursor.execute("SELECT DISTINCT zi_organisation FROM TblUserIDundName")
 		rows = cursor.fetchall()
 		return [('Bitte Organisation wählen', 'Bitte Organisation wählen')] + [(r[0], r[0]) for r in rows]
 
@@ -296,7 +296,7 @@ class TblGesamt(models.Model):
 	tf = 					models.CharField(db_column='tf', max_length=100, verbose_name='TF', db_index=True)  # Field name made lowercase.
 	tf_beschreibung = 		models.CharField(db_column='tf_beschreibung', max_length=250, blank=True, null=True, verbose_name='TF-Beschreibung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	enthalten_in_af = 		models.CharField(db_column='enthalten_in_af', max_length=100, blank=True, null=True, verbose_name='AF', db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	modell = 				models.ForeignKey('TblUebersichtafGfs', db_column='modell', on_delete=models.CASCADE, db_index=True)  # Field name made lowercase.
+	modell = 				models.ForeignKey('TblUebersichtAfGfs', db_column='modell', blank=True, null=True, on_delete=models.CASCADE, db_index=True)  # Field name made lowercase.
 	tf_kritikalitaet = 		models.CharField(db_column='tf_kritikalitaet', max_length=64, blank=True, null=True, verbose_name='TF-Kritikalität', db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	tf_eigentuemer_org = 	models.CharField(db_column='tf_eigentuemer_org', max_length=64, blank=True, null=True, verbose_name='TF-Eigentümer-orga', db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	plattform = 			models.ForeignKey('TblPlattform', db_column='plattform_id', on_delete=models.CASCADE, verbose_name='Plattform', db_index=True)  # Field name made lowercase.
@@ -370,7 +370,7 @@ class TblGesamtHistorie(models.Model):
 	tf = 					models.CharField(db_column='tf', max_length=100, verbose_name='TF')  # Field name made lowercase.
 	tf_beschreibung = 		models.CharField(db_column='tf_beschreibung', max_length=300, blank=True, null=True, verbose_name='TF-Beschreibung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	enthalten_in_af = 		models.CharField(db_column='enthalten_in_af', max_length=100, blank=True, null=True, verbose_name='AF')  # Field name made lowercase. Field renamed to remove unsuitable characters.
-	modell = 				models.ForeignKey('TblUebersichtafGfs', db_column='modell', on_delete=models.CASCADE)  # Field name made lowercase.
+	modell = 				models.ForeignKey('TblUebersichtAfGfs', db_column='modell', blank=True, null=True, on_delete=models.CASCADE)  # Field name made lowercase.
 	tf_kritikalitaet = 		models.CharField(db_column='tf_kritikalitaet', max_length=64, blank=True, null=True, verbose_name='TF-Kritikalität')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	tf_eigentuemer_org = 	models.CharField(db_column='tf_eigentuemer_org', max_length=64, blank=True, null=True, verbose_name='TF-Eigentümer-orga')  # Field name made lowercase. Field renamed to remove unsuitable characters.
 	plattform = 			models.ForeignKey('TblPlattform', db_column='plattform_id', on_delete=models.CASCADE, verbose_name='Plattform')  # Field name made lowercase.

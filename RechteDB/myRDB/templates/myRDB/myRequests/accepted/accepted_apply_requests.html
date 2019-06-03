@@ -1,0 +1,31 @@
+{% load static %}
+{% load index %}
+{% load getdictitem %}
+<script type="text/javascript">
+    var iAcceptedApply = 0;
+</script>
+
+<div class="card" id="accepted_apply_request_card{{ forloop.counter0 }}">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-6" align="left">
+                <h5>
+                    <a class="btn btn-primary" data-toggle="collapse" href="#accepted_apply_request{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="accepted_apply_request{{ forloop.counter0 }}">
+                        Beantragung | {{ apply_request.request.right_name }}
+                    </a>
+                </h5>
+            </div>
+            <div class="col-6" align="right">
+                <form class="accepted_apply_form" onsubmit="javascript: return remove_card_clicked(this);">
+                    <input type="hidden" value="{{ apply_request.request.pk }}" name="pk">
+                    <input type="hidden" value="{{ apply_request.request.requesting_user }}" name="requesting_user">
+                    <input type="submit" class="btn btn-danger" value="X" formmethod="post">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="collapse" id="accepted_apply_request{{ forloop.counter0 }}">
+         {% include 'myRDB/myRequests/accepted/accepted_apply_request_card.html' %}
+    </div>
+</div>
+

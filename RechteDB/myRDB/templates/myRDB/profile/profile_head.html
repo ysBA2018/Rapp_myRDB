@@ -1,0 +1,71 @@
+{% load crispy_forms_tags %}
+<div class="card top-buffer">
+    <div class="card-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                    <img class="card-img-top card-image" src="/../../static/myRDB/images/default_profile.png"
+                         alt="Profile Picture">
+                </div>
+                <div class="col-9">
+                    <h5 class="card-title">{{ user_identity }}</h5>
+                    <p class="card-text">{{ user_name }}</p>
+                    <p class="card-text">{{ user_first_name }}</p>
+                    <p class="card-text">{{ user_departement_id }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="user_count">User:   </label>
+                        <p id="user_count" class="card-text">   ...</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="role_count">Roles:   </label>
+                        <p id="role_count" class="card-text">   {{ role_count }}</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="af_count">AF:   </label>
+                        <p id="af_count" class="card-text">   {{ af_count }}</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="gf_count">GF:   </label>
+                        <p id="gf_count" class="card-text">   {{ gf_count }}</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="tf_count">TF:   </label>
+                        <p id="tf_count" class="card-text">   {{ tf_count }}</p>
+                    </div>
+                </div>
+                {% if current_site == "profile" %}
+                    <div class="col-4 input-group mb-3">
+                        <form id=”search” method=”POST” action="{% url 'myRDB:compare' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <input type="hidden" name="user_identity" value="{{ user_identity }}">
+                                <div class="col-8">
+                                    {{ profile_header_form| crispy}}
+                                </div>
+                                <div class="col-3">
+                                    <button type="submit" class="btn btn-light btn-outline-secondary ">Compare</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

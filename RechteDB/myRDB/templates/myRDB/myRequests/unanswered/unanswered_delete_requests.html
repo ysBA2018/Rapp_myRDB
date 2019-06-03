@@ -1,0 +1,34 @@
+{% load static %}
+{% load index %}
+{% load getdictitem %}
+<script type="text/javascript" >
+    var iUnansweredDelete = 0;
+</script>
+
+<div class="card" id="unanswered_delete_request_card{{ forloop.counter0 }}">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-6" align="left">
+                <h5>
+                    <a class="btn btn-primary" data-toggle="collapse" href="#unanswered_delete_request{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="unanswered_delete_request{{ forloop.counter0 }}">
+                        Löschung | {{ delete_request.request.right_name }}
+                    </a>
+                </h5>
+            </div>
+            <div class="col-6" align="right">
+                <form class="unanswered_delete_form" onsubmit="javascript: return remove_unanswered_card_clicked(this);">
+                    <input type="hidden" value="{{ delete_request.request.pk }}" name="pk">
+                    <input type="hidden" value="{{ delete_request.request.requesting_user }}" name="requesting_user">
+                    <input type="hidden" value="{{ delete_request.request.action }}" name="action">
+                    <input type="hidden" value="{{ delete_request.request.right_name }}" name="right_name">
+                    <input type="hidden" value="{{ delete_request.request.right_type }}" name="right_type">
+                    <input type="submit" class="btn btn-danger" value="X" formmethod="post">
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="collapse" id="unanswered_delete_request{{ forloop.counter0 }}">
+         {% include 'myRDB/myRequests/unanswered/unanswered_delete_request_card.html' %}
+    </div>
+</div>
+

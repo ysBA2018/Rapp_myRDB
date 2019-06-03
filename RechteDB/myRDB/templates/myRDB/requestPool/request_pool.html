@@ -1,0 +1,72 @@
+{% extends 'myRDB/base.html' %}
+{% load static %}
+{% load index %}
+{% load asjson %}
+{% load getdictitem %}
+{% block content %}
+    <script type="text/javascript" >
+        var iDeletionUser = 0;
+        var iApplicationUser = 0;
+    </script>
+
+    <h1 class="top-buffer">Anfragen-Pool</h1>
+    <div class="container-fluid top-buffer">
+        {% if requesting_users %}
+            {% for user in requesting_users %}
+                <div class="container" id="outerToggleGroup{{ forloop.counter0 }}">
+                    <div class="card top-buffer">
+                        <div class="card-header">
+                            <script type="text/javascript" >
+                                var user_apply_requests{{ forloop.counter0 }} = {{ user.apply_requests | asjson}};
+                                var user_delete_requests{{ forloop.counter0 }} = {{ user.delete_requests | asjson}};
+                            </script>
+
+                            <div class="row">
+                                <div class="col-7" align="left">
+                                    <h3> {{ user.requesting_user }}</h3>
+                                </div>
+                                <div class="col-2">
+                                    {% if user.apply_requests %}
+                                        <p>
+                                            <a class="btn btn-info" id="applyButton{{ forloop.counter0 }}" data-toggle="collapse" href="#collapseApply{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="collapseApply{{ forloop.counter0 }}">
+                                                Beantragungen
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-2">
+                                    {% if user.delete_requests %}
+                                        <p>
+                                            <a class="btn btn-info" id="deleteButton{{ forloop.counter0 }}" data-toggle="collapse" href="#collapseDelete{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="collapseDelete{{ forloop.counter0 }}">
+                                                Löschungen
+                                            </a>
+                                        </p>
+                                    {% endif %}
+                                 </div>
+                                <div class="col-1" align="right">
+                                    <p>
+                                        <a class="btn btn-secondary" href="" role="button">
+                                            X
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="collapse" id="collapseApply{{ forloop.counter0 }}" data-parent="#outerToggleGroup{{ forloop.counter0 }}">
+                                  {% include 'myRDB/requestPool/user_apply_requests.html' %}
+                            </div>
+                            <div class="collapse" id="collapseDelete{{ forloop.counter0 }}" data-parent="#outerToggleGroup{{ forloop.counter0 }}">
+                                  {% include 'myRDB/requestPool/user_delete_requests.html' %}
+                            </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card top-buffer" id="empty_pool">
+                <div class="card-header">
+                    <h4 class="text-center">Keine Anfragen im Pool vorhanden!</h4>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

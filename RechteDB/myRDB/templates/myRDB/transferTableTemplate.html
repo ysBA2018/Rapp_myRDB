@@ -1,0 +1,90 @@
+{% load static %}
+<div class="card">
+    <div class="card-header">
+        <h5>Transferliste <span id="transfer_badge" class="badge badge-success">{{ transfer_list_count }}</span></h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="transfer_table" class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">TF</th>
+                        <th scope="col">GF</th>
+                        <th scope="col">AF</th>
+                        {# <th scope="col">Rolle</th> #}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in transfer_list_table_data %}
+                    <tr>
+                        <td>{{ row.0 }}</td>
+                        <td>{{ row.1 }}</td>
+                        <td>{{ row.2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script type="text/javascript">
+                var user_pk = {{ user.pk }};
+                var CSRF_TOKEN = "{{ csrf_token }}";
+                var transfer_table;
+            </script>
+            <script type="text/javascript" src="{% static 'myRDB/js/data_tables/transfer_data_table.js' %}"></script>
+
+        </div>
+    </div>
+    <div class="card-footer">
+        <p class="card-text"> Übertragene Rechte werden hier angezeigt</p>
+    </div>
+    <!--
+        {% if is_paginated %}
+        <ul class="pagination">
+            {% if delete_list_table_data.has_previous %}
+                {% if identity_param %}
+                    <li>
+                        <a href="?identity={{ identity_param }}&page={{ page_obj.number }}&delete_list_page={{ delete_list_table_data.previous_page_number }}&view_mode=Tabellarische Ansicht">&laquo;</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="?page={{ page_obj.number }}&delete_list_page={{ delete_list_table_data.previous_page_number }}&view_mode=Tabellarische Ansicht">&laquo;</a>
+                    </li>
+                {% endif %}
+            {% else %}
+            <li class="disabled"><span>&laquo;</span></li>
+            {% endif %}
+            {% for i in delete_list_table_data.paginator.page_range %}
+                {% if identity_param %}
+                    {% if delete_list_table_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="?identity={{ identity_param }}&page={{ page_obj.number }}&delete_list_page={{ i }}&view_mode=Tabellarische Ansicht">{{ i }}</a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    {% if delete_list_table_data.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="?page={{ page_obj.number }}&delete_list_page={{ i }}&view_mode=Tabellarische Ansicht">{{ i }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if identity_param %}
+                {% if delete_list_table_data.has_next %}
+                    <li><a href="?identity={{ identity_param }}&page={{ page_obj.number }}&delete_list_page={{ delete_list_table_data.next_page_number }}&view_mode=Tabellarische Ansicht">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+            {% else %}
+                {% if delete_list_table_data.has_next %}
+                    <li><a href="?page={{ page_obj.number }}&delete_list_page={{ delete_list_table_data.next_page_number }}&view_mode=Tabellarische Ansicht">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+            {% endif %}
+            </ul>
+        {% endif %}
+        -->
+
+
+</div>

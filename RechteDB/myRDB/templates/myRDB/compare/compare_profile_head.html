@@ -1,0 +1,51 @@
+<div class="card top-buffer">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-2">
+                <img class="card-img-top" src="/../../static/myRDB/images/default_profile.png"
+                     alt="Profile Picture">
+            </div>
+            <div class="col-9">
+
+                <h5 class="card-title">{{ compareUser.identity }}</h5>
+                <p class="card-text">{{ compareUser.name }}</p>
+                <p class="card-text">{{ compareUser.first_name }}</p>
+                <p class="card-text">{{ compareUser.departement_id }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-sm">
+                    <div class="row">
+                        <label for="comp_user_count">User:   </label>
+                        <p id="comp_user_count" class="card-text">   ...</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="comp_role_count">Roles:   </label>
+                        <p id="comp_role_count" class="card-text">   {{ comp_role_count }}</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="comp_af_count">AF:   </label>
+                        <p id="comp_af_count" class="card-text">   {{ comp_af_count }}</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="comp_gf_count">GF:   </label>
+                        <p id="comp_gf_count" class="card-text">   {{ comp_gf_count }}</p>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <label for="comp_tf_count">TF:   </label>
+                        <p id="comp_tf_count" class="card-text">   {{ comp_tf_count }}</p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>

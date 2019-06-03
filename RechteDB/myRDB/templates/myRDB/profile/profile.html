@@ -1,0 +1,127 @@
+{% extends 'myRDB/base.html' %}
+{% block content %}
+    {% load asjson %}
+
+<div class="container-fluid">
+    {% include 'myRDB/profile/profile_head.html' %}
+
+    <script type="text/javascript" >
+        var trash_table_count = {{ delete_list_count }};
+        var current_site = "{{ current_site }}";
+        var scatterData = {{ scatterData | asjson }};
+        var jsondata = {{ jsondata | asjson }};
+        var trashlistdata = {{ deletelist | asjson }};
+        var transferlistdata = {{ transferlist | asjson }};
+        var legendData = {{ legendData | asjson}};
+        var user = "{{ identity_param }}";
+    </script>
+
+        <div class="row top-buffer">
+            <div class="col-6">
+                <div class="card">
+                    {% if view_mode == "Graphische Ansicht" %}
+                        {% include 'myRDB/circlePackingTemplate.html' %}
+                    {% else %}
+                        {% include 'myRDB/profile/profileTableTemplate.html' %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col">
+                        {% include 'myRDB/scatterPlotTemplate.html' %}
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    {# 'Hier Legende realisieren' #}
+                    <div class="col">
+                        {% include 'myRDB/profile/profileLegendTemplate.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row top-buffer">
+            <div class="col">
+                {% if view_mode == "Graphische Ansicht" %}
+                    {% include 'myRDB/trashTemplate.html' %}
+                {% else %}
+                    {% include 'myRDB/trashTableTemplate.html' %}
+                {% endif %}
+            </div>
+            <div class="col">
+                {% if view_mode == "Graphische Ansicht" %}
+                    {% include 'myRDB/transferTemplate.html' %}
+                {% else %}
+                    {% include 'myRDB/transferTableTemplate.html' %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="row-fluid top-buffer">
+    {# hier umschalt button auf tabellarische/visuelle ansicht #}
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-1">
+                            <label for="viewMode">Ansicht: </label>
+                        </div>
+                        <div class="col">
+                            <form>
+                                {% csrf_token %}
+                                {% if identity_param %}
+                                    <input name="identity" type="hidden" value="{{ identity_param }}">
+                                {% endif %}
+                                <select id="viewMode" name="view_mode" class="form-control" onchange="form.submit()">
+                                    {% if view_mode == "Graphische Ansicht"%}
+                                        <option selected>Graphische Ansicht</option>
+                                        <option>Tabellarische Ansicht</option>
+                                    {% else %}
+                                        <option>Graphische Ansicht</option>
+                                        <option selected>Tabellarische Ansicht</option>
+                                    {% endif %}
+                                </select>
+                            </form>
+                        </div>
+                        <div class="col">
+                            <form id=”log” method=”POST” action="{% url 'myRDB:compare' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-light">Logdatei anzeigen</button>
+                            </form>
+                        </div>
+                        <div class="col">
+                            <form id=”analysis” method=”POST” action="{% url 'myRDB:profile_rights_analysis' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-light">Berechtigungsanalyse</button>
+                            </form>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-light">Rechte Beantragen</button>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-light">Löschung beantragen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+<!--
+<script>
+        $(document).ready(function(){
+            $("#txtSearch").autocomplete({
+                source: "/ajax_calls/search/",
+                minLength: 2,
+                open: function(){
+                    setTimeout(function () {
+                        $('.ui-autocomplete').css('z-index', 99);
+                    }, 0);
+                }
+              });
+
+        });
+
+
+
+</script>
+-->
+{% endblock %}

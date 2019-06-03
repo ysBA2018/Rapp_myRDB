@@ -1,0 +1,68 @@
+{% extends 'myRDB/base.html' %}
+{% block content %}
+    {% load asjson %}
+    <script type="text/javascript">
+        var compare_jsondata = {{ compareUser_graph_data | asjson }};
+        var jsondata = {{ jsondata | asjson }};
+        var current_site = "{{ current_site }}";
+        var compare_user = "{{ compareUser.identity }}";
+        var user = "{{ identity_param }}";
+        var user_table_data = "{{ table_data }}";
+        var transferlistdata = {{ transferlist | asjson }};
+        var trashlistdata = {{ deletelist | asjson }};
+        var compare_user_table_data = "{{ compareUser_table_data }}";
+        var transfer_list_table_data = "{{ transfer_list_table_data }}";
+    </script>
+<div class="row top-buffer">
+    <div class="col-6" id="user_card">
+        {% include 'myRDB/profile/profile_head.html' %}
+        <div class="card top-buffer">
+            {% if view_mode == "Graphische Ansicht" %}
+                {% include 'myRDB/circlePackingTemplate.html' %}
+            {% else %}
+                {% include 'myRDB/profile/profileTableTemplate.html' %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-6">
+        {% include 'myRDB/compare/compare_profile_head.html' %}
+        <div class="card top-buffer">
+            {% if view_mode == "Graphische Ansicht" %}
+                {% include 'myRDB/compare/compareCirclePackingTemplate.html' %}
+            {% else %}
+                {% include 'myRDB/compare/compareTableTemplate.html' %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="row-fluid top-buffer">
+    {# hier umschalt button auf tabellarische/visuelle ansicht #}
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-2">
+                    <label for="viewMode">Ansicht: </label>
+                </div>
+                <div class="col-3">
+                    <form>
+                        {% csrf_token %}
+                        <input name="user_identity" type="hidden" value="{{ user_identity }}">
+                        <input name="user_search" type="hidden" value="{{ compareUser.identity }}">
+                        <select id="viewMode" name="view_mode" class="form-control" onchange="form.submit()">
+                            {% if view_mode == "Graphische Ansicht"%}
+                                <option selected>Graphische Ansicht</option>
+                                <option>Tabellarische Ansicht</option>
+                            {% else %}
+                                <option>Graphische Ansicht</option>
+                                <option selected>Tabellarische Ansicht</option>
+                            {% endif %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include 'myRDB/compare/compare_footer_row.html' %}
+
+{% endblock %}

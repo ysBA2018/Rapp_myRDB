@@ -19,51 +19,54 @@ from django.urls import reverse_lazy
 
 
 def push_sp(name, sp):
-	"""
+    """
 	Speichere eine als Parameter übergebene Stored Procedure
 
 	:param name: Name der zu löschenden Stored_Procedure
 	:param sp: Die Stored Procedure, die gespeichert werden soll (SQL-Mengen-String)
 	:return: Fehler (False = kein Fehler)
 	"""
-	# ToDo Das Löschen wirft Warnings im MySQL-Treiber, wenn die SP gar nicht existiert. -> Liste lesen und checken
-	fehler = False
-	loeschstring = format ("DROP PROCEDURE IF EXISTS %s" % name)
-	with connection.cursor() as cursor:
-		try:
-			cursor.execute (loeschstring)
-			cursor.execute (sp)
-		except:
-			e = sys.exc_info()[0]
-			fehler = format("Error: %s" % e)
+    # ToDo Das Löschen wirft Warnings im MySQL-Treiber, wenn die SP gar nicht existiert. -> Liste lesen und checken
+    fehler = False
+    loeschstring = format("DROP PROCEDURE IF EXISTS %s" % name)
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute(loeschstring)
+            cursor.execute(sp)
+        except:
+            e = sys.exc_info()[0]
+            fehler = format("Error: %s" % e)
 
-		cursor.close()
-		return fehler
+        cursor.close()
+        return fehler
+
 
 def push_sp_test():
-	sp = """
+    sp = """
 CREATE PROCEDURE anzahl_import_elemente()
 BEGIN
   SELECT COUNT(*) FROM `tblRechteNeuVonImport` ORDER BY `TF Name`, `Identität`;
 END
 """
-	return push_sp ('anzahl_import_elemente', sp)
+    return push_sp('anzahl_import_elemente', sp)
+
 
 def call_sp_test():
-	fehler = False
-	with connection.cursor() as cursor:
-		try:
-			cursor.execute ("CALL anzahl_import_elemente")
-			liste = cursor.fetchone()
-		except:
-			e = sys.exc_info()[0]
-			fehler = format("Error: %s" % e)
+    fehler = False
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("CALL anzahl_import_elemente")
+            liste = cursor.fetchone()
+        except:
+            e = sys.exc_info()[0]
+            fehler = format("Error: %s" % e)
 
-		cursor.close()
-		return fehler or not liste[0] >= 0
+        cursor.close()
+        return fehler or not liste[0] >= 0
+
 
 def push_sp_vorbereitung():
-	sp = """
+    sp = """
 create procedure vorbereitung()
 BEGIN
     /*
@@ -247,10 +250,11 @@ BEGIN
     */
 END
 """
-	return push_sp ('vorbereitung', sp)
+    return push_sp('vorbereitung', sp)
+
 
 def push_sp_neueUser():
-	sp = """
+    sp = """
 create procedure neueUser (IN orga char(32))
 BEGIN
 
@@ -341,10 +345,11 @@ BEGIN
     ;
 END
 """
-	return push_sp ('neueUser', sp)
+    return push_sp('neueUser', sp)
+
 
 def push_sp_behandleUser():
-	sp = """
+    sp = """
 create procedure behandleUser ()
 BEGIN
 
@@ -382,7 +387,7 @@ BEGIN
     */
     INSERT INTO tblUserIDundName (userid, name, orga_id, `zi_organisation`, geloescht, gruppe, abteilung )
         SELECT userid1, name1, Ausdr1 AS orga_id, Ausdr2 AS `zi_organisation`, 
-        		False AS geloescht, "" as gruppe, "" as abteilung
+                False AS geloescht, "" as gruppe, "" as abteilung
             FROM qryUpdateNeueBerechtigungenZIAIBA_1_NeueUser_a
             WHERE COALESCE(`geloescht`, FALSE) = FALSE
                 AND (userid1 IS NOT NULL OR name1 IS NOT NULL);
@@ -452,431 +457,431 @@ BEGIN
 
 END
 """
-	return push_sp ('behandleUser', sp)
+    return push_sp('behandleUser', sp)
+
 
 def push_sp_behandleRechte():
-	sp = """
+    sp = """
 create procedure behandleRechte (IN orga char(32))
 BEGIN
 
-    /*
-        Nun folgt der komplexere Block:
-        Die neuen, evtl. unveränderten und auch nicht mehr vorhandenen einzelnen Berechtigungen
-        müssen schrittweise in die Gesamttabelle eingetragen werden.
-    */
+	/*
+		Nun folgt der komplexere Block:
+		Die neuen, evtl. unveränderten und auch nicht mehr vorhandenen einzelnen Berechtigungen
+		müssen schrittweise in die Gesamttabelle eingetragen werden.
+	*/
 
-    -- Lösche zunächst Plattform-Namen, die in der Gesamttabelle nicht mehr auftauchen
-    -- (manchmal werden Plattformen einfach umbenannt)
-    CREATE TEMPORARY TABLE bloed as
-        SELECT tblPlattform.`tf_technische_plattform` as x
-            FROM tblPlattform
-            LEFT JOIN tblGesamt ON tblPlattform.id = tblGesamt.plattform_id
-            WHERE tblGesamt.plattform_id IS NULL;
+	-- Lösche zunächst Plattform-Namen, die in der Gesamttabelle nicht mehr auftauchen
+	-- (manchmal werden Plattformen einfach umbenannt)
+	
+	CREATE TEMPORARY TABLE bloed as
+		SELECT tblPlattform.`tf_technische_plattform` as x
+			FROM tblPlattform
+			LEFT JOIN tblGesamt ON tblPlattform.id = tblGesamt.plattform_id
+			WHERE tblGesamt.plattform_id IS NULL;
 
-    DELETE FROM tblPlattform
-    WHERE `tf_technische_plattform` IN (select x from bloed);
+	DELETE FROM tblPlattform
+	WHERE `tf_technische_plattform` IN (select x from bloed);
 
-    -- Ergänze alle Plattformen, die bislang nur in tblRechteAMNeu bekannt sind
-    INSERT INTO tblPlattform (`tf_technische_plattform`)
-    SELECT DISTINCT tblRechteAMNeu.`tf_technische_plattform`
-    FROM tblRechteAMNeu
-        LEFT JOIN tblPlattform
-        ON tblRechteAMNeu.`tf_technische_plattform` = tblPlattform.`tf_technische_plattform`
-    WHERE tblPlattform.`tf_technische_plattform` IS NULL;
+	-- Ergänze alle Plattformen, die bislang nur in tblRechteAMNeu bekannt sind
+	INSERT INTO tblPlattform (`tf_technische_plattform`)
+	SELECT DISTINCT tblRechteAMNeu.`tf_technische_plattform`
+	FROM tblRechteAMNeu
+		LEFT JOIN tblPlattform
+		ON tblRechteAMNeu.`tf_technische_plattform` = tblPlattform.`tf_technische_plattform`
+	WHERE tblPlattform.`tf_technische_plattform` IS NULL;
 
-    /*
-        Der Status "gefunden" dient dazu,
-        später die Selektion neuer Rechte zu vereinfachen und übriggebliebene Rechte zu löschen.
-        Er wird sowohl in der Gesamt-Tabelle, als auch in der Importtabelle zurückgesetzt.
-        Gleichzeitig wird der Status "geaendert" in beiden Tabellen zurückgesetzt.
-    */
+	/*
+		Der Status "gefunden" dient dazu,
+		später die Selektion neuer Rechte zu vereinfachen und übriggebliebene Rechte zu löschen.
+		Er wird sowohl in der Gesamt-Tabelle, als auch in der Importtabelle zurückgesetzt.
+		Gleichzeitig wird der Status "geaendert" in beiden Tabellen zurückgesetzt.
+	*/
 
-    UPDATE tblGesamt
-        INNER JOIN tblUserIDundName
-        ON tblGesamt.`userid_und_name_id` = tblUserIDundName.id
-    SET tblGesamt.gefunden = FALSE,
-        tblGesamt.geaendert = FALSE
-    WHERE tblGesamt.gefunden = TRUE OR tblGesamt.`geaendert` = TRUE;
+	UPDATE tblGesamt
+		INNER JOIN tblUserIDundName
+		ON tblGesamt.`userid_und_name_id` = tblUserIDundName.id
+	SET tblGesamt.gefunden = FALSE,
+		tblGesamt.geaendert = FALSE
+	WHERE tblGesamt.gefunden = TRUE OR tblGesamt.`geaendert` = TRUE;
 
-    -- Dies hier nur zur Sicherheit - eigentlich müssten die eh null sein
-    UPDATE tblRechteAMNeu
-    SET tblRechteAMNeu.gefunden = FALSE,
-        tblRechteAMNeu.geaendert = FALSE
-    WHERE tblRechteAMNeu.gefunden = TRUE
-        OR tblRechteAMNeu.geaendert = TRUE;
+	-- Dies hier nur zur Sicherheit - eigentlich müssten die eh null sein
+	UPDATE tblRechteAMNeu
+	SET tblRechteAMNeu.gefunden = FALSE,
+		tblRechteAMNeu.geaendert = FALSE
+	WHERE tblRechteAMNeu.gefunden = TRUE
+		OR tblRechteAMNeu.geaendert = TRUE;
 
-    /*
-        Nun wird die "flache" Tabelle "tbl_Gesamt_komplett" erzeugt.
-        Dort sind die Referenzen zu den derzeit existierenden, aktiven 
-        User-, Berechtigungs- und Orga-Tabellen aufgelöst,
-        allerdings in dieser Implementierung ausschließlich für die benötigten UserIDen
-        (früher wirklich komplett).
+	/*
+		Nun wird die "flache" Tabelle "tbl_Gesamt_komplett" erzeugt.
+		Dort sind die Referenzen zu den derzeit existierenden, aktiven 
+		User-, Berechtigungs- und Orga-Tabellen aufgelöst,
+		allerdings in dieser Implementierung ausschließlich für die benötigten UserIDen
+		(früher wirklich komplett).
 
-        ToDo: Checken, ob tbl_Gesamt_komplett irgendwo noch als Gesamttabelle aller userids benötigt wird, sonst löschen nach Nutzung
-    */
+		ToDo: Checken, ob tbl_Gesamt_komplett irgendwo noch als Gesamttabelle aller userids benötigt wird, sonst löschen nach Nutzung
+	*/
 
-    drop table if exists tbl_Gesamt_komplett;
+	drop table if exists tbl_Gesamt_komplett;
 	create temporary table uids as
 		select distinct userid as uid from tblRechteAMNeu;
 
-    create table tbl_Gesamt_komplett as
+	create table tbl_Gesamt_komplett as
 		SELECT tblGesamt.id,
-               tblUserIDundName.userid,
-               tblUserIDundName.name,
-               tblGesamt.tf,
-               tblGesamt.`tf_beschreibung`,
-               tblGesamt.`enthalten_in_af`,
-               tblUEbersichtAF_GFs.`name_gf_neu`,
-               tblUEbersichtAF_GFs.`name_af_neu`,
-               tblGesamt.`tf_kritikalitaet`,
-               tblGesamt.`tf_eigentuemer_org`,
-               tblPlattform.`tf_technische_plattform`,
-               tblGesamt.GF,
-               tblGesamt.`vip`,
-               tblGesamt.zufallsgenerator,
-               tblGesamt.modell,
-               tblUserIDundName.orga_id,
-               tblUserIDundName.`zi_organisation`,
-               tblGesamt.`af_gueltig_ab`,
-               tblGesamt.`af_gueltig_bis`,
-               tblGesamt.`direct_connect`,
-               tblGesamt.`hk_tf_in_af`,
-               tblGesamt.`gf_beschreibung`,
-               tblGesamt.`af_zuweisungsdatum`,
-               tblGesamt.datum,
-               tblGesamt.`geloescht`
-        FROM tblGesamt
-            INNER JOIN tblUEbersichtAF_GFs
-            ON tblGesamt.modell = tblUEbersichtAF_GFs.id
+				tblUserIDundName.userid,
+				tblUserIDundName.name,
+				tblGesamt.tf,
+				tblGesamt.`tf_beschreibung`,
+				tblGesamt.`enthalten_in_af`,
+				tblUEbersichtAF_GFs.`name_gf_neu`,
+				tblUEbersichtAF_GFs.`name_af_neu`,
+				tblGesamt.`tf_kritikalitaet`,
+				tblGesamt.`tf_eigentuemer_org`,
+				tblPlattform.`tf_technische_plattform`,
+				tblGesamt.GF,
+				tblGesamt.`vip`,
+				tblGesamt.zufallsgenerator,
+				tblGesamt.modell,
+				tblUserIDundName.orga_id,
+				tblUserIDundName.`zi_organisation`,
+				tblGesamt.`af_gueltig_ab`,
+				tblGesamt.`af_gueltig_bis`,
+				tblGesamt.`direct_connect`,
+				tblGesamt.`hk_tf_in_af`,
+				tblGesamt.`gf_beschreibung`,
+				tblGesamt.`af_zuweisungsdatum`,
+				tblGesamt.datum,
+				tblGesamt.`geloescht`
+		FROM tblGesamt
+			INNER JOIN tblUEbersichtAF_GFs
+			ON tblGesamt.modell = tblUEbersichtAF_GFs.id
 
-            INNER JOIN tblPlattform
-            ON tblPlattform.id = tblGesamt.plattform_id
+			INNER JOIN tblPlattform
+			ON tblPlattform.id = tblGesamt.plattform_id
 
-            INNER JOIN tblUserIDundName
-            ON tblGesamt.`userid_und_name_id` = tblUserIDundName.id
+			INNER JOIN tblUserIDundName
+			ON tblGesamt.`userid_und_name_id` = tblUserIDundName.id
 
-        WHERE COALESCE(tblGesamt.`geloescht`, FALSE) = FALSE
-            AND tblUserIDundName.userid in (select uid from uids)
-        ORDER BY tblGesamt.tf,
-                 tblUserIDundName.userid;
+		WHERE COALESCE(tblGesamt.`geloescht`, FALSE) = FALSE
+			AND tblUserIDundName.userid in (select uid from uids)
+		ORDER BY tblGesamt.tf,
+				tblUserIDundName.userid;
 
-    /*
-        Markieren der Flags Gefunden in tblRechteAMNeu sowie tblGesamt.
-        In letzterer wird auch das wiedergefunden-Datum eingetragen, wann das Recht wiedergefunden wurde.
+	/*
+		Markieren der Flags Gefunden in tblRechteAMNeu sowie tblGesamt.
+		In letzterer wird auch das wiedergefunden-Datum eingetragen, wann das Recht wiedergefunden wurde.
 
-        Zusätzlich werden alle Felder, die hier nicht zum Vergleich der Rechte-Gleichheit
-        genutzt wurden, in der Gesamttabelle aktualisiert.
+		Zusätzlich werden alle Felder, die hier nicht zum Vergleich der Rechte-Gleichheit
+		genutzt wurden, in der Gesamttabelle aktualisiert.
 
-        Das hat früher mal zu Problemen geführt (Umbenennung ovn Rechten und -Eigentümern), 
-        in letzter Zeit aber eher nicht mehr.
+		Das hat früher mal zu Problemen geführt (Umbenennung ovn Rechten und -Eigentümern), 
+		in letzter Zeit aber eher nicht mehr.
 
-    */
+	*/
 
-    -- Zunächst das Setzen und Kopieren der Daten im Fall "Wiedergefunden"
-    UPDATE tblRechteAMNeu
-        INNER JOIN tblGesamt
-        ON      tblRechteAMNeu.tf = tblGesamt.tf
-            AND tblRechteAMNeu.GF = tblGesamt.GF
-            AND tblRechteAMNeu.`enthalten_in_af` = tblGesamt.`enthalten_in_af`
-            AND tblRechteAMNeu.zufallsgenerator = tblGesamt.zufallsgenerator
-            AND tblRechteAMNeu.`vip` = tblGesamt.`vip`
+	-- Zunächst das Setzen und Kopieren der Daten im Fall "Wiedergefunden"
+	UPDATE tblRechteAMNeu
+		INNER JOIN tblGesamt
+		ON      tblRechteAMNeu.tf = tblGesamt.tf
+			AND tblRechteAMNeu.GF = tblGesamt.GF
+			AND tblRechteAMNeu.`enthalten_in_af` = tblGesamt.`enthalten_in_af`
+			AND tblRechteAMNeu.zufallsgenerator = tblGesamt.zufallsgenerator
+			AND tblRechteAMNeu.`vip` = tblGesamt.`vip`
 
-        INNER JOIN tblUserIDundName
-        ON      tblUserIDundName.userid = tblRechteAMNeu.userid
-            AND tblUserIDundName.id = tblGesamt.`userid_und_name_id`
+		INNER JOIN tblUserIDundName
+		ON      tblUserIDundName.userid = tblRechteAMNeu.userid
+			AND tblUserIDundName.id = tblGesamt.`userid_und_name_id`
 
-        INNER JOIN tblPlattform
-        ON      tblPlattform.`tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`
-            AND tblPlattform.id = tblGesamt.plattform_id
+		INNER JOIN tblPlattform
+		ON      tblPlattform.`tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`
+			AND tblPlattform.id = tblGesamt.plattform_id
 
-    SET tblGesamt.gefunden = TRUE,
-        tblGesamt.Wiedergefunden = Now(),
-        tblRechteAMNeu.Gefunden = TRUE,
-        tblGesamt.`tf_beschreibung` = `tblRechteAMNeu`.`tf_beschreibung`,
-        tblGesamt.`tf_kritikalitaet` = `tblRechteAMNeu`.`tf_kritikalitaet`,
-        tblGesamt.`tf_eigentuemer_org` = `tblRechteAMNeu`.`tf_eigentuemer_org`,
-        tblGesamt.`af_gueltig_ab` = `tblRechteAMNeu`.`af_gueltig_ab`,
-        tblGesamt.`af_gueltig_bis` = `tblRechteAMNeu`.`af_gueltig_bis`,
-        tblGesamt.`direct_connect` = `tblRechteAMNeu`.`direct_connect`,
-        tblGesamt.`hk_tf_in_af` = `tblRechteAMNeu`.`hk_tf_in_af`,
-        tblGesamt.`gf_beschreibung` = `tblRechteAMNeu`.`gf_beschreibung`,
-        tblGesamt.`af_zuweisungsdatum` = `tblRechteAMNeu`.`af_zuweisungsdatum`
+	SET tblGesamt.gefunden = TRUE,
+		tblGesamt.Wiedergefunden = Now(),
+		tblRechteAMNeu.Gefunden = TRUE,
+		tblGesamt.`tf_beschreibung` = `tblRechteAMNeu`.`tf_beschreibung`,
+		tblGesamt.`tf_kritikalitaet` = `tblRechteAMNeu`.`tf_kritikalitaet`,
+		tblGesamt.`tf_eigentuemer_org` = `tblRechteAMNeu`.`tf_eigentuemer_org`,
+		tblGesamt.`af_gueltig_ab` = `tblRechteAMNeu`.`af_gueltig_ab`,
+		tblGesamt.`af_gueltig_bis` = `tblRechteAMNeu`.`af_gueltig_bis`,
+		tblGesamt.`direct_connect` = `tblRechteAMNeu`.`direct_connect`,
+		tblGesamt.`hk_tf_in_af` = `tblRechteAMNeu`.`hk_tf_in_af`,
+		tblGesamt.`gf_beschreibung` = `tblRechteAMNeu`.`gf_beschreibung`,
+		tblGesamt.`af_zuweisungsdatum` = `tblRechteAMNeu`.`af_zuweisungsdatum`
 
-    WHERE COALESCE(tblGesamt.`geloescht`, FALSE) = FALSE
-        AND COALESCE(tblUserIDundName.`geloescht`, FALSE) = FALSE;
+	WHERE COALESCE(tblGesamt.`geloescht`, FALSE) = FALSE
+		AND COALESCE(tblUserIDundName.`geloescht`, FALSE) = FALSE;
 
+	/*
+		qryF2setzeGeaentderteAlteAF implementiert den Fall der geaenderten AF aber ansonsten gleichen Daten
+	*/
 
-    /*
-        qryF2setzeGeaentderteAlteAF implementiert den Fall der geaenderten AF aber ansonsten gleichen Daten
-    */
+	UPDATE tblRechteAMNeu
+		INNER JOIN tblGesamt
+		ON      tblRechteAMNeu.tf = tblGesamt.tf
+			AND tblRechteAMNeu.GF = tblGesamt.GF
+			AND tblRechteAMNeu.zufallsgenerator = tblGesamt.zufallsgenerator
+			AND tblRechteAMNeu.`vip` = tblGesamt.`vip`
 
-    UPDATE tblRechteAMNeu
-        INNER JOIN tblGesamt
-        ON      tblRechteAMNeu.tf = tblGesamt.tf
-            AND tblRechteAMNeu.GF = tblGesamt.GF
-            AND tblRechteAMNeu.zufallsgenerator = tblGesamt.zufallsgenerator
-            AND tblRechteAMNeu.`vip` = tblGesamt.`vip`
+		INNER JOIN tblUserIDundName
+		ON      tblUserIDundName.userid = tblRechteAMNeu.userid
+			AND tblUserIDundName.id = tblGesamt.`userid_und_name_id`
 
-        INNER JOIN tblUserIDundName
-        ON      tblUserIDundName.userid = tblRechteAMNeu.userid
-            AND tblUserIDundName.id = tblGesamt.`userid_und_name_id`
+		INNER JOIN tblPlattform
+		ON      tblPlattform.`tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`
+			AND tblPlattform.id = tblGesamt.plattform_id
 
-        INNER JOIN tblPlattform
-        ON      tblPlattform.`tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`
-            AND tblPlattform.id = tblGesamt.plattform_id
+	SET tblGesamt.geaendert = TRUE,
+		tblRechteAMNeu.geaendert = TRUE,
+		tblGesamt.neueaf = `tblRechteAMNeu`.`enthalten_in_af`
 
-    SET tblGesamt.geaendert = TRUE,
-        tblRechteAMNeu.geaendert = TRUE,
-        tblGesamt.neueaf = `tblRechteAMNeu`.`enthalten_in_af`
+	WHERE   tblGesamt.`enthalten_in_af` <> tblRechteAMNeu.`enthalten_in_af`
+		AND tblGesamt.gefunden = FALSE
+		AND tblRechteAMNeu.Gefunden = FALSE
+		AND COALESCE(tblGesamt.`geloescht`, FALSE) = FALSE
+		AND COALESCE(tblUserIDundName.`geloescht`, FALSE) = FALSE;
 
-    WHERE   tblGesamt.`enthalten_in_af` <> tblRechteAMNeu.`enthalten_in_af`
-        AND tblGesamt.gefunden = FALSE
-        AND tblRechteAMNeu.Gefunden = FALSE
-        AND COALESCE(tblGesamt.`geloescht`, FALSE) = FALSE
-        AND COALESCE(tblUserIDundName.`geloescht`, FALSE) = FALSE
-        ;
+	/*
+		qryF5c_HistorisiereGeaenderteEintraege
+		In die Historientabelle werden die zur Änderung vorgemerkten Einträge aus der Gesamttabelle kopiert.
+	*/
 
-    /*
-        qryF5c_HistorisiereGeaenderteEintraege
-        In die Historientabelle werden die zur Änderung vorgemerkten Einträge aus der Gesamttabelle kopiert.
-    */
+	INSERT INTO tblGesamtHistorie (`userid_und_name_id`, tf, `tf_beschreibung`, `enthalten_in_af`, modell, `tf_kritikalitaet`,
+				`tf_eigentuemer_org`, plattform_id, GF, `vip`, zufallsgenerator, geloescht, gefunden,
+				wiedergefunden, geaendert, neueaf, datum, `id_alt`, loeschdatum)
+	SELECT tblGesamt.`userid_und_name_id`,
+			tblGesamt.tf,
+			tblGesamt.`tf_beschreibung`,
+			tblGesamt.`enthalten_in_af`,
+			tblGesamt.modell,
+			tblGesamt.`tf_kritikalitaet`,
+			tblGesamt.`tf_eigentuemer_org`,
+			tblGesamt.plattform_id,
+			tblGesamt.GF,
+			tblGesamt.`vip`,
+			tblGesamt.zufallsgenerator,
+			tblGesamt.geloescht,
+			tblGesamt.gefunden,
+			Now() AS Ausdr1,
+			tblGesamt.geaendert,
+			tblGesamt.neueaf,
+			tblGesamt.datum,
+			tblGesamt.id,
+			tblGesamt.loeschdatum
+	FROM tblUserIDundName
+		INNER JOIN tblGesamt
+		ON tblUserIDundName.id = tblGesamt.`userid_und_name_id`
 
-    INSERT INTO tblGesamtHistorie (`userid_und_name_id`, tf, `tf_beschreibung`, `enthalten_in_af`, modell, `tf_kritikalitaet`,
-                `tf_eigentuemer_org`, plattform_id, GF, `vip`, zufallsgenerator, geloescht, gefunden,
-                wiedergefunden, geaendert, neueaf, datum, `id_alt`, loeschdatum)
-    SELECT tblGesamt.`userid_und_name_id`,
-           tblGesamt.tf,
-           tblGesamt.`tf_beschreibung`,
-           tblGesamt.`enthalten_in_af`,
-           tblGesamt.modell,
-           tblGesamt.`tf_kritikalitaet`,
-           tblGesamt.`tf_eigentuemer_org`,
-           tblGesamt.plattform_id,
-           tblGesamt.GF,
-           tblGesamt.`vip`,
-           tblGesamt.zufallsgenerator,
-           tblGesamt.geloescht,
-           tblGesamt.gefunden,
-           Now() AS Ausdr1,
-           tblGesamt.geaendert,
-           tblGesamt.neueaf,
-           tblGesamt.datum,
-           tblGesamt.id,
-           tblGesamt.loeschdatum
-    FROM tblUserIDundName
-        INNER JOIN tblGesamt
-        ON tblUserIDundName.id = tblGesamt.`userid_und_name_id`
-
-    WHERE tblGesamt.`geaendert` = TRUE
-           AND tblUserIDundName.`zi_organisation` LIKE orga;      -- ToDo: Wird die Einschränkung wirklich benötigt?
-           -- ToDo: Es sollte ja nicht kopiert, sondern verschoben werden. Es fehlt hier also das Löschen.
-
-
-    /*
-        Anschließend können die geaenderten Werte in die GesamtTabelle übernommen werden.
-        Dazu wird der Inhalt des kommentarfelds in die AF-alt-Spalte eingetragen.
-        Damit müsste das erledigt sein :-)
-
-        qryF5d_AktualisiereGeaenderteAF
-    */
-
-    -- ToDo: Später noch mal das geaendert-Flag zurücksetzen, dann entfällt das ToDo vorher...
-
-    UPDATE tblUserIDundName
-        INNER JOIN tblGesamt
-        ON tblUserIDundName.id = tblGesamt.`userid_und_name_id`
-    SET tblGesamt.`enthalten_in_af` = `neueaf`
-
-    WHERE tblGesamt.`geaendert` = TRUE
-        AND tblUserIDundName.`zi_organisation` = orga;
+	WHERE tblGesamt.`geaendert` = TRUE
+			AND tblUserIDundName.`zi_organisation` LIKE orga;
+			 
+	-- ToDo: Wird die Einschränkung wirklich benötigt?
+	-- ToDo: Es sollte ja nicht kopiert, sondern verschoben werden. Es fehlt hier also das Löschen.
 
 
-    /*
-        Als nächstes kann es sein, dass in der Importliste noch tf mit NEUEN AF stehen,
-        die zwar bereits in der Gesamtliste bezogen auf die Uid bekannt sind,
-        dort aber bereits mit den ALTEN AF-Bezeichnungen gefunden wurden.
-        Damit nun nicht bei jedem wiederholten Import die AF-Bezeichnungen umgeschossen werden,
-        hängen wir diese Zeilen nun hinten an die Gesamttabelle an.
+	/*
+		Anschließend können die geaenderten Werte in die GesamtTabelle übernommen werden.
+		Dazu wird der Inhalt des kommentarfelds in die AF-alt-Spalte eingetragen.
+		Damit müsste das erledigt sein :-)
 
-        Dazu werden im ersten Schritt in der Importtabelle die Zeilen markiert (angehaengt_bekannt),
-        die anzuhängen sind. Das sieht zwar umständlich aus, erleichtert aber später die Bewertung.
-        ob noch irgendwelche Einträge in der Importtabelle nicht bearbeitet wurden.
-        Die Flags kann man eigentlich auch zusammenfassen,
-        dann müssten aber bearbeitete Zeilen separat umgeschossen werden...
+		qryF5d_AktualisiereGeaenderteAF
+	*/
 
-        Beim Einfügen der neuen tf-AF-Kombinationen wird in der Gesamttabelle "gefunden" gesetzt,
-        damit das Recht später nicht gleich wieder geloescht wird.
+	-- ToDo: Später noch mal das geaendert-Flag zurücksetzen, dann entfällt das ToDo vorher...
 
-        ToDo: Eigentlich müssten hierbei auch die GF berücksichtigt werden - da gab es aber noch keine Auffälligkeiten
+	UPDATE tblUserIDundName
+		INNER JOIN tblGesamt
+		ON tblUserIDundName.id = tblGesamt.`userid_und_name_id`
+	SET tblGesamt.`enthalten_in_af` = `neueaf`
 
-        qryF5_FlaggetfmitNeuenAFinImportTabelle
-    */
-
-    UPDATE tblRechteAMNeu
-        INNER JOIN tbl_Gesamt_komplett
-        ON (tbl_Gesamt_komplett.zufallsgenerator = tblRechteAMNeu.zufallsgenerator)
-            AND (tbl_Gesamt_komplett.`vip` = tblRechteAMNeu.`vip`)
-            AND (tblRechteAMNeu.GF = tbl_Gesamt_komplett.GF)
-            AND (tblRechteAMNeu.`enthalten_in_af` = tbl_Gesamt_komplett.`enthalten_in_af`)
-            AND (tblRechteAMNeu.userid = tbl_Gesamt_komplett.userid)
-            AND (tblRechteAMNeu.tf = tbl_Gesamt_komplett.tf)
-            AND (tblRechteAMNeu.`tf_technische_plattform` = tbl_Gesamt_komplett.`tf_technische_plattform`)
-        SET tblRechteAMNeu.`angehaengt_bekannt` = TRUE
-        WHERE tblRechteAMNeu.Gefunden = TRUE
-            AND tblRechteAMNeu.`geaendert` = FALSE;
-
-    /*
-        Zum Gucken:
-
-    SELECT COUNT(*) FROM tblRechteAMNeu
-        INNER JOIN tbl_Gesamt_komplett
-        ON (tbl_Gesamt_komplett.zufallsgenerator = tblRechteAMNeu.zufallsgenerator)
-            AND (tbl_Gesamt_komplett.`vip` = tblRechteAMNeu.`vip`)
-            AND (tblRechteAMNeu.GF = tbl_Gesamt_komplett.GF)
-            AND (tblRechteAMNeu.`enthalten_in_af` = tbl_Gesamt_komplett.`enthalten_in_af`)
-            AND (tblRechteAMNeu.userid = tbl_Gesamt_komplett.userid)
-            AND (tblRechteAMNeu.tf = tbl_Gesamt_komplett.tf)
-            AND (tblRechteAMNeu.`tf_technische_plattform` = tbl_Gesamt_komplett.`tf_technische_plattform`)
-        WHERE tblRechteAMNeu.Gefunden = TRUE
-            AND tblRechteAMNeu.`geaendert` = FALSE;
-    */
-
-    /*
-        Anschließend werden diese selektierten Zeilen an die Gesamttabelle angehängt.
-        Dabei wird in der Gesamttabelle das Flag "gefunden" gesetzt,
-        um diese Einträge erkennbar zu machen für das nachfolgende Löschen alter Einträge.
-
-        qryF5_HaengetfmitNeuenAFanGesamtTabelleAn
-    */
-
-    INSERT INTO tblGesamt (tf, `tf_beschreibung`, `enthalten_in_af`, datum, modell, `userid_und_name_id`,
-                plattform_id, Gefunden, `geaendert`, `tf_kritikalitaet`, `tf_eigentuemer_org`, GF, `vip`,
-                zufallsgenerator, `af_gueltig_ab`, `af_gueltig_bis`, `direct_connect`, `hk_tf_in_af`,
-                `gf_beschreibung`, `af_zuweisungsdatum`, letzte_aenderung)
-    SELECT  tblRechteAMNeu.tf,
-            tblRechteAMNeu.`tf_beschreibung`,
-            tblRechteAMNeu.`enthalten_in_af`,
-            Now() AS datumNeu,
-            (
-                SELECT DISTINCT modell
-                FROM `tblGesamt`
-                WHERE `tblGesamt`.`userid_und_name_id` = (
-                    SELECT DISTINCT id
-                    FROM tblUserIDundName
-                    WHERE userid = tblRechteAMNeu.userid
-                )
-                AND `tblGesamt`.`tf` = `tblRechteAMNeu`.`tf`
-                LIMIT 1
-            ) AS modellNeu,
-
-            (SELECT id FROM tblUserIDundName WHERE userid = tblRechteAMNeu.userid) AS UidnameNeu,
-
-            (SELECT id FROM tblPlattform
-                WHERE `tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`) AS PlattformNeu,
-            TRUE AS Ausdr1,
-            tblRechteAMNeu.`geaendert`,
-            tblRechteAMNeu.`tf_kritikalitaet`,
-            tblRechteAMNeu.`tf_eigentuemer_org`,
-            tblRechteAMNeu.GF,
-            tblRechteAMNeu.`vip`,
-            tblRechteAMNeu.zufallsgenerator,
-            tblRechteAMNeu.`af_gueltig_ab`,
-            tblRechteAMNeu.`af_gueltig_bis`,
-            tblRechteAMNeu.`direct_connect`,
-            tblRechteAMNeu.`hk_tf_in_af`,
-            tblRechteAMNeu.`gf_beschreibung`,
-            tblRechteAMNeu.`af_zuweisungsdatum`,
-            now() as letzte_aenderung
-
-    FROM tblRechteAMNeu
-    WHERE tblRechteAMNeu.Gefunden = FALSE
-        AND tblRechteAMNeu.`angehaengt_bekannt` = TRUE;
-
-    /*
-        Nun werden noch die Rechte derjenigen User behandelt,
-        die bislang in der Importtabelle nicht berücksichtigt worden sind.
-        Dies können nur noch Rechte bislang unbekannter User
-        oder unbekannte Rechte bekannter User sein.
-        Dazu werden diese Rechte zunächst mit dem Flag "angehaengt_sonst" markiert:
-
-        qryF5_FlaggetfmitNeuenAFinImportTabelleUnbekannteUser
-    */
+	WHERE tblGesamt.`geaendert` = TRUE
+		AND tblUserIDundName.`zi_organisation` = orga;
 
 
-    /*
-    select * from tblRechteAMNeu
-    WHERE COALESCE(Gefunden, FALSE) = FALSE
-        AND COALESCE(geaendert, FALSE) = FALSE
-        AND COALESCE(angehaengt_bekannt, FALSE) = FALSE;
-    */
+	/*
+		Als nächstes kann es sein, dass in der Importliste noch tf mit NEUEN AF stehen,
+		die zwar bereits in der Gesamtliste bezogen auf die Uid bekannt sind,
+		dort aber bereits mit den ALTEN AF-Bezeichnungen gefunden wurden.
+		Damit nun nicht bei jedem wiederholten Import die AF-Bezeichnungen umgeschossen werden,
+		hängen wir diese Zeilen nun hinten an die Gesamttabelle an.
 
-    UPDATE tblRechteAMNeu
-    SET `angehaengt_sonst` = TRUE
-    WHERE COALESCE(Gefunden, FALSE) = FALSE
-        AND COALESCE(geaendert, FALSE) = FALSE
-        AND COALESCE(angehaengt_bekannt, FALSE) = FALSE;
+		Dazu werden im ersten Schritt in der Importtabelle die Zeilen markiert (angehaengt_bekannt),
+		die anzuhängen sind. Das sieht zwar umständlich aus, erleichtert aber später die Bewertung.
+		ob noch irgendwelche Einträge in der Importtabelle nicht bearbeitet wurden.
+		Die Flags kann man eigentlich auch zusammenfassen,
+		dann müssten aber bearbeitete Zeilen separat umgeschossen werden...
 
-    /*
-    select * from tblRechteAMNeu
-    WHERE angehaengt_sonst = TRUE;
-    */
+		Beim Einfügen der neuen tf-AF-Kombinationen wird in der Gesamttabelle "gefunden" gesetzt,
+		damit das Recht später nicht gleich wieder geloescht wird.
 
-    /*
-        Jetzt sehen wir uns die Plattform an, die in der Importliste auftauchen
-        und hängen gegebenenfalls fehlende Einträge an die Plattform-Tabelle an.
+		ToDo: Eigentlich müssten hierbei auch die GF berücksichtigt werden - da gab es aber noch keine Auffälligkeiten
+		qryF5_FlaggetfmitNeuenAFinImportTabelle
+	*/
 
-        qryF5_AktualisierePlattformListe
-    */
+	UPDATE tblRechteAMNeu
+		INNER JOIN tbl_Gesamt_komplett
+		ON (tbl_Gesamt_komplett.zufallsgenerator = tblRechteAMNeu.zufallsgenerator)
+			AND (tbl_Gesamt_komplett.`vip` = tblRechteAMNeu.`vip`)
+			AND (tblRechteAMNeu.GF = tbl_Gesamt_komplett.GF)
+			AND (tblRechteAMNeu.`enthalten_in_af` = tbl_Gesamt_komplett.`enthalten_in_af`)
+			AND (tblRechteAMNeu.userid = tbl_Gesamt_komplett.userid)
+			AND (tblRechteAMNeu.tf = tbl_Gesamt_komplett.tf)
+			AND (tblRechteAMNeu.`tf_technische_plattform` = tbl_Gesamt_komplett.`tf_technische_plattform`)
+		SET tblRechteAMNeu.`angehaengt_bekannt` = TRUE
+		WHERE tblRechteAMNeu.Gefunden = TRUE
+			AND tblRechteAMNeu.`geaendert` = FALSE;
 
-    INSERT INTO tblPlattform (`tf_technische_plattform`)
-    SELECT DISTINCT tblRechteAMNeu.`tf_technische_plattform`
-    FROM tblRechteAMNeu
-        LEFT JOIN tblPlattform
-        ON tblRechteAMNeu.`tf_technische_plattform` = tblPlattform.`tf_technische_plattform`
-        WHERE tblPlattform.`tf_technische_plattform` IS NULL;
+	/*
+		Zum Gucken:
+
+		SELECT COUNT(*) FROM tblRechteAMNeu
+			INNER JOIN tbl_Gesamt_komplett
+			ON (tbl_Gesamt_komplett.zufallsgenerator = tblRechteAMNeu.zufallsgenerator)
+				AND (tbl_Gesamt_komplett.`vip` = tblRechteAMNeu.`vip`)
+				AND (tblRechteAMNeu.GF = tbl_Gesamt_komplett.GF)
+				AND (tblRechteAMNeu.`enthalten_in_af` = tbl_Gesamt_komplett.`enthalten_in_af`)
+				AND (tblRechteAMNeu.userid = tbl_Gesamt_komplett.userid)
+				AND (tblRechteAMNeu.tf = tbl_Gesamt_komplett.tf)
+				AND (tblRechteAMNeu.`tf_technische_plattform` = tbl_Gesamt_komplett.`tf_technische_plattform`)
+			WHERE tblRechteAMNeu.Gefunden = TRUE
+				AND tblRechteAMNeu.`geaendert` = FALSE;
+	*/
+
+	/*
+		Anschließend werden diese selektierten Zeilen an die Gesamttabelle angehängt.
+		Dabei wird in der Gesamttabelle das Flag "gefunden" gesetzt,
+		um diese Einträge erkennbar zu machen für das nachfolgende Löschen alter Einträge.
+
+		qryF5_HaengetfmitNeuenAFanGesamtTabelleAn
+	*/
+
+	INSERT INTO tblGesamt (tf, `tf_beschreibung`, `enthalten_in_af`, datum, modell, `userid_und_name_id`,
+				plattform_id, Gefunden, `geaendert`, `tf_kritikalitaet`, `tf_eigentuemer_org`, GF, `vip`,
+				zufallsgenerator, `af_gueltig_ab`, `af_gueltig_bis`, `direct_connect`, `hk_tf_in_af`,
+				`gf_beschreibung`, `af_zuweisungsdatum`, letzte_aenderung)
+	SELECT  tblRechteAMNeu.tf,
+			tblRechteAMNeu.`tf_beschreibung`,
+			tblRechteAMNeu.`enthalten_in_af`,
+			Now() AS datumNeu,
+			(
+				SELECT DISTINCT modell
+				FROM `tblGesamt`
+				WHERE `tblGesamt`.`userid_und_name_id` = (
+					SELECT DISTINCT id
+					FROM tblUserIDundName
+					WHERE userid = tblRechteAMNeu.userid
+				)
+				AND `tblGesamt`.`tf` = `tblRechteAMNeu`.`tf`
+				LIMIT 1
+			) AS modellNeu,
+
+			(SELECT id FROM tblUserIDundName WHERE userid = tblRechteAMNeu.userid) AS UidnameNeu,
+
+			(SELECT id FROM tblPlattform
+				WHERE `tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`) AS PlattformNeu,
+			TRUE AS Ausdr1,
+			tblRechteAMNeu.`geaendert`,
+			tblRechteAMNeu.`tf_kritikalitaet`,
+			tblRechteAMNeu.`tf_eigentuemer_org`,
+			tblRechteAMNeu.GF,
+			tblRechteAMNeu.`vip`,
+			tblRechteAMNeu.zufallsgenerator,
+			tblRechteAMNeu.`af_gueltig_ab`,
+			tblRechteAMNeu.`af_gueltig_bis`,
+			tblRechteAMNeu.`direct_connect`,
+			tblRechteAMNeu.`hk_tf_in_af`,
+			tblRechteAMNeu.`gf_beschreibung`,
+			tblRechteAMNeu.`af_zuweisungsdatum`,
+			now() as letzte_aenderung
+
+	FROM tblRechteAMNeu
+	WHERE tblRechteAMNeu.Gefunden = FALSE
+		AND tblRechteAMNeu.`angehaengt_bekannt` = TRUE;
+
+	/*
+		Nun werden noch die Rechte derjenigen User behandelt,
+		die bislang in der Importtabelle nicht berücksichtigt worden sind.
+		Dies können nur noch Rechte bislang unbekannter User
+		oder unbekannte Rechte bekannter User sein.
+		Dazu werden diese Rechte zunächst mit dem Flag "angehaengt_sonst" markiert:
+
+		qryF5_FlaggetfmitNeuenAFinImportTabelleUnbekannteUser
+	*/
+
+	/*
+		select * from tblRechteAMNeu
+		WHERE COALESCE(Gefunden, FALSE) = FALSE
+			AND COALESCE(geaendert, FALSE) = FALSE
+			AND COALESCE(angehaengt_bekannt, FALSE) = FALSE;
+	*/
+
+	UPDATE tblRechteAMNeu
+	SET `angehaengt_sonst` = TRUE
+	WHERE COALESCE(Gefunden, FALSE) = FALSE
+		AND COALESCE(geaendert, FALSE) = FALSE
+		AND COALESCE(angehaengt_bekannt, FALSE) = FALSE;
+
+	/*
+	select * from tblRechteAMNeu
+	WHERE angehaengt_sonst = TRUE;
+	*/
+
+	/*
+		Jetzt sehen wir uns die Plattform an, die in der Importliste auftauchen
+		und hängen gegebenenfalls fehlende Einträge an die Plattform-Tabelle an.
+
+		qryF5_AktualisierePlattformListe
+	*/
+
+	INSERT INTO tblPlattform (`tf_technische_plattform`)
+	SELECT DISTINCT tblRechteAMNeu.`tf_technische_plattform`
+	FROM tblRechteAMNeu
+		LEFT JOIN tblPlattform
+		ON tblRechteAMNeu.`tf_technische_plattform` = tblPlattform.`tf_technische_plattform`
+		WHERE tblPlattform.`tf_technische_plattform` IS NULL;
 
 
-    /*
-        Nun werden alle neuen Rechte aller User an die Gesamttabelle angehängt.
-        Der alte query-name weist irrtümlich darauf hin, dass nur neue User hier behandelt würden,
-        das ist aber definitiv nicht so.
+	/*
+		Nun werden alle neuen Rechte aller User an die Gesamttabelle angehängt.
+		Der alte query-name weist irrtümlich darauf hin, dass nur neue User hier behandelt würden,
+		das ist aber definitiv nicht so.
 
-        qryF5_HaengetfvonNeuenUsernAnGesamtTabelleAn
-    */
+		qryF5_HaengetfvonNeuenUsernAnGesamtTabelleAn
+	*/
 
-    INSERT INTO tblGesamt (tf, `tf_beschreibung`, `enthalten_in_af`, datum, modell, `userid_und_name_id`,
-                plattform_id, Gefunden, `geaendert`, `tf_kritikalitaet`, `tf_eigentuemer_org`, geloescht, GF,
-                `vip`, zufallsgenerator, `af_gueltig_ab`, `af_gueltig_bis`, `direct_connect`,
-                `hk_tf_in_af`, `gf_beschreibung`, `af_zuweisungsdatum`, letzte_aenderung)
-    SELECT  tblRechteAMNeu.tf,
-            tblRechteAMNeu.`tf_beschreibung`,
-            tblRechteAMNeu.`enthalten_in_af`,
-            Now() AS datumNeu,
+	INSERT INTO tblGesamt (tf, `tf_beschreibung`, `enthalten_in_af`, datum, modell, `userid_und_name_id`,
+				plattform_id, Gefunden, `geaendert`, `tf_kritikalitaet`, `tf_eigentuemer_org`, geloescht, GF,
+				`vip`, zufallsgenerator, `af_gueltig_ab`, `af_gueltig_bis`, `direct_connect`,
+				`hk_tf_in_af`, `gf_beschreibung`, `af_zuweisungsdatum`, letzte_aenderung)
+	SELECT  tblRechteAMNeu.tf,
+			tblRechteAMNeu.`tf_beschreibung`,
+			tblRechteAMNeu.`enthalten_in_af`,
+			Now() AS datumNeu,
 
-            (SELECT `id` FROM `tblUEbersichtAF_GFs` WHERE `name_af_neu` LIKE 'Neues Recht noch nicht eingruppiert') AS modellNeu,
+			(SELECT `id` FROM `tblUEbersichtAF_GFs` WHERE `name_af_neu` LIKE 'Neues Recht noch nicht eingruppiert') AS modellNeu,
 
-            (SELECT id FROM tblUserIDundName WHERE userid = tblRechteAMNeu.userid) AS UidnameNeu,
+			(SELECT id FROM tblUserIDundName WHERE userid = tblRechteAMNeu.userid) AS UidnameNeu,
 
-            (SELECT id FROM tblPlattform
-                WHERE `tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`) AS PlattformNeu,
+			(SELECT id FROM tblPlattform
+				WHERE `tf_technische_plattform` = tblRechteAMNeu.`tf_technische_plattform`) AS PlattformNeu,
 
-            TRUE AS Ausdr1,
-            FALSE AS Ausdr2,
-            tblRechteAMNeu.`tf_kritikalitaet`,
-            tblRechteAMNeu.`tf_eigentuemer_org`,
-            FALSE AS Ausdr3,
-            tblRechteAMNeu.GF,
-            tblRechteAMNeu.`vip`,
-            tblRechteAMNeu.zufallsgenerator,
-            tblRechteAMNeu.`af_gueltig_ab`,
-            tblRechteAMNeu.`af_gueltig_bis`,
-            tblRechteAMNeu.`direct_connect`,
-            tblRechteAMNeu.`hk_tf_in_af`,
-            tblRechteAMNeu.`gf_beschreibung`,
-            tblRechteAMNeu.`af_zuweisungsdatum`,
-            now() as letzte_aenderung
-    FROM tblRechteAMNeu
-    WHERE tblRechteAMNeu.`angehaengt_sonst` = TRUE;
+			TRUE AS Ausdr1,
+			FALSE AS Ausdr2,
+			tblRechteAMNeu.`tf_kritikalitaet`,
+			tblRechteAMNeu.`tf_eigentuemer_org`,
+			FALSE AS Ausdr3,
+			tblRechteAMNeu.GF,
+			tblRechteAMNeu.`vip`,
+			tblRechteAMNeu.zufallsgenerator,
+			tblRechteAMNeu.`af_gueltig_ab`,
+			tblRechteAMNeu.`af_gueltig_bis`,
+			tblRechteAMNeu.`direct_connect`,
+			tblRechteAMNeu.`hk_tf_in_af`,
+			tblRechteAMNeu.`gf_beschreibung`,
+			tblRechteAMNeu.`af_zuweisungsdatum`,
+			now() as letzte_aenderung
+	FROM tblRechteAMNeu
+	WHERE tblRechteAMNeu.`angehaengt_sonst` = TRUE;
 
 
     /*
@@ -930,7 +935,7 @@ BEGIN
     */
 
     UPDATE tblGesamt,
-           tblUEbersichtAF_GFs
+        tblUEbersichtAF_GFs
     SET tblGesamt.modell = `tblUEbersichtAF_GFs`.`id`
     WHERE tblGesamt.`enthalten_in_af` LIKE "rvm_*"
         AND tblUEbersichtAF_GFs.`name_gf_neu` = "Bleibt (Control-SA)"
@@ -943,21 +948,22 @@ BEGIN
     */
 
     UPDATE tblGesamt,
-           tblUEbersichtAF_GFs
+    tblUEbersichtAF_GFs
     SET tblGesamt.modell = `tblUEbersichtAF_GFs`.`id`
     WHERE tblUEbersichtAF_GFs.`name_gf_neu` = "Neues Recht noch nicht eingruppiert"
-       AND tblGesamt.modell IS NULL;
+        AND tblGesamt.modell IS NULL;
 
+    /*
+        Und fertig wir sind.
+    */
 
-/*
-    Und fertig wir sind.
-*/
 END
 """
-	return push_sp ('behandleRechte', sp)
+    return push_sp('behandleRechte', sp)
+
 
 def push_sp_loescheDoppelteRechte():
-	sp = """
+    sp = """
 create procedure loescheDoppelteRechte (IN nurLesen bool)
 BEGIN
     /*
@@ -1009,11 +1015,11 @@ BEGIN
     END IF;
 END
 """
-	return push_sp ('loescheDoppelteRechte', sp)
+    return push_sp('loescheDoppelteRechte', sp)
 
 
 def push_sp_nichtai():
-	sp = """
+    sp = """
 create procedure setzeNichtAIFlag()
 BEGIN
 
@@ -1175,25 +1181,24 @@ BEGIN
 
 END
 """
-	return push_sp ('setzeNichtAIFlag', sp)
+    return push_sp('setzeNichtAIFlag', sp)
 
 
 def handle_stored_procedures(request):
-	# Behandle den Import von Stored-Procedures in die Datenbank
-	daten = {}
+    # Behandle den Import von Stored-Procedures in die Datenbank
+    daten = {}
 
-	if request.method == 'POST':
-		daten['anzahl_import_elemente'] = push_sp_test()
-		daten['call_anzahl_import_elemente'] = call_sp_test()
-		daten['vorbereitung'] = push_sp_vorbereitung()
-		daten['neueUser'] = push_sp_neueUser()
-		daten['behandleUser'] = push_sp_behandleUser()
-		daten['behandleRechte'] = push_sp_behandleRechte()
-		daten['loescheDoppelteRechte'] = push_sp_loescheDoppelteRechte()
-		daten['setzeNichtAIFlag'] = push_sp_nichtai() # Nur, falls die Funktion jemals wieder benötigt wird
+    if request.method == 'POST':
+        daten['anzahl_import_elemente'] = push_sp_test()
+        daten['call_anzahl_import_elemente'] = call_sp_test()
+        daten['vorbereitung'] = push_sp_vorbereitung()
+        daten['neueUser'] = push_sp_neueUser()
+        daten['behandleUser'] = push_sp_behandleUser()
+        daten['behandleRechte'] = push_sp_behandleRechte()
+        daten['loescheDoppelteRechte'] = push_sp_loescheDoppelteRechte()
+        daten['setzeNichtAIFlag'] = push_sp_nichtai()  # Nur, falls die Funktion jemals wieder benötigt wird
 
-	context = {
-		'daten': daten,
-	}
-	return render(request, 'rapp/stored_procedures.html', context)
-
+    context = {
+        'daten': daten,
+    }
+    return render(request, 'rapp/stored_procedures.html', context)

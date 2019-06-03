@@ -1,0 +1,145 @@
+{% extends 'myRDB/base.html' %}
+{% load asjson %}
+{% block content %}
+<div class="container-fluid">
+    {% include 'myRDB/profile/profile_head.html' %}
+    <script type="text/javascript" >
+        var trashlistdata = {{ deletelist | asjson}};
+        var transferlistdata = {{ transferlist | asjson}};
+        var current_site = "{{ current_site }}";
+        var user = "{{ user_identity }}";
+        var level = "{{ level }}";
+    </script>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-2">
+                    <form action="{% url 'myRDB:profile' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light btn-outline-secondary "><--</button>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <p class="text-right">Vergleichensebene:</p>
+                </div>
+                <div class="col-2">
+                    <form>
+                        {% csrf_token %}
+                        <select class="form-control" id="level-switch" name="level" onchange="form.submit()">
+                            {# <option>Rolle</option> #}
+                            {% if level == "AF" %}
+                                <option selected>AF</option>
+                                <option>GF</option>
+                            {% elif level == "GF" %}
+                                <option>AF</option>
+                                <option selected>GF</option>
+                            {% endif %}
+                        </select>
+                    </form>
+                </div>
+                <div class="col-2">
+                    <form>
+                        {% csrf_token %}
+                        <select id="viewMode" name="view_mode" class="form-control" onchange="form.submit()">
+                            {% if view_mode == "Graphische Ansicht"%}
+                                <option selected>Graphische Ansicht</option>
+                                <option>Tabellarische Ansicht</option>
+                            {% else %}
+                                <option>Graphische Ansicht</option>
+                                <option selected>Tabellarische Ansicht</option>
+                            {% endif %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col">
+                    <h5 class="text-center">{{ user_first_name }}'s {% if level == "Rolle" %}Rollen{% elif level == "AF" %}AF{% elif level == "GF" %}GF{% elif level == "TF" %}TF{% endif %}</h5>
+                </div>
+                <div class="col-6">
+                    <p class="text-center">Verschiebe Berechtigung aus Modell zur Person um diese der Beantragungsliste hinzuzufügen</p>
+                </div>
+                <div class="col">
+                    <h5 class="text-center">Modell-{% if level == "Rolle" %}Rollen{% elif level == "AF" %}AF{% elif level == "GF" %}GF{% elif level == "TF" %}TF{% endif %}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="unequalRightsHeading">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#unequalRights" aria-expanded="true" aria-controls="unequalRights">
+                        Abweichend
+                    </button>
+                </h5>
+            </div>
+            <div id="unequalRights" class="collapse show" aria-labelledby="unequalRightsHeading" data-parent="#accordion">
+                <div class="card-body">
+                    <div id="inner_accordion_unequal">
+                        {% for right in unequal_rights %}
+                            <div class="card">
+                                <div class="card-header" id="inner_unequalRightsHeading{{ forloop.counter0 }}">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#inner_unequalRights{{ forloop.counter0 }}" aria-expanded="true" aria-controls="inner_unequalRights{{ forloop.counter0 }}">
+                                            {{ right.name }}
+                                        </button>
+                                    </h5>
+                                </div>
+                                {% if forloop.counter0 == 0 %}
+                                    <div id="inner_unequalRights{{ forloop.counter0 }}" class="collapse show" aria-labelledby="inner_unequalRightsHeading{{ forloop.counter0 }}" data-parent="#inner_accordion_unequal">
+                                        {% include 'myRDB/profileRightsAnalysis/profile_rights_analysis_unequal_compare_card.html' %}
+                                    </div>
+                                {% else %}
+                                    <div id="inner_unequalRights{{ forloop.counter0 }}" class="collapse" aria-labelledby="inner_unequalRightsHeading{{ forloop.counter0 }}" data-parent="#inner_accordion_unequal">
+                                        {% include 'myRDB/profileRightsAnalysis/profile_rights_analysis_unequal_compare_card.html' %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header" id="equalRightsHeading">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#equalRights" aria-expanded="true" aria-controls="equalRights">
+                        Übereinstimmend
+                    </button>
+                </h5>
+            </div>
+            <div id="equalRights" class="collapse" aria-labelledby="equalRightsHeading" data-parent="#accordion">
+                <div class="card-body">
+                    <div id="inner_accordion_equal">
+                        {% for right in equal_rights %}
+                            <div class="card">
+                                <div class="card-header" id="inner_equalRightsHeading{{ forloop.counter0 }}">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#inner_equalRights{{ forloop.counter0 }}" aria-expanded="true" aria-controls="inner_equalRights{{ forloop.counter0 }}">
+                                            {{ right.name }}
+                                        </button>
+                                    </h5>
+                                </div>
+                                {% if forloop.counter0 == 0 %}
+                                    <div id="inner_equalRights{{ forloop.counter0 }}" class="collapse show" aria-labelledby="inner_equalRightsHeading{{ forloop.counter0 }}" data-parent="#inner_accordion_equal">
+                                        {% include 'myRDB/profileRightsAnalysis/profile_rights_analysis_equal_compare_card.html' %}
+                                    </div>
+                                {% else %}
+                                    <div id="inner_equalRights{{ forloop.counter0 }}" class="collapse" aria-labelledby="inner_equalRightsHeading{{ forloop.counter0 }}" data-parent="#inner_accordion_equal">
+                                        {% include 'myRDB/profileRightsAnalysis/profile_rights_analysis_equal_compare_card.html' %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'myRDB/compare/compare_footer_row.html' %}
+</div>
+
+{% endblock %}

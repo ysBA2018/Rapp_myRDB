@@ -1,0 +1,21 @@
+{% load static %}
+{% load asjson %}
+<div class="card">
+    <div class="card-header">
+        <h5>Deletegraph <span id="graph_trash_badge" class="badge badge-danger">{{ delete_list_count }}</span></h5>
+    </div>
+    <div class="card-body">
+        {# Hier die Trash-Drop-Fläche realisieren #}
+        <script type="text/javascript" >
+            var trashlistdata ={{ deletelist | asjson }};
+            var trash_table_data = {{ delete_list_table_data | safe }};
+            var trash_table_count = {{ delete_list_count }};
+            var updateTrash;
+        </script>
+        <svg class="trash" id="trashSVG" width="180" height="180"></svg>
+        <script type="text/javascript" src="{% static 'myRDB/js/circle_packing/trashCirclePacking.js' %}"></script>
+    </div>
+    <div class="card-footer">
+        <p>Mit Rechtsklick & Bestätigung<br>Berechtigung von Löschliste nehmen!</p>
+    </div>
+</div>
