@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block breadcrumb %}
   <li class="breadcrumb-item active">Start</li>
 {% endblock breadcrumb %}
@@ -11,8 +11,8 @@
       <h1>Hauptseite</h1>
     </div>
     <div class="row ">
-        <p>Willkommen in der <em>RechteDB</em>,
-        einer sehr einfachen Django Website zur Pflege der Berechtigungsdaten für die Abteilung
+        <p>Willkommen in der neuen <em>RechteApp RApp</em>,
+        der Website zur Pflege von Berechtigungsdaten
       </p>
     </div>
   </div>
@@ -20,10 +20,28 @@
   <div class="container rounded bg-dark">
     <div class="row">
       <div class="text-light col-xs-12 col-sm-8 col-md-6 col-lg 4 col-xl-4 mt-4">
-        <h5>Statistik über die RechteDB:</h5>
+        <h5>Statistik über die RApp-Inhalte:</h5>
       </div>
     </div>
     <div class="container rounded bg-info text-light">
+      <div class="row pt-3 ">
+        <div class="col col-xs-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+          Status Stored Procedures:
+        </div>
+        <div class="col col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-right bg-info">
+          {% if sps %}
+            <img src="{% static 'admin/img/icon-yes.svg' %}">
+          {% else %}
+            <img src="{% static 'admin/img/icon-no.svg' %}">
+          {% endif %}
+        </div>
+      </div>
+      <div class="row ">
+        <div class="col col-xs-10 col-sm-8 col-md-8 col-lg-8 col-xl-4">
+          Stand letzter Import:
+        </div>
+        <div class="col col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-right bg-info">{{ letzter_import }}</div>
+      </div>
       <div class="row pt-3 ">
         <div class="col col-xs-10 col-sm-8 col-md-6 col-lg-5 col-xl-4">
           Administrierte Berechtigungen:
@@ -68,7 +86,7 @@
       </div>
       <div class="row">
         <div class="col col-xs-8 col-sm-8 col-md-6 col-lg-5 col-xl-4">
-          Anwender der RechteDB:
+          Anwender der RApp:
         </div>
         <div class="col col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xl-2 text-right bg-info">{{ num_users }}</div>
       </div>

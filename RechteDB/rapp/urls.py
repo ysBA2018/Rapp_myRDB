@@ -14,10 +14,7 @@ Including another URLconf
 	2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from . import views
-from django.conf.urls import url
-from django_filters.views import FilterView
-#from .filters import UserFilter
+from . import views, view_UserHatRolle, view_import, stored_procedures, view_serienbrief
 
 # app_name = 'rapp'		# Wird nur benötigt als namespace, falls mehrere Apps dieselbe Teil-URL haben
 
@@ -67,29 +64,48 @@ urlpatterns += [
 
 # Der Link auf das Eingabepanel zur freien Selektion direkt auf der Gesamttabelle
 urlpatterns += [
+	path('panel/download', views.panelDownload, name='panel_download'),
 	path('panel/', views.panel, name='panel'),
 ]
 
-# Der Link auf das Eingabepanel zur freien Selektion auf der Usertabelle mit Änderungslink
+# Der Link auf das Eingabepanel zur freien Selektion auf der User-hat-Rolle Tabelle mit Änderungslink
 urlpatterns += [
-	path('user_rolle_af/<int:pk>/delete/', views.UhRDelete.as_view(), name='user_rolle_af-delete'),
-	path('user_rolle_af/<int:id>/', views.panel_UhR, name='user_rolle_af_parm'),
-	path('user_rolle_af/create/<str:userid>/', views.UhRCreate.as_view(), name='user_rolle_af-create' ),
-	path('user_rolle_af/create/', views.UhRCreate.as_view(), name='user_rolle_af-create' ),
-	path('user_rolle_af/', views.panel_UhR, name='user_rolle_af'),
+	path('user_rolle_af/<int:pk>/delete/', 		view_UserHatRolle.UhRDelete.as_view(), 		name='user_rolle_af-delete'),
+	# path('user_rolle_af/<int:pk>/update/', 		view_UserHatRolle.UhRUpdate.as_view(), 		name='user_rolle_af-update'),
+	path('user_rolle_af/<int:id>/', 			view_UserHatRolle.panel_UhR, 				name='user_rolle_af_parm'),
+	path('user_rolle_af/create/<str:userid>/',	view_UserHatRolle.UhRCreate.as_view(), 		name='user_rolle_af-create' ),
+	path('user_rolle_af/konzept/', 				view_UserHatRolle.panel_UhR_konzept,		name='uhr_konzept'),
+	path('user_rolle_af/konzept_pdf/', 			view_UserHatRolle.panel_UhR_konzept_pdf, 	name='uhr_konzept_pdf'),
+	path('user_rolle_af/matrix/', 				view_UserHatRolle.panel_UhR_matrix, 		name='uhr_matrix'),
+	path('user_rolle_af/matrix_csv/', 			view_UserHatRolle.panel_UhR_matrix_csv, 	name='uhr_matrix_csv'),
+	path('user_rolle_af/matrix_csv/<str:flag>/',
+		 										view_UserHatRolle.panel_UhR_matrix_csv, 	name='uhr_matrix_csv'),
+	path('user_rolle_af/', 						view_UserHatRolle.panel_UhR, 				name='user_rolle_af'),
 ]
 
 # URl zum Importieren neuer Daten aus IIQ (csv-File)
 urlpatterns += [
-	path('import/', views.import_csv, name='import'),
-	path('import2/', views.import2, name='import2'),
-	path('import2_quittung/', views.import2_quittung, name='import2_quittung'),
-	path('import3_quittung/', views.import3_quittung, name='import3_quittung'),
-	path('import_status/', views.import_status, name='import_status'),
+	path('import/', view_import.import_csv, name='import'),
+	path('import2/', view_import.import2, name='import2'),
+	path('import2_quittung/', view_import.import2_quittung, name='import2_quittung'),
+	path('import3_quittung/', view_import.import3_quittung, name='import3_quittung'),
+	path('import_reset/', view_import.import_reset, name='import_reset'),
+	path('import_status/', view_import.import_status, name='import_status'),
 ]
 
 # URl zum Bestücken der verschiedenen Stored Procedures in das DBMS
 urlpatterns += [
-	path('stored_procedures/', views.handle_stored_procedures, name='stored_procedures'),
+	path('stored_procedures/', stored_procedures.handle_stored_procedures, name='stored_procedures'),
+]
+
+# URl zum Erzeugen der LaTeX-Serienbriefinformation zu Direct Connects
+urlpatterns += [
+	path('einzelbrief/', view_serienbrief.einzelbrief, name='einzelbrief'),
+	path('serienbrief/', view_serienbrief.serienbrief, name='serienbrief'),
+]
+
+# URl zum Testen neuer Funktionalität (liegt in "Magie")
+urlpatterns += [
+	path('magic_click/', views.magic_click, name='magic_click'),
 ]
 

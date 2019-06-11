@@ -5,9 +5,9 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+#from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import *
-
+'''
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
@@ -26,5 +26,5 @@ admin.site.register(Department)
 admin.site.register(Group)
 admin.site.register(ZI_Organisation)
 admin.site.register(TF_Application)
-
+'''
 

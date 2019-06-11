@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from typing import Type, List
-
 from django.contrib import admin
 
 # Register your models here.
@@ -12,14 +10,17 @@ from django.db import models
 from django.forms import Textarea
 
 # Die Datenbanken / Models
-from rapp.models import TblUebersichtAfGfs, TblUserIDundName, TblOrga, TblPlattform, \
+from .models import TblUebersichtAfGfs, TblUserIDundName, TblOrga, TblPlattform, \
 						TblGesamt, TblGesamtHistorie, Tblrechteneuvonimport, \
 						TblRollen, TblAfliste, TblUserhatrolle, TblRollehataf, \
-						Tblsubsysteme, Tblsachgebiete, TblDb2, TblRacfGruppen
+						Tblsubsysteme, Tblsachgebiete, TblDb2, TblRacfGruppen, \
+						RACF_Rechte, Orga_details, \
+						Modellierung, Direktverbindungen
 
 # Für den Im- und Export
 from import_export.admin import ImportExportModelAdmin
-from rapp.resources import MeinCSVImporterModel, GesamtExporterModel
+from .resources import MeinCSVImporterModel, GesamtExporterModel, \
+							ModellierungExporterModel, DirektverbindungenExporterModel
 
 # Vorwärtsreferenzen gehen nicht in python :-(
 # Inline function to show all Instances in other view
@@ -64,12 +65,9 @@ class RollenInline(admin.TabularInline):
 	model = TblRollen
 	extra = 1
 
-
-
 # ######################################################################################################
 # tbl Gesamt
 # ######################################################################################################
-
 @admin.register(TblGesamt)
 class GesamtAdmin(ImportExportModelAdmin):
 	actions_on_top = False		# Keine Actions, weil diese Tabelle nie manuell geändert wird
@@ -98,10 +96,10 @@ class GesamtAdmin(ImportExportModelAdmin):
 	list_display_links = ('id', )
 	list_editable = ('tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf', )
 	search_fields = ['id', 'userid_name__name', 'tf',
-					 # 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf',
+					'tf_beschreibung', #'enthalten_in_af', 'plattform', 'gf',
 	]
 
-	list_per_page = 10
+	list_per_page = 50
 
 	# Parameter für import/export
 	resource_class = GesamtExporterModel
@@ -110,10 +108,10 @@ class GesamtAdmin(ImportExportModelAdmin):
 # ######################################################################################################
 # tbl UserIDundName
 # ######################################################################################################
-
-
 @admin.register(TblUserIDundName)
 class UserIDundNameAdmin(admin.ModelAdmin):
+
+	list_select_related = ('orga', )
 
 	fieldsets = [
 		('User-Informationen', {'fields': ['userid', 'name', 'orga', 'geloescht']}),
@@ -137,11 +135,9 @@ class UserIDundNameAdmin(admin.ModelAdmin):
 	list_per_page = 25
 	# inlines = [UserhatrolleInline]
 
-
 # ######################################################################################################
 # tbl Orga
 # ######################################################################################################
-
 @admin.register(TblOrga)
 class Orga(admin.ModelAdmin):
 	actions_on_top = True
@@ -154,11 +150,9 @@ class Orga(admin.ModelAdmin):
 
 	inlines = [UserIDundNameInline]
 
-
 # ######################################################################################################
 # tbl Plattform
 # ######################################################################################################
-
 @admin.register(TblPlattform)
 class Plattform(admin.ModelAdmin):
 	actions_on_top = True
@@ -168,15 +162,12 @@ class Plattform(admin.ModelAdmin):
 	# list_display_links = ('tf_technische_plattform')
 	list_editable = ('tf_technische_plattform',)
 	search_fields = ['tf_technische_plattform', ]
-
 	# Nette Idee, grottig lahm
 	# inlines = [GesamtInline]
-
 
 # ######################################################################################################
 # tbl UebersichtAfGfs
 # ######################################################################################################
-
 @admin.register(TblUebersichtAfGfs)
 class UebersichtAfGfs(admin.ModelAdmin):
 	actions_on_top = True
@@ -206,11 +197,9 @@ class UebersichtAfGfs(admin.ModelAdmin):
 
 	# inlines = [GesamtInline]
 
-
 # ######################################################################################################
 # tbl GesamtHistorie
 # ######################################################################################################
-
 @admin.register(TblGesamtHistorie)
 class TblGesamtHistorie(admin.ModelAdmin):
 	actions_on_top = False
@@ -223,11 +212,9 @@ class TblGesamtHistorie(admin.ModelAdmin):
 
 	search_fields = ['id_alt__id', 'userid_name__name', 'tf', 'tf_beschreibung', 'enthalten_in_af',]
 
-
  ######################################################################################################
 # tbl Userhatrolle
 # ######################################################################################################
-
 @admin.register(TblUserhatrolle)
 class Userhatrolle(admin.ModelAdmin):
 	actions_on_top = True
@@ -252,14 +239,12 @@ class Userhatrolle(admin.ModelAdmin):
 	list_editable = ('schwerpunkt_vertretung', 'bemerkung', )
 	search_fields = [ 'schwerpunkt_vertretung', 'rollenname__rollenname', 'bemerkung', 'userid__name', 'userid__userid', ]
 
-	list_per_page = 25 # sys.maxsize
+	list_per_page = 25
 	extra = 1
-
 
 # ######################################################################################################
 # tbl Rollen
 # ######################################################################################################
-
 @admin.register(TblRollen)
 class Rollen(admin.ModelAdmin):
 	actions_on_top = True
@@ -284,11 +269,9 @@ class Rollen(admin.ModelAdmin):
 	inlines = [RollehatafInline, UserhatrolleInline, ]
 	extra = 1
 
-
 # ######################################################################################################
 # tbl AFListe
 # ######################################################################################################
-
 @admin.register(TblAfliste)
 class Afliste(admin.ModelAdmin):
 	actions_on_top = True
@@ -302,13 +285,11 @@ class Afliste(admin.ModelAdmin):
 
 	inlines = [RollehatafInline]
 
-
 # ######################################################################################################
 # tbl RolleHatAF
 # ######################################################################################################
 # ToDo: Suche AF in Rollen mit Anzeige zugehöriger User
 # ToDo: - Suche ist schon erweitert: Anzeige betroffener User integrieren (besser in neuer Abfrage?)
-
 @admin.register(TblRollehataf)
 class Rollehataf(admin.ModelAdmin):
 	actions_on_top = True
@@ -330,12 +311,11 @@ class Rollehataf(admin.ModelAdmin):
 	search_fields = ['rollenname__rollenname', 'af__af_name', 'bemerkung', ]
 	list_filter = ('mussfeld', 'einsatz', )
 
-	list_per_page = 25 # sys.maxsize
+	list_per_page = 25
 
 # ######################################################################################################
 # Eine Reihe von Hilfstabellen, alle nach dem selben Schema. Keine Foreign Keys
 # ######################################################################################################
-
 @admin.register(Tblsubsysteme)
 class Subsysteme(admin.ModelAdmin):
 	alle = ['sgss', 'definition', 'verantwortlicher', 'fk',]
@@ -350,31 +330,65 @@ class Sachgebiete(admin.ModelAdmin):
 
 @admin.register(TblDb2)
 class Db2(admin.ModelAdmin):
-	list_display = ['id', 'get_aktiv', 'source', 'get_grantee', 'creator', 'table',
-			'selectauth', 'insertauth', 'updateauth', 'deleteauth',
-			'alterauth', 'indexauth', 'grantor', 'grantedts', 'datum']
-	search_fields = ['table', 'grantee__group', 'grantor']
+	list_display = ['id', 'source', 'grantee', 'creator', 'table',
+			'selectauth', 'insertauth', 'updateauth', 'deleteauth', 'alterauth', 'indexauth',
+			'grantor', 'grantedts', 'datum']
+	search_fields = ['table', 'grantee', 'grantor']
+	list_filter = ('source', 'datum')
 
-@admin.register(TblRacfGruppen)
+# Wahrscheinlich kann die DB mal entsorgt werden.
+# Sie war ursprünglich entwickelt worden, um die Frage der SE zu beantworten,
+# welche Rechte in Produktion Schreibrechte sind.
+# ToDo Tabelle RacfGruppen entsorgen, wenn sie bis Jahresmitte 2019 nicht mehr benötigt wurde
+#@admin.register(TblRacfGruppen)
 class RacfGruppen(admin.ModelAdmin):
 	alle = ['group', 'test', 'get_produktion', 'get_readonly', 'get_db2_only', 'stempel', ]
 	search_fields = alle
 	list_display = alle
 
-# ######################################################################################################
-# Import-Export-Tabelle - der erste Versuch des Imports. Der Export kann helfen bei Importproblemen
-# ######################################################################################################
-
-#@admin.register(Tblrechteneuvonimport) # ToDo: Komplett ausbauen, wenn wirklich nicht mehr benötigt für Export-Checks
-class Tblrechteneuvonimport(ImportExportModelAdmin):
-	"""
-	Versuch des Im- und Exports via CSV / XLSX / JSON und den Browser
-	https://django-import-export.readthedocs.io/en/latest/getting_started.html#admin-integration
-	"""
-	resource_class = MeinCSVImporterModel
-	alle = ['identitaet', 'nachname', 'vorname', 'tf_name', 'af_anzeigename', 'gf_name', ]
+@admin.register(RACF_Rechte)
+class RACF_Rechte(admin.ModelAdmin):
+	alle = ['id', 'type', 'group', 'ressource_class', 'profil', 'access',
+			'test', 'produktion', 'alter_control_update', 'datum', ]
 	search_fields = alle
 	list_display = alle
-	list_per_page = 100
-	sortable_by = []
 
+@admin.register(Orga_details)
+class Orga_details(admin.ModelAdmin):
+	alle = ['id', 'abteilungsnummer', 'organisation', 'orgaBezeichnung',
+			'fk', 'kostenstelle', 'orgID', 'parentOrga', 'parentOrgID',
+			'orgaTyp', 'fkName', 'delegationEigentuemer', 'delegationFK',
+			'datum', ]
+	search_fields = alle
+	list_display = alle
+
+@admin.register(Modellierung)
+class Modellierung(ImportExportModelAdmin):
+	alle = [
+		'entitlement', 'neue_beschreibung', 'plattform', 'gf',
+		'beschreibung_der_gf', 'af', 'beschreibung_der_af',
+		'organisation_der_af', 'eigentuemer_der_af',
+		'aus_modellierung_entfernen', 'datei', 'letzte_aenderung'
+	]
+	search_fields = alle
+	list_display = alle
+	list_editable = () # Read Only Tabelle
+
+	# Parameter für import/export
+	resource_class = ModellierungExporterModel
+	sortable_by = ['entitlement', 'plattform', 'gf', 'af']
+
+@admin.register(Direktverbindungen)
+class Direktverbindungen(ImportExportModelAdmin):
+	alle = [
+		'organisation', 'entscheidung', 'entitlement', 'applikation',
+		'instanz', 'identitaet', 'manager', 'vorname', 'nachname', 'account_name',
+		'status', 'typ', 'nicht_anmailen', 'ansprechpartner', 'letzte_aenderung'
+	]
+	search_fields = alle
+	list_display = alle
+	list_editable = ('entscheidung', 'nicht_anmailen', 'ansprechpartner')
+
+	# Parameter für import/export
+	resource_class = DirektverbindungenExporterModel
+	sortable_by = ['entitlement', 'plattform', 'gf', 'af']

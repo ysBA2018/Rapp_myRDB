@@ -1,15 +1,15 @@
-from django.contrib.auth.models import User, Group
-from .models import TblGesamt, TblUserIDundName, TblUserhatrolle
+from .models import TblGesamt, TblUserIDundName, TblUserhatrolle, TblRollehataf
 import django_filters
 
 class PanelFilter(django_filters.FilterSet):
 	tf = 							django_filters.CharFilter(lookup_expr='icontains')
+	tf_beschreibung =				django_filters.CharFilter(lookup_expr='icontains')
 	enthalten_in_af = 				django_filters.CharFilter(lookup_expr='icontains')
 	userid_name__name = 			django_filters.CharFilter(lookup_expr='istartswith')
 	userid_name__userid = 			django_filters.CharFilter(lookup_expr='istartswith')
 	geloescht = 					django_filters.BooleanFilter()
 	userid_name__geloescht = 		django_filters.BooleanFilter()
-
+	userid_name__gruppe = 			django_filters.CharFilter(lookup_expr='icontains')
 	userid_name__zi_organisation = 	django_filters.CharFilter(lookup_expr='icontains')
 	modell__name_af_neu = 			django_filters.CharFilter(lookup_expr='icontains')
 	modell__name_gf_neu = 			django_filters.CharFilter(lookup_expr='icontains')
@@ -53,10 +53,10 @@ class UseridRollenFilter(django_filters.FilterSet):
 
 class UseridFilter(django_filters.FilterSet):
 	name = 						django_filters.CharFilter(lookup_expr='istartswith')
-	userid = 					django_filters.CharFilter(lookup_expr='istartswith')
-	zi_organisation = 			django_filters.CharFilter(lookup_expr='icontains')
-	geloescht = 				django_filters.BooleanFilter()
-	abteilung = 				django_filters.CharFilter(lookup_expr='icontains')
+	#userid = 					django_filters.CharFilter(lookup_expr='istartswith')
+	#zi_organisation = 			django_filters.CharFilter(lookup_expr='icontains')
+	#geloescht = 				django_filters.BooleanFilter()
+	#abteilung = 				django_filters.CharFilter(lookup_expr='icontains')
 	gruppe = 					django_filters.CharFilter(lookup_expr='icontains')
 
 	class Meta:
@@ -69,5 +69,38 @@ class UseridFilter(django_filters.FilterSet):
 			'abteilung',
 			'gruppe',
 			'orga',
+		]
+
+class RollenFilter(django_filters.FilterSet):
+	name = django_filters.CharFilter(lookup_expr='istartswith')
+	gruppe = django_filters.CharFilter(lookup_expr='icontains')
+	rollenname = django_filters.CharFilter(lookup_expr='icontains')
+	# afname = django_filters.CharFilter(lookup_expr='icontains')
+
+	class Meta:
+		model = TblUserhatrolle
+		fields = [
+			'userid__name',
+			'userid__userid',
+			'userid__zi_organisation',
+			'userid__gruppe',
+			'userid__orga',
+			'rollenname',
+		]
+
+# Filter für das halbautomatische Selektieren über die Arbeitsplatzfunktion.
+# Wird insbesondere in der AF-Factory bei UhR genutzt
+class RolleAFFilter(django_filters.FilterSet):
+	rollenname = 		django_filters.CharFilter(lookup_expr='istartswith')
+	af = 				django_filters.CharFilter(lookup_expr='istartswith')
+	af__af_name = 		django_filters.CharFilter(lookup_expr='istartswith')
+
+	class Meta:
+		model = TblRollehataf
+		fields = [
+			'rollenname',
+			'rollenname__rollenname',
+			'af__af_name',
+			'mussfeld',
 		]
 

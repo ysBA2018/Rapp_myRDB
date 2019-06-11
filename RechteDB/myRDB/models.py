@@ -7,14 +7,41 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from djongo import models as djongomodels
+#from djongo import models as djongomodels
 from django.utils import timezone
 
 # Create your models here.
 from rest_framework.authtoken.models import Token
 
-from myRDB_Project import settings
+from RechteDB import settings
+from django.apps import apps
+import importlib
 
+modellist = importlib.import_module('rapp.models')
+TblRollen = modellist.TblRollen
+TblRollehataf = modellist.TblRollehataf
+TblUserhatrolle = modellist.TblUserhatrolle
+TblUebersichtAfGfs = modellist.TblUebersichtAfGfs
+TblOrga = modellist.TblOrga
+TblUserIDundName = modellist.TblUserIDundName
+TblPlattform = modellist.TblPlattform
+TblGesamt = modellist.TblGesamt
+TblGesamtHistorie = modellist.TblGesamtHistorie
+TblAfliste = modellist.TblAfliste
+Tblsachgebiete = modellist.Tblsachgebiete
+Tblsubsysteme = modellist.Tblsubsysteme
+TblDb2 = modellist.TblDb2
+TblRacfGruppen = modellist.TblRacfGruppen
+Tblrechteneuvonimport = modellist.Tblrechteneuvonimport
+Tblrechteamneu = modellist.Tblrechteamneu
+Qryf3Rechteneuvonimportduplikatfrei = modellist.Qryf3Rechteneuvonimportduplikatfrei
+RACF_Rechte = modellist.RACF_Rechte
+Orga_details = modellist.Orga_details
+Letzter_import = modellist.Letzter_import
+Modellierung = modellist.Modellierung
+Direktverbindungen = modellist.Direktverbindungen
+
+'''
 class ChangeRequests(models.Model):
     requesting_user = models.CharField(max_length=7)
     compare_user = models.CharField(max_length=7)
@@ -264,8 +291,10 @@ class User(AbstractUser):
     def __str__(self):
         return self.identity
 
-
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+'''
+

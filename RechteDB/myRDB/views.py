@@ -10,14 +10,18 @@ from django.http import HttpResponseRedirect
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .forms import CustomUserCreationForm, SomeForm, ApplyRightForm, DeleteRightForm, AcceptChangeForm, \
+#from .forms import CustomUserCreationForm, SomeForm, ApplyRightForm, DeleteRightForm, AcceptChangeForm, \
+#   DeclineChangeForm, CustomAuthenticationForm, ProfileHeaderForm
+from .forms import SomeForm, ApplyRightForm, DeleteRightForm, AcceptChangeForm, \
     DeclineChangeForm, CustomAuthenticationForm, ProfileHeaderForm
-from .models import Role, AF, GF, TF, Orga, Group, Department, ZI_Organisation, TF_Application, User_AF, User_TF, \
-    User_GF, ChangeRequests
+from .models import *
+#from .models import Role, AF, GF, TF, Orga, Group, Department, ZI_Organisation, TF_Application, User_AF, User_TF, \
+#   User_GF, ChangeRequests
 from rest_framework import viewsets, status
-from .serializers import UserSerializer, RoleSerializer, AFSerializer, GFSerializer, TFSerializer, OrgaSerializer, \
-    GroupSerializer, DepartmentSerializer, ZI_OrganisationSerializer, TF_ApplicationSerializer, UserListingSerializer, \
-    CompleteUserListingSerializer, UserModelRightsSerializer, ChangeRequestsSerializer
+from .serializers import *
+#from .serializers import UserSerializer, RoleSerializer, AFSerializer, GFSerializer, TFSerializer, OrgaSerializer, \
+#   GroupSerializer, DepartmentSerializer, ZI_OrganisationSerializer, TF_ApplicationSerializer, UserListingSerializer, \
+#  CompleteUserListingSerializer, UserModelRightsSerializer, ChangeRequestsSerializer
 from django.views import generic
 
 from django.contrib.auth import get_user_model
@@ -227,7 +231,8 @@ class Register(generic.CreateView):
         standard Register view uses  django.auth includes CustomUserCreationForm-form
         currently without email-verification
     '''
-    form_class = CustomUserCreationForm
+    form_class = None
+    #form_class = CustomUserCreationForm
     success_url = '/myRDB/login'
     template_name = 'myRDB/registration/register.html'
 
@@ -994,7 +999,8 @@ class RequestPool(generic.ListView):
             prepares data and forms for display
             sets context-variable
     '''
-    model = ChangeRequests
+    model = None
+    #model = ChangeRequests
     template_name = 'myRDB/requestPool/request_pool.html'
     extra_context = {}
     context_object_name = 'list_data'
@@ -1060,7 +1066,8 @@ class MyRequests(generic.ListView):
             prepares data for display as circlepackings
             sets contextvariables
     '''
-    model = ChangeRequests
+    model = None
+    #model = ChangeRequests
     template_name = 'myRDB/myRequests/my_requests.html'
     extra_context = {}
     context_object_name = "accepted_list"
@@ -1746,12 +1753,173 @@ def prepare_delete_list(delete_list):
 
     return delete_list, delete_list_with_category
 
+class TblRollenViewSet(viewsets.ModelViewSet):
+    '''
+        API-Rollen ViewSet
+    '''
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblRollenSerializer
 
+    def get_queryset(self):
+        return TblRollen.objects.all()
+
+class TblRollehatafViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblRollehatafSerializer
+
+    def get_queryset(self):
+        return TblRollehataf.objects.all()
+
+class TblUserhatrolleViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblUserhatrolleSerializer
+
+    def get_queryset(self):
+        return TblUserhatrolle.objects.all()
+
+
+class TblUebersichtAfGfsViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblUebersichtAfGfsSerializer
+
+    def get_queryset(self):
+        return TblUebersichtAfGfs.objects.all()
+
+class TblOrgaViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblOrgaSerializer
+
+    def get_queryset(self):
+        return TblOrga.objects.all()
+
+class TblUserIDundNameViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblUserIDundNameSerializer
+
+    def get_queryset(self):
+        return TblUserIDundName.objects.all()
+
+class TblPlattformViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblPlattformSerializer
+
+    def get_queryset(self):
+        return TblPlattform.objects.all()
+
+class TblGesamtViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblGesamtSerializer
+
+    def get_queryset(self):
+        return TblGesamt.objects.all()
+
+class TblGesamtHistorieViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblGesamtHistorieSerializer
+
+    def get_queryset(self):
+        return TblGesamtHistorie.objects.all()
+
+class TblAflisteViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAflisteSerializer
+
+    def get_queryset(self):
+        return TblAfliste.objects.all()
+
+class TblsachgebieteViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblsachgebieteSerializer
+
+    def get_queryset(self):
+        return Tblsachgebiete.objects.all()
+
+class TblsubsystemeViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblsubsystemeSerializer
+
+    def get_queryset(self):
+        return Tblsubsysteme.objects.all()
+
+class TblDb2ViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblDb2Serializer
+
+    def get_queryset(self):
+        return TblDb2.objects.all()
+
+class TblRacfGruppenViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblRacfGruppenSerializer
+
+    def get_queryset(self):
+        return TblRacfGruppen.objects.all()
+
+class TblrechteneuvonimportViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblrechteneuvonimportSerializer
+
+    def get_queryset(self):
+        return Tblrechteneuvonimport.objects.all()
+
+class TblrechteamneuViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblrechteamneuSerializer
+
+    def get_queryset(self):
+        return Tblrechteamneu.objects.all()
+
+class Qryf3RechteneuvonimportduplikatfreiViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = Qryf3RechteneuvonimportduplikatfreiSerializer
+
+    def get_queryset(self):
+        return Qryf3Rechteneuvonimportduplikatfrei.objects.all()
+
+class RACF_RechteViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = RACF_RechteSerializer
+
+    def get_queryset(self):
+        return RACF_Rechte.objects.all()
+
+class Orga_detailsViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = Orga_detailsSerializer
+
+    def get_queryset(self):
+        return Orga_details.objects.all()
+
+class Letzter_importViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = Letzter_importSerializer
+
+    def get_queryset(self):
+        return Letzter_import.objects.all()
+
+
+class ModellierungViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ModellierungSerializer
+
+    def get_queryset(self):
+        return Modellierung.objects.all()
+
+class DirektverbindungenViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = DirektverbindungenSerializer
+
+    def get_queryset(self):
+        return Direktverbindungen.objects.all()
+
+
+
+'''
 class UserModelRightsViewSet(viewsets.ModelViewSet):
-    '''
-        API endpoint that allows usermodelrights to be listed and detail-viewed
-        special listing with all rights expanded
-    '''
+    
+       # API endpoint that allows usermodelrights to be listed and detail-viewed
+        #special listing with all rights expanded
+    
 
     permission_classes = (IsAuthenticated,)
     serializer_class = UserModelRightsSerializer
@@ -1964,3 +2132,4 @@ class ChangeRequestsViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(json.dumps(added_requests), status=status.HTTP_201_CREATED, headers=headers)
 # Create your views here.
+'''

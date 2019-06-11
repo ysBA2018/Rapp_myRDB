@@ -34,14 +34,15 @@ DATABASES = {
             # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
             'ENGINE': 'django.db.backends.mysql',		# ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
             # 'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
-            'NAME': 'Rapp_myRDB',
+            'NAME': 'Rapp_myRDB_new',
             'USER': 'YannickSimchen',
             'PASSWORD': 'BanepukBabe',
             'HOST': 'localhost',
             'PORT': '3306',
             'default-character-set': 'utf8mb4_unicode_ci',
             'OPTIONS': {
-                'init_command': 'SET storage_engine=MyISAM',
+                'init_command': 'SET storage_engine=InnoDB; \
+                                SET GLOBAL max_connections = 100000'
             },
     }
 }
@@ -72,7 +73,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap4',
 
-    'rapp',
+    'rapp.apps.RappConfig',
+    'myRDB.apps.MyrdbConfig',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'crispy_forms',
+
     'django_filters',
     'debug_toolbar',
 
@@ -92,6 +98,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
 
 ROOT_URLCONF = 'RechteDB.urls'
 

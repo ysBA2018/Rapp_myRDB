@@ -4,8 +4,9 @@ from django.utils.safestring import mark_safe
 
 from django.contrib.auth import get_user_model
 
-from .models import User, Orga, Group, Department, ZI_Organisation, Role, AF, GF, TF, User_AF, User_GF, User_TF, \
-    ChangeRequests
+#from .models import User, Orga, Group, Department, ZI_Organisation, Role, AF, GF, TF, User_AF, User_GF, User_TF, \
+#    ChangeRequests
+from .models import *
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -14,32 +15,32 @@ class CustomAuthenticationForm(AuthenticationForm):
         fields = ('identity',)
 
 
-
+'''
 class CustomUserCreationForm(UserCreationForm):
-    '''
-        Form for password and xvNumber validation
-        also checks if Profile has already been activated by any user by creating pswd
-            otherwise create new
-    '''
+    
+    #    Form for password and xvNumber validation
+     #   also checks if Profile has already been activated by any user by creating pswd
+      #      otherwise create new
+    
     class Meta:
         model = get_user_model()
         fields = ('identity','email')
 
     # Validation von xvnummer abgeschaltet da dieses bei passwortvalidierung mit dabei
-    '''
-    def clean_identity(self):
-        print("in clean identity")
-        identity = self.cleaned_data.get("identity")
-        try:
-            user = User.objects.exclude(pk=self.instance.pk).get(identity=identity)
-            self.errors['identity'] = self.error_class()
-            print("user exists")
+    #
+    #def clean_identity(self):
+     #   print("in clean identity")
+      #  identity = self.cleaned_data.get("identity")
+       # try:
+        #    user = User.objects.exclude(pk=self.instance.pk).get(identity=identity)
+         #   self.errors['identity'] = self.error_class()
+          #  print("user exists")
 
-        except User.DoesNotExist:
-            print("in does not exist")
-            pass
-        return identity
-    '''
+    #    except User.DoesNotExist:
+     #       print("in does not exist")
+      #      pass
+       # return identity
+    
 
     def clean(self):
         print("in clean_password2")
@@ -119,13 +120,12 @@ class CustomUserCreationForm(UserCreationForm):
                     user.save()
         return user
 
-
 class CustomUserChangeForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = User
         fields = ('identity',)
         error_css_class = 'error'
-
+'''
 
 class SomeForm(forms.Form):
     start_import = forms.FileInput()
