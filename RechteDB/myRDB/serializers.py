@@ -2,79 +2,104 @@ import json
 
 from rest_framework import serializers
 import copy
-#from .models import Orga, Department, Group, ZI_Organisation, TF_Application, TF, GF, AF, Role, User, User_GF, User_AF, \
-    #User_TF, ChangeRequests
+# from .models import Orga, Department, Group, ZI_Organisation, TF_Application, TF, GF, AF, Role, User, User_GF, User_AF, \
+# User_TF, ChangeRequests
 from .models import *
 
-class TblRollenSerializer(serializers.HyperlinkedModelSerializer):
+
+
+class TblRollenSerializer(serializers.ModelSerializer):
     class Meta:
         model = TblRollen
-        fields = ('url','rollenname','system','rollenbeschreibung','datum')
+        fields = ('url', 'rollenname', 'system', 'rollenbeschreibung', 'datum','afs','del_afs','on_delete_list','on_transfer_list')
 
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rolle-detail')
+    #url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rolle-detail',lookup_field='pk')
+    url = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:rolle-detail',lookup_field='pk')
+    afs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:af-detail')
+    del_afs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:af-detail')
+
+
 
 class TblRollehatafSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblRollehataf
-        fields = ('url','rollenmappingid','rollenname','af','mussfeld','bemerkung','einsatz')
+        fields = ('url','rollenmappingid', 'rollenname', 'af', 'mussfeld', 'bemerkung', 'einsatz')
 
-    rollenname = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='myRDBNS:rollen')
-    af = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='myRDBNS:afs')
+    #rollenname = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail')
+    rollenname = TblRollenSerializer()
+    af = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:af-detail')
+    #url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rollehataf-detail')
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rollehataf-detail')
-
-
-class TblUserhatrolleSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblUserhatrolle
-        fields = ('url','userundrollenid','userid','rollenname','schwerpunkt_vertretung','bemerkung','letzte_aenderung')
-
-    userid = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='myRDBNS:useridundname')
-    rollenname = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='myRDBNS:rollen')
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatrolle-detail')
 
 
 class TblUebersichtAfGfsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblUebersichtAfGfs
-        fields = ('url','id','name_gf_neu','name_af_neu','kommentar','zielperson','af_text','gf_text','af_langtext',
-                  'af_ausschlussgruppen','af_einschlussgruppen','af_sonstige_vergabehinweise','geloescht','kannweg','modelliert')
+        fields = (
+        'url', 'id', 'name_gf_neu', 'name_af_neu', 'kommentar', 'zielperson', 'af_text', 'gf_text', 'af_langtext',
+        'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise', 'geloescht', 'kannweg',
+        'modelliert','on_delete_list','on_transfer_list','tfs','del_tfs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:afgf-detail')
+    tfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:gesamt-detail')
+    del_tfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:gesamt-detail')
+
 
 
 class TblOrgaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblOrga
-        fields = ('url','id','team','themeneigentuemer')
+        fields = ('url', 'id', 'team', 'themeneigentuemer')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:orga-detail')
 
 
 class TblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblUserIDundName
-        fields = ('url','id','userid','name','orga','zi_organisation','geloescht','abteilung','gruppe')
+        fields = ('url', 'id', 'userid', 'name', 'orga', 'zi_organisation', 'geloescht', 'abteilung', 'gruppe','rollen',
+                  'del_rollen','on_delete_list')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:useridundname-detail')
     orga = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:orga-detail')
+    rollen = TblRollenSerializer(many=True, read_only=True)
+    del_rollen = TblRollenSerializer(many=True, read_only=True)
+
+
+
+class TblUserhatrolleSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblUserhatrolle
+        fields = (
+        'url', 'userundrollenid', 'userid', 'rollenname', 'schwerpunkt_vertretung', 'bemerkung', 'letzte_aenderung')
+
+    #userid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail', lookup_field='id')
+    #rollenname = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail')
+    userid = TblUserIDundNameSerializer()
+    rollenname = TblRollenSerializer()
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatrolle-detail')
 
 
 class TblPlattformSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblPlattform
-        fields = ('url','id', 'tf_technische_plattform')
+        fields = ('url', 'id', 'tf_technische_plattform','color')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:plattform-detail')
 
 
 class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblGesamt
-        fields = ('url','id','userid_name','tf','tf_beschreibung','enthalten_in_af','modell','tf_kritikalitaet',
-                  'tf_eigentuemer_org','plattform','gf','vip_kennzeichen','zufallsgenerator','af_gueltig_ab',
-                  'af_gueltig_bis','direct_connect','hoechste_kritikalitaet_tf_in_af','gf_beschreibung',
-                  'af_zuweisungsdatum','datum','geloescht','gefunden','wiedergefunden','geaendert','neueaf',
-                  'nicht_ai','patchdatum','wertmodellvorpatch','loeschdatum','letzte_aenderung')
+        fields = ('url', 'id', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell', 'tf_kritikalitaet',
+                  'tf_eigentuemer_org', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab',
+                  'af_gueltig_bis', 'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung',
+                  'af_zuweisungsdatum', 'datum', 'geloescht', 'gefunden', 'wiedergefunden', 'geaendert', 'neueaf',
+                  'nicht_ai', 'patchdatum', 'wertmodellvorpatch', 'loeschdatum', 'letzte_aenderung','on_delete_list',
+                  'on_transfer_list')
 
     userid_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
-    modell = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgfs')
+    modell = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
     plattform = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:plattform-detail')
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:gesamt-detail')
 
@@ -82,53 +107,65 @@ class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
 class TblGesamtHistorieSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblGesamtHistorie
-        fields = ('url','id','id_alt','userid_name','tf','tf_beschreibung','enthalten_in_af','modell','tf_kritikalitaet',
-                  'tf_eigentuemer_org','plattform','gf','vip_kennzeichen','zufallsgenerator','datum','geloescht',
-                  'gefunden','wiedergefunden','geaendert','neueaf','loeschdatum','af_zuweisungsdatum',
-                  'af_zuweisungsdatum_alt','af_gueltig_ab','af_gueltig_bis','direct_connect',
-                  'hoechste_kritikalitaet_tf_in_af','gf_beschreibung','nicht_ai','patchdatum','wertmodellvorpatch',
-                  'letzte_aenderung')
+        fields = (
+        'url', 'id', 'id_alt', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell', 'tf_kritikalitaet',
+        'tf_eigentuemer_org', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'datum', 'geloescht',
+        'gefunden', 'wiedergefunden', 'geaendert', 'neueaf', 'loeschdatum', 'af_zuweisungsdatum',
+        'af_zuweisungsdatum_alt', 'af_gueltig_ab', 'af_gueltig_bis', 'direct_connect',
+        'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'nicht_ai', 'patchdatum', 'wertmodellvorpatch',
+        'letzte_aenderung')
 
     userid_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
-    modell = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgfs')
+    #modell = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgfs')
+    modell = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
     plattform = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:plattform-detail')
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:gesamthistorie-detail')
 
-    
+
 class TblAflisteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAfliste
-        fields = ('url','id','af_name','neu_ab')
+        fields = ('url', 'id', 'af_name', 'neu_ab','on_delete_list','on_transfer_list','gfs','del_gfs')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:af-detail')
+    gfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgf-detail')
+    del_gfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgf-detail')
+
 
 
 class TblsachgebieteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tblsachgebiete
-        fields = ('url','sachgebiet','definition','verantwortlicher','telefon_verantwortlicher','user_id_verantwortlicher','fk')
+        fields = (
+        'url', 'sachgebiet', 'definition', 'verantwortlicher', 'telefon_verantwortlicher', 'user_id_verantwortlicher',
+        'fk')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:sachgebiet-detail')
+
 
 class TblsubsystemeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tblsubsysteme
-        fields = ('url','sgss','definition','verantwortlicher','telefon_verantwortlicher','user_id_verantwortlicher','fk')
+        fields = (
+        'url', 'sgss', 'definition', 'verantwortlicher', 'telefon_verantwortlicher', 'user_id_verantwortlicher', 'fk')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:subsystem-detail')
 
 
 class TblDb2Serializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblDb2
-        fields = ('url','id','source','grantee','creator','table','selectauth','insertauth','updateauth',
-                  'deleteauth','alterauth','indexauth','grantor','grantedts','datum')
+        fields = ('url', 'id', 'source', 'grantee', 'creator', 'table', 'selectauth', 'insertauth', 'updateauth',
+                  'deleteauth', 'alterauth', 'indexauth', 'grantor', 'grantedts', 'datum')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:db2-detail')
-    #grantee = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:racfgruppen')
+    # grantee = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:racfgruppen')
+
 
 class TblRacfGruppenSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblRacfGruppen
-        fields = ('url','group','test','produktion','readonly','db2_only','stempel')
+        fields = ('url', 'group', 'test', 'produktion', 'readonly', 'db2_only', 'stempel')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:racfgruppe-detail')
 
@@ -136,43 +173,56 @@ class TblRacfGruppenSerializer(serializers.HyperlinkedModelSerializer):
 class TblrechteneuvonimportSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tblrechteneuvonimport
-        fields = ('url','id','identitaet','nachname','vorname','tf_name','tf_beschreibung','af_anzeigename','af_beschreibung',
-                  'hoechste_kritikalitaet_tf_in_af','tf_eigentuemer_org','tf_applikation','tf_kritikalitaet','gf_name',
-                  'gf_beschreibung','direct_connect','af_zugewiesen_an_account_name','af_gueltig_ab','af_gueltig_bis',
+        fields = ('url', 'id', 'identitaet', 'nachname', 'vorname', 'tf_name', 'tf_beschreibung', 'af_anzeigename',
+                  'af_beschreibung',
+                  'hoechste_kritikalitaet_tf_in_af', 'tf_eigentuemer_org', 'tf_applikation', 'tf_kritikalitaet',
+                  'gf_name',
+                  'gf_beschreibung', 'direct_connect', 'af_zugewiesen_an_account_name', 'af_gueltig_ab',
+                  'af_gueltig_bis',
                   'af_zuweisungsdatum')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rechtneuvonimport-detail')
+
 
 class TblrechteamneuSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Tblrechteamneu
-        fields = ('url','id','userid','name','tf','tf_beschreibung','enthalten_in_af','tf_kritikalitaet','tf_eigentuemer_org',
-                  'tf_technische_plattform','gf','vip_kennzeichen','zufallsgenerator','af_gueltig_ab','af_gueltig_bis',
-                  'direct_connect','hoechste_kritikalitaet_tf_in_af','gf_beschreibung','af_zuweisungsdatum','gefunden',
-                  'geaendert','angehaengt_bekannt','angehaengt_sonst','doppelerkennung')
+        fields = ('url', 'id', 'userid', 'name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'tf_kritikalitaet',
+                  'tf_eigentuemer_org',
+                  'tf_technische_plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab',
+                  'af_gueltig_bis',
+                  'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'af_zuweisungsdatum',
+                  'gefunden',
+                  'geaendert', 'angehaengt_bekannt', 'angehaengt_sonst', 'doppelerkennung')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rechtamneu-detail')
+
 
 class Qryf3RechteneuvonimportduplikatfreiSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Qryf3Rechteneuvonimportduplikatfrei
-        fields = ('url','userid','name','tf','tf_beschreibung','enthalten_in_af','tf_kritikalitaet','tf_eigentuemer_org',
-                  'tf_technische_plattform','gf','vip_kennzeichen','zufallsgenerator','af_gueltig_ab','af_gueltig_bis',
-                  'direct_connect','hoechste_kritikalitaet_tf_in_af','gf_beschreibung','af_zuweisungsdatum')
+        fields = (
+        'url', 'userid', 'name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'tf_kritikalitaet', 'tf_eigentuemer_org',
+        'tf_technische_plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab', 'af_gueltig_bis',
+        'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'af_zuweisungsdatum')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:qryf3rechteneuvonimportduplikatfrei-detail')
+
 
 class RACF_RechteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = RACF_Rechte
-        fields = ('url','id','type','group','ressource_class','profil','access','test','produktion',
-                  'alter_control_update','datum')
+        fields = ('url', 'id', 'type', 'group', 'ressource_class', 'profil', 'access', 'test', 'produktion',
+                  'alter_control_update', 'datum')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:RACF_Recht-detail')
+
 
 class Orga_detailsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Orga_details
-        fields = ('url','id','abteilungsnummer','organisation','orgaBezeichnung','fk','kostenstelle','orgID',
-                  'parentOrga', 'parentOrgID','orgaTyp','fkName','delegationEigentuemer','delegationFK','datum')
+        fields = ('url', 'id', 'abteilungsnummer', 'organisation', 'orgaBezeichnung', 'fk', 'kostenstelle', 'orgID',
+                  'parentOrga', 'parentOrgID', 'orgaTyp', 'fkName', 'delegationEigentuemer', 'delegationFK', 'datum')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Orga_detail-detail')
 
@@ -180,7 +230,7 @@ class Orga_detailsSerializer(serializers.HyperlinkedModelSerializer):
 class Letzter_importSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Letzter_import
-        fields = ('url','id','start','user','end','max','aktuell','schritt')
+        fields = ('url', 'id', 'start', 'user', 'end', 'max', 'aktuell', 'schritt')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Letzter_import-detail')
 
@@ -188,24 +238,640 @@ class Letzter_importSerializer(serializers.HyperlinkedModelSerializer):
 class ModellierungSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Modellierung
-        fields = ('url','entitlement','neue_beschreibung','plattform','gf','beschreibung_der_gf','af',
-                  'beschreibung_der_af','organisation_der_af','eigentuemer_der_af','aus_modellierung_entfernen',
-                  'datei','letzte_aenderung')
+        fields = ('url', 'entitlement', 'neue_beschreibung', 'plattform', 'gf', 'beschreibung_der_gf', 'af',
+                  'beschreibung_der_af', 'organisation_der_af', 'eigentuemer_der_af', 'aus_modellierung_entfernen',
+                  'datei', 'letzte_aenderung')
 
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Modell-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Modellierung-detail')
 
 
 class DirektverbindungenSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Direktverbindungen
-        fields = ('url','organisation','entscheidung','entitlement','applikation','instanz',
-                  'identitaet','manager','vorname','nachname','account_name','status','typ','nicht_anmailen',
-                  'ansprechpartner','letzte_aenderung')
+        fields = ('url', 'organisation', 'entscheidung', 'entitlement', 'applikation', 'instanz',
+                  'identitaet', 'manager', 'vorname', 'nachname', 'account_name', 'status', 'typ', 'nicht_anmailen',
+                  'ansprechpartner', 'letzte_aenderung')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Direktverbindung-detail')
 
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url','password','last_login','is_superuser','username','first_name','last_name',
+                  'email','is_staff','is_active','date_joined','userid_name', 'delete_list', 'transfer_list')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:User-detail')
+    userid_name = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='myRDBNS:useridundname-detail')
+    delete_list = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='myRDBNS:useridundname-detail')
+    transfer_list = serializers.HyperlinkedRelatedField(many=True, read_only=True,view_name='myRDBNS:useridundname-detail')
+
+    def update(self, instance, validated_data):
+        print("im in the serializer-update-method")
+        print(self._kwargs)
+        data = self._kwargs['data']
+        if data['action_type'] == 'trash':
+            instance = self.add_to_delete_list(instance, data)
+        elif data['action_type'] == "restore":
+            instance = self.remove_from_delete_list(instance, data)
+        elif data['action_type'] == "transfer":
+            instance = self.add_to_transfer_list(instance, data)
+        elif data['action_type'] == "restore_transfer":
+            instance = self.remove_from_transfer_list(instance, data)
+        elif data['action_type'] == "add_to_requests":
+            instance = self.add_to_my_requests(instance, data)
+        elif data['action_type'] == "remove_from_requests":
+            instance = self.remove_from_my_requests(instance, data)
+        elif data['action_type'] == "reverse_action":
+            instance = self.reverse_action(instance, data)
+        elif data['action_type'] == "clear_transfer_list_and_delete_list":
+            instance = self.clear_transferlist_and_deletelist(instance)
+        elif data['action_type'] == "set_rights_as_requested":
+            instance = self.set_rights_as_requested(instance, data)
+        elif data['action_type'] == "perform_action":
+            instance = self.perform_action(instance, data)
+        elif data['action_type'] == "decline_action":
+            instance = self.decline_action(instance, data)
+        elif data['action_type'] == "analysis_transfer":
+            instance = self.add_to_transfer_list_from_analysis(instance, data)
+        instance.save()
+
+        return instance
+
+    def add_to_transfer_list_from_analysis(self, instance, data):
+        print('in add to transfer fom analysis')
+        print(data)
+        '''
+        if data['right_type'] == 'tf':
+            tf = TF.objects.get(pk=data['right_pk'])
+            new_user_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.pk)), color=tf.tf_application.color,
+                                  transfer=True)
+            for af in instance.transfer_list:
+                if af.af_name == data['grandparent']:
+                    for gf in af.gfs:
+                        if gf.gf_name == data['parent']:
+                            gf.tfs.append(new_user_tf)
+                            return instance
+                    gf = GF.objects.get(gf_name=data['parent'])
+                    help_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.pk, tfs=[new_user_tf])
+                    af.gfs.append(help_gf)
+                    return instance
+            gf = GF.objects.get(gf_name=data['parent'])
+            help_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.pk, tfs=[new_user_tf])
+            af = AF.objects.get(af_name=data['grandparent'])
+            help_af = User_AF(af_name=af.af_name, model_af_pk=af.pk, gfs=[help_gf])
+            instance.transfer_list.append(help_af)
+            return instance
+        if data['right_type'] == 'gf':
+            gf = GF.objects.get(pk=data['right_pk'])
+            new_user_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=int(float(gf.pk)), tfs=[])
+            for tf_id in gf.tfs_id:
+                tf = TF.objects.get(pk=tf_id)
+                u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.pk)), color=tf.tf_application.color,
+                               transfer=True)
+                new_user_gf.tfs.append(u_tf)
+            for af in instance.transfer_list:
+                if af.af_name == data['parent']:
+                    af.gfs.append(new_user_gf)
+                    return instance
+            af = AF.objects.get(af_name=data['parent'])
+            help_af = User_AF(af_name=af.af_name, model_af_pk=af.pk, gfs=[new_user_gf])
+            instance.transfer_list.append(help_af)
+            return instance
+
+        if data['right_type'] == 'af':
+            af = AF.objects.get(pk=data['right_pk'])
+            new_user_af = User_AF(af_name=af.af_name, model_af_pk=int(float(af.pk)), gfs=[])
+            for gf_id in af.gfs_id:
+                gf = GF.objects.get(pk=gf_id)
+                u_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.pk, tfs=[])
+                for tf_id in gf.tfs_id:
+                    tf = TF.objects.get(pk=tf_id)
+                    u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.pk)), color=tf.tf_application.color,
+                                   transfer=True)
+                    u_gf.tfs.append(u_tf)
+                new_user_af.gfs.append(u_gf)
+            instance.transfer_list.append(new_user_af)
+            '''
+        return instance
+
+    def reverse_action(self, instance, data):
+        print("in Reverse_action")
+        if data['action'] == 'delete':
+            instance = self.restore_after_decline(instance, data, 'delete')
+        if data['action'] == 'apply':
+            instance = self.restore_after_decline(instance, data, 'apply')
+
+        return instance
+
+    def set_rights_as_requested(self, instance, data):
+        print("in set_rights_as_requested")
+        objects_to_change = json.loads(data['objects_to_change'])
+        for obj in objects_to_change:
+            action = obj[0]['value']
+            right_name = obj[1]['value']
+            right_type = obj[2]['value']
+
+            if action == 'apply':
+                list = instance.transfer_list
+            else:
+                list = instance.delete_list
+
+            if right_type == 'AF':
+                for right in list:
+                    if right_name == right.af_name:
+                        right.requested = True
+                        break
+            elif right_type == 'GF':
+                for right in list:
+                    for right_lev_2 in right.gfs:
+                        if right_name == right_lev_2.gf_name:
+                            right_lev_2.requested = True
+                            break
+                    else:
+                        continue
+                    break
+            elif right_type == 'TF':
+                for right in list:
+                    for right_lev_2 in right.gfs:
+                        for right_lev_3 in right_lev_2.tfs:
+                            if right_name == right_lev_3.tf_name:
+                                right_lev_3.requested = True
+                                break
+                        else:
+                            continue
+                        break
+                    else:
+                        continue
+                    break
+        return instance
+
+    def decline_action(self, instance, data):
+        print("in perform_action")
+        request_data = json.loads(data['request_data'])
+        if request_data['action'] == 'apply':
+            instance = self.restore_after_decline(instance, request_data, 'apply')
+        if request_data['action'] == 'delete':
+            instance = self.restore_after_decline(instance, request_data, 'delete')
+
+        return instance
+
+    def restore_after_decline(self, instance, request_data, action):
+        print("in restore_after_decline")
+        print(request_data)
+        if action == 'delete':
+            list = instance.delete_list
+        else:
+            list = instance.transfer_list
+
+        if request_data['right_type'] == 'AF':
+            data = {'right_name': request_data['right_name'], 'right_type': request_data['right_type'].lower()}
+
+        elif request_data['right_type'] == 'GF':
+            for right in list:
+                for gf in right.gfs:
+                    if gf.gf_name == request_data['right_name']:
+                        data = {'right_name': gf.gf_name, 'parent': right.af_name,
+                                'right_type': request_data['right_type'].lower()}
+                        break
+                else:
+                    continue
+                break
+
+        elif request_data['right_type'] == 'TF':
+            for right in list:
+                for gf in right.gfs:
+                    for tf in gf.tfs:
+                        if tf.tf_name == request_data['right_name']:
+                            data = {'right_name': tf.tf_name, 'parent': gf.gf_name, 'grandparent': right.af_name,
+                                    'right_type': request_data['right_type'].lower()}
+                            break
+                    else:
+                        continue
+                    break
+                else:
+                    continue
+                break
+        if action == 'delete':
+            if request_data['right_type'] == 'AF':
+                instance = self.remove_from_delete_list(instance, {'right_name': request_data['right_name']})
+            else:
+                instance = self.remove_from_delete_list(instance, {'right_name': right.af_name})
+        else:
+            instance = self.remove_from_transfer_list(instance, data)
+
+        return instance
+
+    def perform_action(self, instance, data):
+        print("in perform_action")
+        request_data = json.loads(data['request_data'])
+        if request_data['action'] == 'apply':
+            instance = self.apply_right(instance, request_data['compare_user'], request_data['right_name'],
+                                        request_data['right_type'], request_data['last_modified'])
+        if request_data['action'] == 'delete':
+            instance = self.delete_right(instance, request_data['right_name'], request_data['right_type'])
+
+        return instance
+
+    # TODO: apply und delete auch für gfs und tfs implementieren
+    def apply_right(self, instance, compare_xv_user, right_name, right_type, application_date):
+        print("in apply right")
+        if right_type == "AF":
+            index = 0
+            for af in instance.transfer_list:
+                if af.af_name == right_name:
+                    af.af_applied = application_date
+                    instance.user_afs.append(af)
+                    instance.direct_connect_afs_id.add(af.model_af_pk)
+                    instance.transfer_list.pop(index)
+                    break
+                index += 1
+        if right_type == "GF":
+            af_index = 0
+            for af in instance.transfer_list:
+                index = 0
+                for gf in af.gfs:
+                    if gf.gf_name == right_name:
+                        for u_af in instance.user_afs:
+                            if u_af.af_name == af.af_name:
+                                u_af.gfs.append(gf)
+                                af.gfs.pop(index)
+                                break
+                    index += 1
+                if not af.gfs:
+                    instance.transfer_list.pop(af_index)
+                    break
+                af_index += 1
+        if right_type == "TF":
+            af_index = 0
+            for af in instance.transfer_list:
+                gf_index = 0
+                for gf in af.gfs:
+                    index = 0
+                    for tf in gf.tfs:
+                        if tf.tf_name == right_name:
+                            for u_af in instance.user_afs:
+                                if u_af.af_name == af.af_name:
+                                    for u_gf in u_af.gfs:
+                                        if u_gf.gf_name == gf.gf_name:
+                                            u_gf.tfs.append(tf)
+                                            gf.tfs.pop(index)
+                                            break
+                        index += 1
+                    if not gf.tfs:
+                        af.gfs.pop(gf_index)
+                        break
+                    gf_index += 1
+                if not af.gfs:
+                    instance.transfer_list.pop(af_index)
+                    break
+                af_index += 1
+
+        return instance
+
+    def delete_right(self, instance, right_name, right_type):
+        print("in delete right")
+        if right_type == "AF":
+            index = 0
+            for af in instance.delete_list:
+                if af.af_name == right_name:
+                    instance.direct_connect_afs_id.remove(af.model_af_pk)
+                    instance.delete_list.pop(index)
+                    break
+                index += 1
+        if right_type == "GF":
+            index = 0
+            af_index = 0
+            for af in instance.delete_list:
+                for gf in af.gfs:
+                    if gf.gf_name == right_name:
+                        af.gfs.pop(index)
+                        break
+                    index += 1
+                if not af.gfs:
+                    instance.delete_list.pop(af_index)
+                    break
+                af_index += 1
+        if right_type == "TF":
+            index = 0
+            af_index = 0
+            gf_index = 0
+            for af in instance.delete_list:
+                for gf in af.gfs:
+                    for tf in gf.tfs:
+                        if tf.tf_name == right_name:
+                            gf.tfs.pop(index)
+                            break
+                        index += 1
+                    if not gf.tfs:
+                        af.gfs.pop(gf_index)
+                        break
+                    gf_index += 1
+                if not af.gfs:
+                    instance.delete_list.pop(af_index)
+                    break
+                af_index += 1
+
+        return instance
+
+    def clear_transferlist_and_deletelist(self, instance):
+        print("in clear transfer- and deletelist")
+        instance.transfer_list.clear()
+        instance.delete_list.clear()
+        return instance
+
+    def remove_from_my_requests(self, instance, data):
+        print("in remove_from_my_requests")
+        instance.my_requests_id.remove(int(data['request_pk']))
+        return instance
+
+    def add_to_my_requests(self, instance, data):
+        print("in add_to_my_requests")
+        keys = json.loads(data['request_pks'])
+        for key in keys:
+            instance.my_requests_id.add(key)
+        return instance
+
+    def copy_user_right(self, right, type):
+        '''
+        if type == "af":
+            u_af = User_AF(af_name=right.af_name, model_af_pk=int(float(right.model_af_pk)), gfs=[])
+            # u_af.Meta.abstract = True
+            for gf in right.gfs:
+                u_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=int(float(gf.model_gf_pk)), tfs=[])
+                # u_gf.Meta.abstract = True
+                for tf in gf.tfs:
+                    u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.model_tf_pk)), color=tf.color)
+                    # u_tf.Meta.abstract = True
+                    u_gf.tfs.append(u_tf)
+                u_af.gfs.append(u_gf)
+            return u_af
+        elif type == "gf":
+            u_gf = User_GF(gf_name=right.gf_name, model_gf_pk=int(float(right.model_gf_pk)), tfs=[])
+            for tf in right.tfs:
+                u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.model_tf_pk)), color=tf.color)
+                u_gf.tfs.append(u_tf)
+            return u_gf
+        elif type == "tf":
+            u_tf = User_TF(tf_name=right.tf_name, model_tf_pk=int(float(right.model_tf_pk)), color=right.color)
+            return u_tf
+            '''
+        return None
+
+    def add_to_transfer_list(self, instance, data):
+        print("in add_to_transfer_lst")
+        '''
+        compareUser = User.objects.get(identity=data['compare_user'])
+        if data['right_type'] == "af":
+            for af in compareUser.user_afs:
+                if af.af_name == data['right_name']:
+                    cpy_af = self.copy_user_right(af, data['right_type'])
+                    cpy_af.transfer = True
+                    instance.transfer_list.append(cpy_af)
+                    break
+        # TODO: ab hier noch nicht durchgetestet
+        elif data['right_type'] == "gf":
+            for af in compareUser.user_afs:
+                if af.af_name == data['parent']:
+                    for gf in af.gfs:
+                        if gf.gf_name == data['right_name']:
+                            added = False
+                            cpy_gf = self.copy_user_right(gf, data['right_type'])
+                            cpy_gf.transfer = True
+                            for ele in instance.transfer_list:
+                                if ele.af_name == data['parent']:
+                                    ele.gfs.append(cpy_gf)
+                                    added = True
+                                    break
+                            if not added:
+                                cpy_af = User_AF(af_name=af.af_name, model_af_pk=af.model_af_pk, gfs=[])
+                                cpy_af.gfs.append(cpy_gf)
+                                instance.transfer_list.append(cpy_af)
+                            break
+                    else:
+                        continue
+                    break
+        elif data['right_type'] == "tf":
+            for af in compareUser.user_afs:
+                if af.af_name == data['grandparent']:
+                    for gf in af.gfs:
+                        if gf.gf_name == data['parent']:
+                            for tf in gf.tfs:
+                                if tf.tf_name == data['right_name']:
+                                    cpy_tf = self.copy_user_right(tf, data['right_type'])
+                                    cpy_tf.transfer = True
+                                    added = False
+                                    for ele in instance.transfer_list:
+                                        if ele.af_name == data['grandparent']:
+                                            for user_gf in ele.gfs:
+                                                if user_gf.gf_name == data['parent']:
+                                                    user_gf.tfs.append(cpy_tf)
+                                                    added = True
+                                                    break
+                                            else:
+                                                continue
+                                            break
+                                    if not added:
+                                        cpy_af = User_AF(af_name=af.af_name, model_af_pk=af.model_af_pk, gfs=[])
+                                        cpy_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.model_gf_pk, tfs=[])
+                                        cpy_gf.tfs.append(cpy_tf)
+                                        cpy_af.gfs.append(cpy_gf)
+                                        instance.transfer_list.append(cpy_af)
+                                    break
+                            else:
+                                continue
+                            break
+                    else:
+                        continue
+                    break
+                    '''
+        return instance
+
+    def remove_from_transfer_list(self, instance, data):
+        print("in remove from transfer_list")
+        if data['right_type'] == "af":
+            index = 0
+            for right in instance.transfer_list:
+                if right.af_name == data['right_name']:
+                    instance.transfer_list.pop(index)
+                    break
+                index += 1
+        elif data['right_type'] == "gf":
+            af_index = 0
+            for right in instance.transfer_list:
+                if right.af_name == data['parent']:
+                    index = 0
+                    for gf in right.gfs:
+                        if gf.gf_name == data['right_name']:
+                            right.gfs.pop(index)
+                            break
+                        index += 1
+                    if not right.gfs:
+                        instance.transfer_list.pop(af_index)
+                af_index += 1
+        elif data['right_type'] == "tf":
+            af_index = 0
+            for right in instance.transfer_list:
+                if right.af_name == data['grandparent']:
+                    gf_index = 0
+                    for gf in right.gfs:
+                        if gf.gf_name == data['parent']:
+                            index = 0
+                            for tf in gf.tfs:
+                                if tf.tf_name == data['right_name']:
+                                    gf.tfs.pop(index)
+                                    break
+                                index += 1
+                            if not gf.tfs:
+                                right.gfs.pop(gf_index)
+                                break
+                        gf_index += 1
+                    if not right.gfs:
+                        instance.transfer_list.pop(af_index)
+                        break
+                af_index += 1
+
+        return instance
+
+    def remove_from_delete_list(self, instance, data):
+        print("in remove_from_delete_list")
+        if data['right_type'] == 'user':
+            for user in instance.delete_list.all():
+                if user.userid == data['right_name']:
+                    user.on_delete_list = True
+                    instance.userid_name.add(user.id)
+                    instance.delete_list.remove(TblUserIDundName.objects.get(id=user.id))
+                    return instance
+        elif data['right_type'] == 'role':
+            for user in instance.delete_list.all():
+                if user.userid == data['parent']:
+                    for role in user.del_rollen.all():
+                        if role.rollenname == data['right_name']:
+                            role.on_delete_list = True
+                            user.rollen.add(role.id)
+                            user.del_rollen.remove(TblRollen.objects.get(id=role.id))
+                            return instance
+        elif data['right_type'] == 'af':
+            for user in instance.delete_list.all():
+                if user.userid == data['grandparent']:
+                    for role in user.del_rollen.all():
+                        if role.rollenname == data['parent']:
+                            for af in role.del_afs.all():
+                                if af.af_name == data['right_name']:
+                                    af.on_delete_list = True
+                                    role.afs.add(af.id)
+                                    role.del_afs.remove(TblAfliste.objects.get(id=af.id))
+                                    return instance
+        elif data['right_type'] == 'gf':
+            for user in instance.delete_list.all():
+                if user.userid == data['greatgrandparent']:
+                    for role in user.del_rollen.all():
+                        if role.rollenname == data['grandparent']:
+                            for af in role.del_afs.all():
+                                if af.af_name == data['parent']:
+                                    for gf in af.del_gfs.all():
+                                        if gf.name_gf_neu == data['right_name']:
+                                            gf.on_delete_list = True
+                                            af.gfs.add(gf.id)
+                                            af.del_gfs.remove(TblUebersichtAfGfs.objects.get(id=gf.id))
+                                            return instance
+        elif data['right_type'] == 'tf':
+            for user in instance.delete_list.all():
+                if user.userid == data['greatgreatgrandparent']:
+                    for role in user.del_rollen.all():
+                        if role.rollenname == data['greatgrandparent']:
+                            for af in role.del_afs.all():
+                                if af.af_name == data['grandparent']:
+                                    for gf in af.del_gfs.all():
+                                        if gf.name_gf_neu == data['parent']:
+                                            for tf in gf.del_tfs.all():
+                                                if tf.tf_name == data['right_name']:
+                                                    tf.on_delete_list = True
+                                                    gf.tfs.add(tf.id)
+                                                    gf.del_tfs.remove(TblGesamt.objects.get(id=tf.id))
+                                                    return instance
+
+
+    def add_to_delete_list(self, instance, data):
+        print("in add_to_delete_list")
+        if data['right_type'] == 'user':
+            for user in instance.userid_name.all():
+                if user.userid == data['right_name']:
+                    user.on_delete_list = True
+                    instance.delete_list.add(user.id)
+                    instance.userid_name.remove(TblUserIDundName.objects.get(id=user.id))
+                    return instance
+        elif data['right_type'] == 'role':
+            for user in instance.userid_name.all():
+                if user.userid == data['parent']:
+                    if not user.id in instance.delete_list:
+                        instance.delete_list.add(user.id)
+                    for role in user.rollen.all():
+                        if role.rollenname == data['right_name']:
+                            role.on_delete_list = True
+                            user.del_rollen.add(role.id)
+                            user.rollen.remove(TblRollen.objects.get(id=role.id))
+                            return instance
+        elif data['right_type'] == 'af':
+            for user in instance.userid_name.all():
+                if user.userid == data['grandparent']:
+                    if not user.id in instance.delete_list:
+                        instance.delete_list.add(user.id)
+                    for role in user.rollen.all():
+                        if role.rollenname == data['parent']:
+                            if not role.rollenname in user.del_rollen:
+                                instance.del_rollen.add(role.rollenname)
+                            for af in role.afs.all():
+                                if af.af_name == data['right_name']:
+                                    af.on_delete_list = True
+                                    role.del_afs.add(af.id)
+                                    role.afs.remove(TblAfliste.objects.get(id=af.id))
+                                    return instance
+        elif data['right_type'] == 'gf':
+            for user in instance.userid_name.all():
+                if user.userid == data['greatgrandparent']:
+                    if not user.id in instance.delete_list:
+                        instance.delete_list.add(user.id)
+                    for role in user.rollen.all():
+                        if role.rollenname == data['grandparent']:
+                            if not role.rollenname in user.del_rollen:
+                                instance.del_rollen.add(role.rollenname)
+                            for af in role.afs.all():
+                                if af.af_name == data['parent']:
+                                    if not af.id in role.del_afs:
+                                        role.del_afs.add(af.id)
+                                    for gf in af.gfs.all():
+                                        if gf.name_gf_neu == data['right_name']:
+                                            gf.on_delete_list = True
+                                            af.del_gfs.add(gf.id)
+                                            af.gfs.remove(TblUebersichtAfGfs.objects.get(id=gf.id))
+                                            return instance
+        elif data['right_type'] == 'tf':
+            for user in instance.userid_name.all():
+                if user.userid == data['greatgreatgrandparent']:
+                    if not user.id in instance.delete_list:
+                        instance.delete_list.add(user.id)
+                    for role in user.rollen.all():
+                        if role.rollenname == data['greatgrandparent']:
+                            if not role.rollenname in user.del_rollen:
+                                instance.del_rollen.add(role.rollenname)
+                            for af in role.afs.all():
+                                if af.af_name == data['grandparent']:
+                                    if not af.id in role.del_afs:
+                                        role.del_afs.add(af.id)
+                                    for gf in af.gfs.all():
+                                        if gf.name_gf_neu == data['parent']:
+                                            if not gf.id in af.del_gfs:
+                                                af.del_gfs.add(gf.id)
+                                            for tf in gf.tfs.all():
+                                                if tf.tf_name == data['right_name']:
+                                                    tf.on_delete_list = True
+                                                    gf.del_tfs.add(tf.id)
+                                                    gf.tfs.remove(TblGesamt.objects.get(id=tf.id))
+                                                    return instance
+        return instance
 
 '''
+
 
 class ChangeRequestsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

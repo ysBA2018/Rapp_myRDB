@@ -34,7 +34,7 @@ DATABASES = {
             # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
             'ENGINE': 'django.db.backends.mysql',		# ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
             # 'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
-            'NAME': 'Rapp_myRDB_new',
+            'NAME': 'Rapp_myRDB',
             'USER': 'YannickSimchen',
             'PASSWORD': 'BanepukBabe',
             'HOST': 'localhost',
@@ -97,12 +97,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'myRDB.middleware.HttpPostTunnelingMiddleware',
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.BasicAuthentication',
+                                      'rest_framework.authentication.SessionAuthentication',
+                                      'rest_framework.authentication.TokenAuthentication'),
 }
+
 
 ROOT_URLCONF = 'RechteDB.urls'
 
@@ -131,6 +137,7 @@ WSGI_APPLICATION = 'RechteDB.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+AUTH_USER_MODEL = 'rapp.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

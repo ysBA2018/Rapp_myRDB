@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Wilkommen in der RechteDB</h1>
 {% if user.is_authenticated %}
-Hi {{user.identity}} !
+Hi {{user.username}} !
 <p><a href="{% url 'myRDB:logout' %}">logout</a></p>
 {% else %}
 <p>You are not logged in!</p>

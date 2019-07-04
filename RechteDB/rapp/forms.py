@@ -1,5 +1,7 @@
 from django import forms
-from .models import TblUserhatrolle, hole_organisationen
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+from .models import TblUserhatrolle, hole_organisationen, User, TblUserIDundName
 
 # Das hätte man auch einfacher haben können, indem die relevanten Infos in views.py eingetragen worden wären
 class ShowUhRForm(forms.ModelForm):
@@ -41,3 +43,24 @@ class ImportForm_schritt3(forms.Form):
 	# deshalb sind auch hier keine Datenfelder angegeben
 	# (Eventuell kann hier noch ein Flag angegeben werden, ob Doppeleinträge gesucht wertden sollen)
 	doppelte_suchen = forms.BooleanField(label = 'Suche nach doppelten Einträgen (optional)', required = False)
+
+class CustomUserChoiceField(forms.ModelChoiceField):
+	def label_from_instance(self, obj):
+		return obj.get_full_name()
+
+class CustomUserCreationForm(UserCreationForm):
+	class Meta:
+		model = User
+		fields = ('username','email')
+
+class CustomUserChangeForm(UserChangeForm):
+	class Meta:
+		model = User
+		fields = ('username', 'email','userid_name')
+
+class UserForm(forms.ModelForm):
+	userid_name = CustomUserChoiceField(queryset=User.objects.all())
+	class Meta:
+		model = User
+		fields = ('username', 'email','userid_name')
+

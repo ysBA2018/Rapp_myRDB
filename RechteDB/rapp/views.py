@@ -61,6 +61,9 @@ from .view_serienbrief import serienbrief
 # ToDo: Suche: Wo kann man die Modelle anpassen? Braucht das Ändern der Modellzugehörigkeit noch jemand, oder ist das mit dem neuen Rollenmodell obsolet?
 # ToDo: Userrolle: Link von der Rollensicht auf tbluseridundname im Admin
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 def get_version(package):
 	"""
 	Return package version as listed in `__version__` in `init.py`.

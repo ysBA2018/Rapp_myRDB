@@ -3,17 +3,15 @@ import json
 
 from django.contrib.auth.base_user import BaseUserManager
 
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+
 #from djongo import models as djongomodels
 from django.utils import timezone
 
 # Create your models here.
-from rest_framework.authtoken.models import Token
 
-from RechteDB import settings
+
+
 from django.apps import apps
 import importlib
 
@@ -40,7 +38,7 @@ Orga_details = modellist.Orga_details
 Letzter_import = modellist.Letzter_import
 Modellierung = modellist.Modellierung
 Direktverbindungen = modellist.Direktverbindungen
-
+User = modellist.User
 '''
 class ChangeRequests(models.Model):
     requesting_user = models.CharField(max_length=7)
@@ -199,102 +197,6 @@ class Role(models.Model):
         return self.role_name
 
 
-class CustomAccountManager(BaseUserManager):
-    def create_user(self, identity, password):
-        user = self.model(identity=identity, password=password)
-        user.set_password(password)
-        user.is_staff = False
-        user.is_superuser = False
-
-        if not user.orga:
-            user.orga = Orga()
-        if not user.group:
-            user.group = Group()
-        if not user.department:
-            user.department = Department()
-        if not user.zi_organisation:
-            user.zi_organisation = ZI_Organisation()
-        if not user.roles:
-            user.roles = [Role()]
-        if not user.direct_connect_afs:
-            user.direct_connect_afs = [AF()]
-        if not user.direct_connect_gfs:
-            user.direct_connect_gfs = [GF()]
-        if not user.direct_connect_tfs:
-            user.direct_connect_tfs = [TF()]
-        if not user.my_requests:
-            user.my_requests = [ChangeRequests()]
-        if not user.user_afs:
-            user.user_afs = []
-        if not user.transfer_list:
-            user.transfer_list = []
-        if not user.transfer_list:
-            user.delete_list = []
-
-        user.save(using=self.db)
-        return user
-
-    def create_staff(self, identity, password):
-        user = self.create_user(identity=identity, password=password)
-        user.is_staff = True
-        user.is_superuser = False
-        user.save(using=self.db)
-        return user
-
-    def create_superuser(self, identity, password):
-        user = self.create_user(identity=identity, password=password)
-        user.is_active = True
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self.db)
-        return user
-
-    def get_by_natural_key(self, identity_):
-        case_insensitive_identitiy_field = '{}__iexact'.format(self.model.USERNAME_FIELD)
-        print(identity_)
-        return self.get(**{case_insensitive_identitiy_field: identity_})
-
-
-class User(AbstractUser):
-    identity = models.CharField(max_length=7, unique=True)
-    email = models.EmailField()
-    avatar = models.ImageField()
-    name = models.CharField(max_length=100)
-    first_name = models.CharField(max_length=100)
-    deleted = models.BooleanField(default=False)
-    orga = djongomodels.EmbeddedModelField(model_container=Orga)
-    department = djongomodels.EmbeddedModelField(model_container=Department)
-    group = djongomodels.EmbeddedModelField(model_container=Group)
-    zi_organisation = djongomodels.EmbeddedModelField(model_container=ZI_Organisation)
-    roles = djongomodels.ArrayReferenceField(to=Role)
-    direct_connect_afs = djongomodels.ArrayReferenceField(to=AF)
-    direct_connect_gfs = djongomodels.ArrayReferenceField(to=GF)
-    direct_connect_tfs = djongomodels.ArrayReferenceField(to=TF)
-    my_requests = djongomodels.ArrayReferenceField(to=ChangeRequests, on_delete=models.CASCADE)
-    user_afs = djongomodels.ArrayModelField(model_container=User_AF)
-    transfer_list = djongomodels.ArrayModelField(model_container=User_AF)
-    delete_list = djongomodels.ArrayModelField(model_container=User_AF)
-    is_staff = models.BooleanField(default=False)
-    password = models.CharField(max_length=32)
-
-    REQUIRED_FIELDS = []
-    USERNAME_FIELD = 'identity'
-
-    objects = CustomAccountManager()
-
-    def natural_key(self):
-        return self.identity
-
-    def get_short_name(self):
-        return self.identity
-
-    def __str__(self):
-        return self.identity
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
-
 '''
+
 

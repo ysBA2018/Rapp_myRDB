@@ -1,13 +1,20 @@
 {% load static %}
 {% load asjson %}
 <div class="card">
+    <script>
+        var dotI = 0;
+    </script>
     <div class="card-header">
         <h5>Legende</h5>
     </div>
-    <div class="card-body">
-        {# Hier die Legende realisieren #}
-        <svg class="legend" id="profileLegendSVG" width="480" height="80"></svg>
-        <script type="text/javascript" src="{% static 'myRDB/js/legends/profile-legend.js' %}"></script>
+    <div class="card-body" style="max-height: 120px; overflow-y: auto;">
+        {% for e in legendData %}
+            <script>
+                var dotData{{ forloop.counter0 }} = {{ e | asjson}};
+            </script>
+            <svg class="legend" id="profileLegendSVG{{ forloop.counter0 }}" width="150" height="40"></svg>
+            <script type="text/javascript" src="{% static 'myRDB/js/legends/profile-legend.js' %}"></script>
+        {% endfor %}
     </div>
     <div class="card-footer">
         <p>Farben beschreiben TF-Zugehörigkeit zu Applikation</p>

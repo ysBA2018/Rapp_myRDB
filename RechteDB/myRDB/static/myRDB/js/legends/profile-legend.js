@@ -1,34 +1,20 @@
 $(document).ready(function(){
-    var svg = d3.select("#profileLegendSVG"),
-        margin = 20,
-        diameter = +svg.attr("width"),
-        g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+    var index = window.dotI;
+    var svg = d3.select("#profileLegendSVG"+index);
 
-    svg.select("g").style('transform','translate(50%, 50%)');
-
-    var data = window.legendData;
-    console.log(data);
+    var data = window['dotData'+index];
     var j = 0;
 
-    svg.selectAll('mydots')
-        .data(data)
-        .enter()
-        .append("circle")
-            .attr("cx",function (d,i) {
-                if(i>=3&&i<6){return 130}else if(i>=6&&i<9){return 245}else if(i>=9&&i<12){return 360}else{return 15}
-            })
-            .attr("cy",function (d,i) {return 15 + (i * 25)%75 })
-            .attr("r", 7)
-            .style("fill", function (d){return d.color});
+    svg.append("circle").style('fill', function () {
+        return d3.hsl(window['dotData'+index].color,0.5,0.5);
+    }).attr("cx",20).attr("cy",32).attr("r", 6);
 
-    svg.selectAll("mylabels")
-        .data(data)
-        .enter()
-        .append("text")
-        .attr("x",function (d,i) { if(i>=3&&i<6){return 145}else if(i>=6&&i<9){return 260}else if(i>=9&&i<12){return 375}else{return 30} })
-        .attr("y",function (d,i){return 15 + (i * 25)%75 } )
-        .text(function (d) { return d.application_name })
-        .attr("text-anchor","left")
-        .attr("alignment-baseline","middle");
+    svg.append("text").attr("x", 35).attr("y", 38).text(data.tf_technische_plattform).style("font-size", function () {
+        var strLen = this.textContent.length;
+        if(strLen<16){return "15px"}
+        if(strLen>=16 && strLen <20){return "12px"}
+        else{return "10px"}
+    }).attr("alignment-baseline","middle");
+    window.dotI+=1;
 
 });

@@ -4,16 +4,19 @@
 
 <div class="container-fluid">
     {% include 'myRDB/profile/profile_head.html' %}
-
     <script type="text/javascript" >
-        var trash_table_count = {{ delete_list_count }};
+        var jsondata = {{ jsondata | asjson }};
+        var legendData = {{ legendData | asjson}};
         var current_site = "{{ current_site }}";
         var scatterData = {{ scatterData | asjson }};
-        var jsondata = {{ jsondata | asjson }};
+        var user = "{{ identity_param }}";
+        var user_id = "{{ user_id }}";
+        var current_host = "{{ current_host }}";
         var trashlistdata = {{ deletelist | asjson }};
         var transferlistdata = {{ transferlist | asjson }};
-        var legendData = {{ legendData | asjson}};
-        var user = "{{ identity_param }}";
+    </script>
+    <script type="text/javascript" >
+        var trash_table_count = {{ delete_list_count }};
     </script>
 
         <div class="row top-buffer">

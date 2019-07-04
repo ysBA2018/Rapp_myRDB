@@ -68,7 +68,13 @@
                       div.transition()
                           .duration(200)
                           .style("opacity",9);
-                      div .html("<b>TF:</b> "+d.name+"<br/>"+"<b>GF:</b> "+d.gf_name+"<br/>"+"<b>AF:</b> "+d.af_name+"<br/>"+"<b>AF aktiv seit:</b> "+d.af_applied+"<br/>")
+                      div .html("<b>TF:</b> "+d.name+"<br/>"+
+                          "<b>GF:</b> "+d.gf_name+"<br/>"+
+                          "<b>AF:</b> "+d.af_name+"<br/>"+
+                          "<b>Rolle:</b> "+d.role+"<br/>"+
+                          "<b>User:</b> "+d.user+"<br/>"+
+                          "<b>Plattform:</b> "+d.plattform+"<br/>"+
+                          "<b>AF aktiv seit:</b> "+d.af_applied+"<br/>")
                           .style("right","px")
                           .style("top","py"+(d3.event.pageY))
                   })

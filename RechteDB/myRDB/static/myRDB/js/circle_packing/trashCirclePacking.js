@@ -10,7 +10,7 @@ $(document).ready(function(){
               return "white";
           }
           else{
-              if(d.depth===3){return d.data.color}
+              if(d.depth===5){return d.data.color}
               else{return "white"}
           }
       }
@@ -37,10 +37,12 @@ $(document).ready(function(){
           .style("opacity",0);
 
       function get_opacity(d) {
-          if(d.depth ===0) return 0.5;
-          if(d.depth ===1) return 0.7;
-          if(d.depth ===2) return 0.8;
-          if(d.depth ===3) return 0.9;
+          if(d.depth ===0) return 0.4;
+          if(d.depth ===1) return 0.5;
+          if(d.depth ===2) return 0.6;
+          if(d.depth ===3) return 0.7;
+          if(d.depth ===4) return 0.8;
+          if(d.depth ===5) return 0.9;
       }
 
     //TODO: bei erstellen von json color für leaves mitgeben!!!
@@ -62,11 +64,15 @@ $(document).ready(function(){
                   .style("opacity",9);
               var text;
               if(d.depth === 1){
-                  text = "<b>AF:</b> "+d.data.name
+                  text = "<b>User:</b> "+d.data.name+"<br/>"
               }else if(d.depth === 2){
-                  text = "<b>GF:</b> "+d.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.data.name
+                  text = "<b>Rolle:</b> "+d.data.name+"<br/>"+"<b>Rollen-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 3){
-                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>GF:</b> "+d.parent.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.parent.data.name
+                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 4){
+                  text = "<b>GF:</b> "+d.data.name+"<br/>"+"<b>GF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 5){
+                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>TF-Beschreibung:</b> "+d.data.description
               }
               div .html(text)
                   .style("left",(d3.event.pageX)+"px")
@@ -79,9 +85,9 @@ $(document).ready(function(){
                   .style("opacity",0)
           });
 
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
+      //var leaves = d3.selectAll("circle").filter(function(d){
+      //  return d.children === null;
+      //});
 
       //var text = g.selectAll("text")
       //  .data(nodes)
@@ -195,11 +201,15 @@ $(document).ready(function(){
                   .style("opacity",9);
               var text;
               if(d.depth === 1){
-                  text = "<b>AF:</b> "+d.data.name
+                  text = "<b>User:</b> "+d.data.name+"<br/>"
               }else if(d.depth === 2){
-                  text = "<b>GF:</b> "+d.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.data.name+"<br/>"
+                  text = "<b>Rolle:</b> "+d.data.name+"<br/>"+"<b>Rollen-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 3){
-                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>GF:</b> "+d.parent.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.parent.data.name
+                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 4){
+                  text = "<b>GF:</b> "+d.data.name+"<br/>"+"<b>GF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 5){
+                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>TF-Beschreibung:</b> "+d.data.description
               }
               div .html(text)
                   .style("left",(d3.event.pageX)+"px")
@@ -248,12 +258,6 @@ $(document).ready(function(){
             });
       }
     function restorefunction(d,i){
-        if(d.depth !== 1){
-            bootbox.alert("Berechtigung:\n\n"+d.data.name+"\n\nkonnte nicht wiederhergestellt werden!\n\nBerechtigungsbündel können nur\nkomplett wiederhergestellt werden!",function(){
-                    console.log("Berechtigungen können nur komplett wiederhergestellt werden");
-            });
-            return;
-        }
             function getCookie(name) {
                 var cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -279,12 +283,36 @@ $(document).ready(function(){
                         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                     }
                 }
-            });
-            var data = {"X-CSRFToken":getCookie("csrftoken"),"X_METHODOVERRIDE":'PATCH',"user_pk":window.user,"action_type":"restore","right_name":d.data.name};
+            });var right_type="",right_parent = "",right_grandparent = "",right_greatgrandparent = "",right_greatgreatgrandparent = "";
+            if(d.depth===1) right_type="user";
+            else if(d.depth===2) {
+                right_type="role";
+                right_parent = d.parent.data.name;
+            }
+            else if(d.depth===3){
+                right_type="af";
+                right_parent = d.parent.data.name;
+                right_grandparent = d.parent.parent.data.name;
+            }else if(d.depth===4){
+                right_type="gf";
+                right_parent = d.parent.data.name;
+                right_grandparent = d.parent.parent.data.name;
+                right_greatgrandparent = d.parent.parent.parent.data.name;
+            }else if(d.depth===5){
+                right_type="tf";
+                right_parent = d.parent.data.name;
+                right_grandparent = d.parent.parent.data.name;
+                right_greatgrandparent = d.parent.parent.parent.data.name;
+                right_greatgreatgrandparent = d.parent.parent.parent.parent.data.name;
+            }
+            var data = {"X-CSRFToken":getCookie("csrftoken"),"X_METHODOVERRIDE":'PATCH',"user":window.user,
+                "action_type":"restore","right_type":right_type,"right_name":d.data.name,"parent":right_parent,
+                "grandparent":right_grandparent, "greatgrandparent":right_greatgrandparent,
+                "greatgreatgrandparent":right_greatgreatgrandparent, };
             var successful=false;
             $.ajax({type:'POST',
                     data:data,
-                    url:'http://127.0.0.1:8000/users/'+window.user+'/',
+                    url:window.current_host+'/api/Users/'+window.user_id+'/',
                     async:false,
                     success: function(res){console.log(res);
                         successful=true},

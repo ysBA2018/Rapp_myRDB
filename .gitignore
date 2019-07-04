@@ -1,3 +1,4 @@
+**/.idea/*
 */__pycache__
 */*/__pycache__
 db.sqlite3
@@ -7,11 +8,37 @@ __pycache__
 .directory
 my3.6venv
 .idea/workspace.xml
-.idea/*
 01\ Mitarbeiterberechtigungen\ ZI-AI-BA*.csv
 .env
 *.xmi
 *.mdj
 other_files/RechteDB 20180825 Erster Export der Neuimplementierung.sql.gz
 Test.csv
-rapp_0.0.1.tar*
+**/rapp_*.tar*
+Organummernliste.csv
+other_files/storedProcedures_neue_Namenskonventionen.sql
+tbl_AFListe.txt
+tbl_RolleHatAF.sql
+tbl_RolleHatAF.txt
+tbl_Rollen.txt
+tbl_UserHatRolle.sql
+tbl_UserHatRolle.txt
+tbl*bersichtAF_GFs.txt
+RechteDB/static/icons8-add-64.png
+RechteDB/static/icons8-neu-48-2.png
+RechteDB/static/icons8-neu-48.png
+RechteDB/static/icons8-plus-48.png
+other_files/2019-01-14_DB2_RuV_Tabellen_Berechtigungen_mdq*
+other_files/datadir*
+other_files/Organummernliste.csv.gz
+code_*
+other_files/Ansicht_Berechtigungskonzept_20190127_111017.png
+other_files/TF-Zertifizierung/
+**/*.bak
+other_files/LinuxOne.pem
+other_files/rapp_direktverbindungen-OhneVorhandeModelle.ods
+other_files/rapp_direktverbindungen.sql
+other_files/rapp_direktverbindungen_VorhandeneModelle.ods
+other_files/rapp_direktverbindungen_VorhandeneModelleMitAFVorschlägen.ods
+other_files/ubuntu_latex.tar.gz
+RechteDB/ER-Modell.mwb.bak
