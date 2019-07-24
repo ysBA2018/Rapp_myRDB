@@ -88,16 +88,13 @@ class TblGesamt(models.Model):
                                        db_index=True)
     letzte_aenderung = models.DateTimeField(auto_now=True, db_index=True)
 
-    on_transfer_list = models.BooleanField(default=False)
-    on_delete_list = models.BooleanField(default=False)
-
     class Meta:
         managed = True
         db_table = 'tblGesamt'
         verbose_name = "Eintrag der Gesamttabelle (tblGesamt)"
         verbose_name_plural = "08_Gesamttabelle Übersicht (tblGesamt)"
         index_together = (
-        ('userid_name', 'tf', 'enthalten_in_af', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator'),)
+            ('userid_name', 'tf', 'enthalten_in_af', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator'),)
         ordering = ['id']
 
     def __str__(self) -> str:
@@ -137,11 +134,10 @@ class TblGesamt(models.Model):
         return reverse('gesamt-detail', args=[str(self.id)])
 
 
-
 # Tabelle enthält die aktuell genehmigten (modellierten und in Modellierung befindlichen) AF + GF-Kombinationen
 class TblUebersichtAfGfs(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)  # Field name made lowercase.
-    name_gf_neu = models.CharField(db_column='name_gf_neu', max_length=50, verbose_name='GF Neu',
+    name_gf_neu = models.CharField(db_column='name_gf_neu', max_length=100, verbose_name='GF Neu',
                                    db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
     name_af_neu = models.CharField(db_column='name_af_neu', max_length=50, verbose_name='AF Neu',
                                    db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
@@ -163,10 +159,6 @@ class TblUebersichtAfGfs(models.Model):
     geloescht = models.IntegerField(db_column='geloescht', blank=True, null=True, db_index=True)
     kannweg = models.IntegerField(blank=True, null=True)
     modelliert = models.DateTimeField(blank=True, null=True)
-    tfs = models.ManyToManyField(TblGesamt,default=None)
-    del_tfs = models.ManyToManyField(TblGesamt,default=None, related_name='del_tfs')
-    on_transfer_list = models.BooleanField(default=False)
-    on_delete_list = models.BooleanField(default=False)
 
     class Meta:
         managed = True
@@ -181,8 +173,6 @@ class TblUebersichtAfGfs(models.Model):
 
     geloescht.boolean = True
     kannweg.boolean = True
-
-
 
 
 # Dies ist nur eine Hilfstabelle.
@@ -203,10 +193,6 @@ class TblAfliste(models.Model):
     af_name = models.CharField(db_column='af_name', unique=True, max_length=150,
                                verbose_name='AF-Name')  # Field name made lowercase. Field renamed to remove unsuitable characters.
     neu_ab = models.DateTimeField(db_column='neu_ab')  # Field renamed to remove unsuitable characters.
-    gfs = models.ManyToManyField(TblUebersichtAfGfs,default=None)
-    del_gfs = models.ManyToManyField(TblUebersichtAfGfs,default=None, related_name='del_gfs')
-    on_transfer_list = models.BooleanField(default=False)
-    on_delete_list = models.BooleanField(default=False)
 
     class Meta:
         managed = True
@@ -219,21 +205,17 @@ class TblAfliste(models.Model):
         return str(self.af_name)
 
 
-#class TblGfliste(models.Model):
+# class TblGfliste(models.Model):
 
 
 # Die drei Rollentabellen sowie die AF-Liste hängen inhaltlich zusammen
 # Die Definition der Rollen
 class TblRollen(models.Model):
-    rollenname = models.CharField(db_column='rollenname', primary_key=True, max_length=100, verbose_name='Rollen-Name')
+    rollenid = models.AutoField(primary_key=True)
+    rollenname = models.CharField(db_column='rollenname', unique=True, max_length=100, verbose_name='Rollen-Name')
     system = models.CharField(db_column='system', max_length=150, verbose_name='System', db_index=True)
     rollenbeschreibung = models.TextField(db_column='rollenbeschreibung', blank=True, null=True)
     datum = models.DateTimeField(db_column='datum', default=timezone.now, blank=True)
-    afs = models.ManyToManyField(TblAfliste,through='TblRollehataf', default=None)
-    del_afs = models.ManyToManyField(TblAfliste, default=None, related_name='del_afs')
-    on_transfer_list = models.BooleanField(default=False)
-    on_delete_list = models.BooleanField(default=False)
-
 
     class Meta:
         managed = True
@@ -279,6 +261,12 @@ class TblRollehataf(models.Model):
     bemerkung = models.CharField(db_column='bemerkung', max_length=250, blank=True,
                                  null=True)  # Field name made lowercase.
     einsatz = models.IntegerField(db_column='einsatz', choices=EINSATZ_CHOICES, default=EINSATZ_NONE)
+    userHatRolle_id = models.ForeignKey('TblUserhatrolle', models.CASCADE, to_field='userundrollenid',
+                                        db_column='userHatRolle', blank=True, null=True)  # Field name made lowercase.
+
+    gfs = models.ManyToManyField(TblUebersichtAfGfs, default=None, related_name='gfs', through='TblAfHatGF')
+    on_transfer_list = models.BooleanField(default=False)
+    on_delete_list = models.BooleanField(default=False)
 
     class Meta:
         managed = True
@@ -300,6 +288,134 @@ class TblRollehataf(models.Model):
     mussfeld.boolean = True
 
 
+class TblRollehataf_Geloescht(models.Model):
+    EINSATZ_NONE = 0
+    EINSATZ_NURDV = 1
+    EINSATZ_XABCV = 2
+    EINSATZ_NURXV = 4
+    EINSATZ_ABCV = 8
+    EINSATZ_CHOICES = (
+        (EINSATZ_NONE, 'nicht zugewiesen'),
+        (EINSATZ_NURDV, 'Nur DV-User'),
+        (EINSATZ_XABCV, 'XV, AV, BV, CV'),
+        (EINSATZ_NURXV, 'nur XV-User'),
+        (EINSATZ_ABCV, 'AV, BV, CV'),
+    )
+
+    rollenmappingid = models.AutoField(db_column='rollenmappingid', primary_key=True,
+                                       verbose_name='ID')  # Field name made lowercase.
+    rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
+                                   db_column='rollenname')  # Field name made lowercase.
+    af = models.ForeignKey('TblAfliste', models.PROTECT, to_field='id', db_column='af', blank=True, null=True,
+                           verbose_name='AF')  # Field name made lowercase.
+    mussfeld = models.IntegerField(db_column='mussfeld', blank=True, null=True,
+                                   verbose_name='Muss')  # Field name made lowercase. This field type is a guess.
+    bemerkung = models.CharField(db_column='bemerkung', max_length=250, blank=True,
+                                 null=True)  # Field name made lowercase.
+    einsatz = models.IntegerField(db_column='einsatz', choices=EINSATZ_CHOICES, default=EINSATZ_NONE)
+    userHatRolle_id = models.ForeignKey('TblUserhatrolle_Geloescht', models.CASCADE, to_field='userundrollenid',
+                                        db_column='userHatRolle', blank=True, null=True)  # Field name made lowercase.
+
+    del_gfs = models.ManyToManyField(TblUebersichtAfGfs, default=None, related_name='del_gfs',
+                                     through='TblAfHatGF_Geloescht')
+    on_delete_list = models.BooleanField(default=False)
+
+    class Meta:
+        managed = True
+        db_table = 'tbl_RolleHatAF_Geloescht'
+        unique_together = (('rollenname', 'af'),)
+        verbose_name = "Rolle und ihre Arbeitsplatzfunktionen Geloescht"
+        verbose_name_plural = "02_Rollen und ihre Arbeitsplatzfunktionen (tbl_RolleHatAF) Geloescht"
+        ordering = ['rollenname__rollenname', 'af__af_name', ]
+
+    def __str__(self) -> str:
+        return str(self.rollenname)
+
+    def get_muss(self):
+        return self.mussfeld
+
+    get_muss.boolean = True
+    get_muss.admin_order_field = 'mussfeld'
+    get_muss.short_description = 'Muss'
+    mussfeld.boolean = True
+
+
+class TblRollehataf_Transferiert(models.Model):
+    EINSATZ_NONE = 0
+    EINSATZ_NURDV = 1
+    EINSATZ_XABCV = 2
+    EINSATZ_NURXV = 4
+    EINSATZ_ABCV = 8
+    EINSATZ_CHOICES = (
+        (EINSATZ_NONE, 'nicht zugewiesen'),
+        (EINSATZ_NURDV, 'Nur DV-User'),
+        (EINSATZ_XABCV, 'XV, AV, BV, CV'),
+        (EINSATZ_NURXV, 'nur XV-User'),
+        (EINSATZ_ABCV, 'AV, BV, CV'),
+    )
+
+    rollenmappingid = models.AutoField(db_column='rollenmappingid', primary_key=True,
+                                       verbose_name='ID')  # Field name made lowercase.
+    rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
+                                   db_column='rollenname')  # Field name made lowercase.
+    af = models.ForeignKey('TblAfliste', models.PROTECT, to_field='id', db_column='af', blank=True, null=True,
+                           verbose_name='AF')  # Field name made lowercase.
+    mussfeld = models.IntegerField(db_column='mussfeld', blank=True, null=True,
+                                   verbose_name='Muss')  # Field name made lowercase. This field type is a guess.
+    bemerkung = models.CharField(db_column='bemerkung', max_length=250, blank=True,
+                                 null=True)  # Field name made lowercase.
+    einsatz = models.IntegerField(db_column='einsatz', choices=EINSATZ_CHOICES, default=EINSATZ_NONE)
+
+    userHatRolle_id = models.ForeignKey('TblUserhatrolle_Transferiert', models.CASCADE, to_field='userundrollenid',
+                                        db_column='userHatRolle', blank=True, null=True)  # Field name made lowercase.
+
+    trans_gfs = models.ManyToManyField(TblUebersichtAfGfs, default=None, related_name='trans_gfs',
+                                       through='TblAfHatGF_Transferiert')
+    on_transfer_list = models.BooleanField(default=False)
+
+    class Meta:
+        managed = True
+        db_table = 'tbl_RolleHatAF_Transferiert'
+        unique_together = (('rollenname', 'af'),)
+        verbose_name = "Rolle und ihre Arbeitsplatzfunktionen Transferiert"
+        verbose_name_plural = "02_Rollen und ihre Arbeitsplatzfunktionen (tbl_RolleHatAF) Transferiert"
+        ordering = ['rollenname__rollenname', 'af__af_name', ]
+
+    def __str__(self) -> str:
+        return str(self.rollenname)
+
+    def get_muss(self):
+        return self.mussfeld
+
+    get_muss.boolean = True
+    get_muss.admin_order_field = 'mussfeld'
+    get_muss.short_description = 'Muss'
+    mussfeld.boolean = True
+
+
+class TblAfHatGF(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    rolleHatAf_id = models.ForeignKey('TblRollehataf', db_column='rolleHatAf_id', on_delete=models.CASCADE)
+    gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
+    tfs = models.ManyToManyField(TblGesamt, default=None, related_name='tfs')
+
+
+class TblAfHatGF_Geloescht(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    rolleHatAf_id = models.ForeignKey('TblRollehataf_Geloescht', db_column='rolleHatAf_id', on_delete=models.CASCADE)
+    gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
+    del_tfs = models.ManyToManyField(TblGesamt, default=None, related_name='del_tfs')
+    on_delete_list = models.BooleanField(default=False)
+
+
+class TblAfHatGF_Transferiert(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    rolleHatAf_id = models.ForeignKey('TblRollehataf_Transferiert', db_column='rolleHatAf_id', on_delete=models.CASCADE)
+    gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
+    trans_tfs = models.ManyToManyField(TblGesamt, default=None, related_name='trans_tfs')
+    on_transfer_list = models.BooleanField(default=False)
+
+
 # Referenz der User auf die ihnen zur Verfügung stehenden Rollen
 class TblUserhatrolle(models.Model):
     SCHWERPUNKT_TYPE = (
@@ -307,15 +423,13 @@ class TblUserhatrolle(models.Model):
         ('Vertretung', 'Vertretungstätigkeiten, Zweitsysteme'),
         ('Allgemein', 'Rollen, die nicht Systemen zugeordnet sind'),
     )
-
     userundrollenid = models.AutoField(db_column='userundrollenid', primary_key=True,
                                        verbose_name='ID')  # Field name made lowercase.
     userid = models.ForeignKey('TblUserIDundName', models.PROTECT, to_field='userid', db_column='userid',
                                verbose_name='UserID, Name')  # Field name made lowercase.
-    rollenname = models.ForeignKey('TblRollen', models.PROTECT, db_column='rollenname')  # Field name made lowercase.
-
-    schwerpunkt_vertretung = \
-        models.CharField(db_column='schwerpunkt_vertretung',
+    rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
+                                   db_column='rollenname')  # Field name made lowercase.
+    schwerpunkt_vertretung = models.CharField(db_column='schwerpunkt_vertretung',
                          max_length=100,
                          blank=True, null=True,
                          choices=SCHWERPUNKT_TYPE,
@@ -324,6 +438,12 @@ class TblUserhatrolle(models.Model):
     bemerkung = models.TextField(db_column='bemerkung', blank=True, null=True)  # Field name made lowercase.
     letzte_aenderung = models.DateTimeField(db_column='letzte_aenderung', default=timezone.now, blank=True,
                                             db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    userHatUserID_id = models.ForeignKey('UserHatTblUserIDundName', models.CASCADE, db_column='userHatUserID_id',
+                                         default=None, null=True)  # Field name made lowercase.
+
+    afs = models.ManyToManyField(TblAfliste, through='TblRollehataf', default=None, related_name='afs')
+    on_transfer_list = models.BooleanField(default=False)
+    on_delete_list = models.BooleanField(default=False)
 
     class Meta:
         managed = True
@@ -357,6 +477,131 @@ class TblUserhatrolle(models.Model):
         # Returns the url to access a particular instance of the model.
         return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
 
+
+class TblUserhatrolle_Geloescht(models.Model):
+    SCHWERPUNKT_TYPE = (
+        ('Schwerpunkt', 'Schwerpunktaufgabe'),
+        ('Vertretung', 'Vertretungstätigkeiten, Zweitsysteme'),
+        ('Allgemein', 'Rollen, die nicht Systemen zugeordnet sind'),
+    )
+
+    userundrollenid = models.AutoField(db_column='userundrollenid', primary_key=True,
+                                       verbose_name='ID')  # Field name made lowercase.
+    userid = models.ForeignKey('TblUserIDundName', models.PROTECT, to_field='userid', db_column='userid',
+                               verbose_name='UserID, Name')  # Field name made lowercase.
+    rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
+                                   db_column='rollenname')  # Field name made lowercase.
+    schwerpunkt_vertretung = \
+        models.CharField(db_column='schwerpunkt_vertretung',
+                         max_length=100,
+                         blank=True, null=True,
+                         choices=SCHWERPUNKT_TYPE,
+                         db_index=True
+                         )  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    bemerkung = models.TextField(db_column='bemerkung', blank=True, null=True)  # Field name made lowercase.
+    letzte_aenderung = models.DateTimeField(db_column='letzte_aenderung', default=timezone.now, blank=True,
+                                            db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    userHatUserID_id = models.ForeignKey('UserHatTblUserIDundName_Geloescht', models.CASCADE,
+                                         db_column='userHatUserID_id', default=None)  # Field name made lowercase.
+
+    del_afs = models.ManyToManyField(TblAfliste, through='TblRollehataf_Geloescht', default=None,
+                                     related_name='del_afs')
+    on_delete_list = models.BooleanField(default=False)
+
+    class Meta:
+        managed = True
+        db_table = 'tbl_UserHatRolle_Geloescht'
+        verbose_name = "User und Ihre Rollen Geloescht"
+        verbose_name_plural = "01_User und Ihre Rollen (tbl_UserHatRolle) Geloescht"
+        ordering = ['userid__name', '-userid__userid', 'schwerpunkt_vertretung', 'rollenname', ]
+        unique_together = (('userid', 'rollenname'),)
+
+    def __str__(self) -> str:
+        return str(self.userundrollenid)
+
+    def get_rollenbeschreibung(self):
+        return str(self.rollenname.rollenbeschreibung)
+
+    get_rollenbeschreibung.short_description = 'Rollenbeschreibung'
+
+    def get_absolute_url(self):
+        # Returns the url for the whole list.
+        return reverse('user_rolle_af', args=[])
+
+    def get_absolute_update_url(self):
+        # Returns the url to access a particular instance of the model.
+        return reverse('user_rolle_af-update', args=[str(self.userundrollenid)])
+
+    def get_absolute_create_url(self):
+        # Returns the url to open the create-instance of the model (no ID given, the element does not exist yet).
+        return reverse('user_rolle_af-create', args=[])
+
+    def get_absolute_delete_url(self):
+        # Returns the url to access a particular instance of the model.
+        return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
+
+
+class TblUserhatrolle_Transferiert(models.Model):
+    SCHWERPUNKT_TYPE = (
+        ('Schwerpunkt', 'Schwerpunktaufgabe'),
+        ('Vertretung', 'Vertretungstätigkeiten, Zweitsysteme'),
+        ('Allgemein', 'Rollen, die nicht Systemen zugeordnet sind'),
+    )
+
+    userundrollenid = models.AutoField(db_column='userundrollenid', primary_key=True,
+                                       verbose_name='ID')  # Field name made lowercase.
+    userid = models.ForeignKey('TblUserIDundName', models.PROTECT, to_field='userid', db_column='userid',
+                               verbose_name='UserID, Name')  # Field name made lowercase.
+    rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
+                                   db_column='rollenname')  # Field name made lowercase.
+    schwerpunkt_vertretung = \
+        models.CharField(db_column='schwerpunkt_vertretung',
+                         max_length=100,
+                         blank=True, null=True,
+                         choices=SCHWERPUNKT_TYPE,
+                         db_index=True
+                         )  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    bemerkung = models.TextField(db_column='bemerkung', blank=True, null=True)  # Field name made lowercase.
+    letzte_aenderung = models.DateTimeField(db_column='letzte_aenderung', default=timezone.now, blank=True,
+                                            db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    userHatUserID_id = models.ForeignKey('UserHatTblUserIDundName_Transferiert', models.CASCADE,
+                                         db_column='userHatUserID_id', default=None)  # Field name made lowercase.
+
+    trans_afs = models.ManyToManyField(TblAfliste, through='TblRollehataf_Transferiert', default=None,
+                                       related_name='trans_afs')
+    on_transfer_list = models.BooleanField(default=False)
+
+    class Meta:
+        managed = True
+        db_table = 'tbl_UserHatRolle_Transferiert'
+        verbose_name = "User und Ihre Rollen Transferiert"
+        verbose_name_plural = "01_User und Ihre Rollen (tbl_UserHatRolle) Transferiert"
+        ordering = ['userid__name', '-userid__userid', 'schwerpunkt_vertretung', 'rollenname', ]
+        unique_together = (('userid', 'rollenname'),)
+
+    def __str__(self) -> str:
+        return str(self.userundrollenid)
+
+    def get_rollenbeschreibung(self):
+        return str(self.rollenname.rollenbeschreibung)
+
+    get_rollenbeschreibung.short_description = 'Rollenbeschreibung'
+
+    def get_absolute_url(self):
+        # Returns the url for the whole list.
+        return reverse('user_rolle_af', args=[])
+
+    def get_absolute_update_url(self):
+        # Returns the url to access a particular instance of the model.
+        return reverse('user_rolle_af-update', args=[str(self.userundrollenid)])
+
+    def get_absolute_create_url(self):
+        # Returns the url to open the create-instance of the model (no ID given, the element does not exist yet).
+        return reverse('user_rolle_af-create', args=[])
+
+    def get_absolute_delete_url(self):
+        # Returns the url to access a particular instance of the model.
+        return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
 
 
 # Die Tabelle enthält die Teambeschreibungen. Das eigentliche Team ist das Feld "team"
@@ -394,6 +639,31 @@ class TblOrga(models.Model):
         return reverse('team-create', args=[])
 
 
+class UserHatTblUserIDundName(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
+    userid_name_id = models.ForeignKey('TblUserIDundName', db_column='userid_name_id', on_delete=models.CASCADE)
+    rollen = models.ManyToManyField(TblRollen, through='TblUserhatrolle', default=None, related_name='rollen')
+
+
+class UserHatTblUserIDundName_Geloescht(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
+    userid_name_id = models.ForeignKey('TblUserIDundName', db_column='userid_name_id', on_delete=models.CASCADE)
+    del_rollen = models.ManyToManyField(TblRollen, through='TblUserhatrolle_Geloescht', default=None,
+                                        related_name='del_rollen')
+    on_delete_list = models.BooleanField(default=True)
+
+
+class UserHatTblUserIDundName_Transferiert(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
+    userid_name_id = models.ForeignKey('TblUserIDundName', db_column='userid_name_id', on_delete=models.CASCADE)
+    trans_rollen = models.ManyToManyField(TblRollen, through='TblUserhatrolle_Transferiert', default=None,
+                                          related_name='trans_rollen')
+    on_transfer_list = models.BooleanField(default=True)
+
+
 # Die Namen aller aktiven und gelöschten UserIDen und der dazugehörenden Namen (Realnamen und Technische User)
 class TblUserIDundName(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)  # Field name made lowercase.
@@ -407,9 +677,7 @@ class TblUserIDundName(models.Model):
                                     db_index=True)
     abteilung = models.CharField(db_column='abteilung', max_length=64, )  # Field name made lowercase.
     gruppe = models.CharField(db_column='gruppe', max_length=32, db_index=True)  # Field name made lowercase.
-    rollen = models.ManyToManyField(TblRollen,through='TblUserhatrolle', default=None)
-    del_rollen = models.ManyToManyField(TblRollen, default=None, related_name='del_rollen')
-    on_delete_list = models.BooleanField(default=False)
+    rollen = models.ManyToManyField(TblRollen, related_name='applied_model_roles', through=TblUserhatrolle)
 
     class Meta:
         managed = True
@@ -482,7 +750,8 @@ class TblPlattform(models.Model):
     tf_technische_plattform = models.CharField(db_column='tf_technische_plattform', unique=True, max_length=32,
                                                verbose_name='Plattform',
                                                db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    color = models.CharField(default="0",max_length=25)
+    color = models.CharField(default="0", max_length=25)
+
     class Meta:
         managed = True
         db_table = 'tblPlattform'
@@ -1025,10 +1294,15 @@ class User(AbstractUser):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True, editable=False, null=False, blank=False)
+    userid_name = models.ManyToManyField(TblUserIDundName, default=None, related_name="user_rights",
+                                         through=UserHatTblUserIDundName)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+
     deleted = models.BooleanField(default=False)
-    userid_name = models.ManyToManyField(TblUserIDundName, default=None)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    transfer_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="transfer_list")
-    delete_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="delete_list")
+    transfer_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="transfer_list",
+                                           through=UserHatTblUserIDundName_Transferiert)
+    delete_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="delete_list",
+                                         through=UserHatTblUserIDundName_Geloescht)
+
     # identity = models.CharField(max_length=7, unique=True)
     # avatar = models.ImageField()
 

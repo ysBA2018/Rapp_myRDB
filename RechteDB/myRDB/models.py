@@ -17,8 +17,6 @@ import importlib
 
 modellist = importlib.import_module('rapp.models')
 TblRollen = modellist.TblRollen
-TblRollehataf = modellist.TblRollehataf
-TblUserhatrolle = modellist.TblUserhatrolle
 TblUebersichtAfGfs = modellist.TblUebersichtAfGfs
 TblOrga = modellist.TblOrga
 TblUserIDundName = modellist.TblUserIDundName
@@ -39,6 +37,24 @@ Letzter_import = modellist.Letzter_import
 Modellierung = modellist.Modellierung
 Direktverbindungen = modellist.Direktverbindungen
 User = modellist.User
+
+UserHatTblUserIDundName_Transferiert = modellist.UserHatTblUserIDundName_Transferiert
+UserHatTblUserIDundName_Geloescht = modellist.UserHatTblUserIDundName_Geloescht
+UserHatTblUserIDundName = modellist.UserHatTblUserIDundName
+
+TblUserhatrolle = modellist.TblUserhatrolle
+TblUserhatrolle_Transferiert = modellist.TblUserhatrolle_Transferiert
+TblUserhatrolle_Geloescht = modellist.TblUserhatrolle_Geloescht
+
+TblRollehataf = modellist.TblRollehataf
+TblRollehataf_Transferiert = modellist.TblRollehataf_Transferiert
+TblRollehataf_Geloescht = modellist.TblRollehataf_Geloescht
+
+TblAfHatGf = modellist.TblAfHatGF
+TblAfHatGF_Transferiert = modellist.TblAfHatGF_Transferiert
+TblAfHatGF_Geloescht = modellist.TblAfHatGF_Geloescht
+
+
 '''
 class ChangeRequests(models.Model):
     requesting_user = models.CharField(max_length=7)

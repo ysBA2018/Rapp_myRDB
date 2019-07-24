@@ -12,9 +12,10 @@ from rest_framework.response import Response
 
 # from .forms import CustomUserCreationForm, SomeForm, ApplyRightForm, DeleteRightForm, AcceptChangeForm, \
 #   DeclineChangeForm, CustomAuthenticationForm, ProfileHeaderForm
+from .models import *
 from .forms import SomeForm, ApplyRightForm, DeleteRightForm, AcceptChangeForm, \
     DeclineChangeForm, CustomAuthenticationForm, ProfileHeaderForm
-from .models import *
+
 # from .models import Role, AF, GF, TF, Orga, Group, Department, ZI_Organisation, TF_Application, User_AF, User_TF, \
 #   User_GF, ChangeRequests
 from rest_framework import viewsets, status
@@ -1631,8 +1632,9 @@ def get_user_by_key(pk, headers, request):
     :return:
     '''
     # url = 'http://' + request.get_host() + '/users/%s' % pk
-    url = docker_container_ip + '/api/Users/%s' % pk
-    json = requests.get(url, headers=headers).json()
+    url = docker_container_ip + '/api/users/%s' % pk
+    res = requests.get(url, headers=headers)
+    json = res.json()
     if 'results' in json:
         json = json['results']
     elif 'detail' in json:
@@ -1706,6 +1708,25 @@ def get_user_roles(headers, user_pk, request):
     '''
     url = docker_container_ip + '/api/userhatrollen/'
     json = requests.get(url, headers=headers).json()
+    if 'results' in json:
+        json = json['results']
+    elif 'detail' in json:
+        print(json['detail'])
+        raise ConnectionError(json['detail'])
+    return json
+
+
+def get_user_userid_name_combination(headers, user_pk, userid_name_pk, request):
+    '''
+    :param headers:
+    :param user_pk:
+    :param userid_name_pk:
+    :param request:
+    :return:
+    '''
+    url = docker_container_ip + '/api/userhatuseridundnamen/?user_pk='+str(user_pk)+'&userid_name_pk='+str(userid_name_pk)
+    res = requests.get(url, headers=headers)
+    json = res.json()
     if 'results' in json:
         json = json['results']
     elif 'detail' in json:
@@ -1807,11 +1828,15 @@ def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     old_plattform = None
     counts = {'user': 0, 'roles': 0, 'afs': 0, 'gfs': 0, 'tfs': 0, }
     for e in user_json_data['userid_name']:
-        graph_data['children'].append(get_user_details_by_url(e, headers))
+        userid_name_data = get_user_details_by_url(e, headers)
+        user_hat_userid_name_data = get_user_userid_name_combination(headers,user_json_data['id'],userid_name_data['id'],request)
+        graph_data['children'].append(userid_name_data)
         for user in graph_data['children']:
             user['name'] = user.pop('userid')
-            user['children'] = user.pop('rollen')
+            user['children'] = []
             counts['user'] += 1
+            for rolle in user['rollen']:
+                user['children'].append(get_by_url(rolle,headers))
             for rolle in user['children']:
                 rolle['name'] = rolle.pop('rollenname')
                 rolle['description'] = rolle.pop('rollenbeschreibung')
@@ -1971,22 +1996,6 @@ class TblRollenViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return TblRollen.objects.all()
-
-
-class TblRollehatafViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = TblRollehatafSerializer
-
-    def get_queryset(self):
-        return TblRollehataf.objects.all()
-
-
-class TblUserhatrolleViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = TblUserhatrolleSerializer
-
-    def get_queryset(self):
-        return TblUserhatrolle.objects.all()
 
 
 class TblUebersichtAfGfsViewSet(viewsets.ModelViewSet):
@@ -2185,6 +2194,119 @@ class UsersViewSet(viewsets.ModelViewSet):
         return User.objects.all()
 
 
+class UserHatTblUserIDundName_TransferiertViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserHatTblUserIDundName_TransferiertSerializer
+
+    def get_queryset(self):
+        if 'user_pk' in self.request.GET and 'userid_name_pk' in self.request.GET:
+            user_pk = self.request.GET['user_pk']
+            userid_name_pk = self.request.GET['userid_name_pk']
+            filtered = UserHatTblUserIDundName_Transferiert.objects.filter(id=user_pk) \
+                .filter(userid_name_pk=userid_name_pk)
+            return filtered
+        return UserHatTblUserIDundName_Transferiert.objects.all()
+
+
+class UserHatTblUserIDundName_GeloeschtViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserHatTblUserIDundName_GeloeschtSerializer
+
+    def get_queryset(self):
+        if 'user_pk' in self.request.GET and 'userid_name_pk' in self.request.GET:
+            user_pk = self.request.GET['user_pk']
+            userid_name_pk = self.request.GET['userid_name_pk']
+            filtered = UserHatTblUserIDundName_Geloescht.objects.filter(id=user_pk) \
+                .filter(userid_name_pk=userid_name_pk)
+            return filtered
+        return UserHatTblUserIDundName_Geloescht.objects.all()
+
+
+class UserHatTblUserIDundNameViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserHatTblUserIDundNameSerializer
+
+    def get_queryset(self):
+        if 'user_pk' in self.request.GET and 'userid_name_pk' in self.request.GET:
+            user_pk = self.request.GET['user_pk']
+            userid_name_pk = self.request.GET['userid_name_pk']
+            filtered = UserHatTblUserIDundName.objects.filter(user_name=user_pk) \
+                .filter(userid_name_id=userid_name_pk)
+            return filtered
+        return UserHatTblUserIDundName.objects.all()
+
+
+
+class TblUserhatrolleViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblUserhatrolleSerializer
+
+    def get_queryset(self):
+        return TblUserhatrolle.objects.all()
+
+
+class TblUserhatrolle_TransferiertViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblUserhatrolle_TransferiertSerializer
+
+    def get_queryset(self):
+        return TblUserhatrolle_Transferiert.objects.all()
+
+
+class TblUserhatrolle_GeloeschtViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblUserhatrolle_GeloeschtSerializer
+
+    def get_queryset(self):
+        return TblUserhatrolle_Geloescht.objects.all()
+
+
+class TblRollehatafViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblRollehatafSerializer
+
+    def get_queryset(self):
+        return TblRollehataf.objects.all()
+
+
+class TblRollehataf_TransferiertViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblRollehataf_TransferiertSerializer
+
+    def get_queryset(self):
+        return TblRollehataf_Transferiert.objects.all()
+
+
+class TblRollehataf_GeloeschtViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblRollehataf_GeloeschtSerializer
+
+    def get_queryset(self):
+        return TblRollehataf_Geloescht.objects.all()
+
+
+class TblAfHatGfViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAfHatGfSerializer
+
+    def get_queryset(self):
+        return TblAfHatGf.objects.all()
+
+
+class TblAfHatGf_TransferiertViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAfHatGf_TransferiertSerializer
+
+    def get_queryset(self):
+        return TblAfHatGF_Transferiert.objects.all()
+
+
+class TblAfHatGf_GeloeschtViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAfHatGf_GeloeschtSerializer
+
+    def get_queryset(self):
+        return TblAfHatGF_Geloescht.objects.all()
 '''
 class UserModelRightsViewSet(viewsets.ModelViewSet):
     
