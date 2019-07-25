@@ -54,7 +54,7 @@ TblAfHatGf = modellist.TblAfHatGF
 TblAfHatGF_Transferiert = modellist.TblAfHatGF_Transferiert
 TblAfHatGF_Geloescht = modellist.TblAfHatGF_Geloescht
 
-
+#TblModelAfHatModelGf = modellist.TblModelAfHatModelGf
 '''
 class ChangeRequests(models.Model):
     requesting_user = models.CharField(max_length=7)

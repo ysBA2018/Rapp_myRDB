@@ -947,8 +947,9 @@ class Profile(generic.ListView):
         user_json_data = get_user_by_key(user_pk, headers, self.request)
         transfer_list = user_json_data['transfer_list']
         delete_list = user_json_data['delete_list']
-
+        update_personal_right_models(user_id, user_json_data, headers, self.request)
         graph_data, scatterData, counts = prepareJSONdata(user_id, user_json_data, False, headers, self.request)
+        #graph_data, new_counts = self.reduce_and_patch_to_personal_rights(graph_data, headers)
         self.extra_context['scatterData'] = scatterData
 
         transfer_list, transfer_list_with_category = prepareTransferJSONdata(transfer_list)
@@ -1003,6 +1004,26 @@ class Profile(generic.ListView):
 
         return []
         # return data
+
+    def reduce_and_patch_to_personal_rights(self, graph_data, headers):
+        counts = {'user':0,'roles':0,'afs':0,'gfs':0,'tfs':0}
+        new_graph_data = {}
+        print(graph_data)
+        for u in graph_data['children']:
+            for r in u['children']:
+                for a in r['children']:
+                    if not a['children']:
+                        r['children'].remove(a)
+                    else:
+                        for g in a['children']:
+                            if not g['children']:
+                                a['children'].remove(g)
+                        if not a['children']:
+                            r['children'].remove(a)
+                if not r['children']:
+                    u['children'].remove(r)
+        print(graph_data)
+        return graph_data, counts
 
 
 class RequestPool(generic.ListView):
@@ -1785,6 +1806,54 @@ def get_af_description_from_Tblrechteneuvonimport(user, af, gf, tf, headers):
     return json
 
 
+def patch_userhatuseridundnamen_rollen(userhatuseridundname_id, rollen_id, headers):
+    url = docker_container_ip + '/api/userhatuseridundnamen/'
+    data = {"userhatuseridundname_id": userhatuseridundname_id, "rollen_id": rollen_id}
+    try:
+        requests.patch(url, data=data, headers=headers)
+        print("UserHatUseridundnamen-Rollen-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von userhatuseridundnamen_rollen")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def patch_userhatrolle_afs(userhatrolle_id, af_id, headers):
+    url = docker_container_ip + '/api/rollehataf/'
+    data = {"userhatrolle_id": userhatrolle_id, "af_id": af_id}
+    try:
+        requests.patch(url, data=data, headers=headers)
+        print("UserHatRolle-AFS-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von userhatrolle_afs")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def patch_rollehatafs_gfs(rollehataf_id, gf_id, headers):
+    url = docker_container_ip + '/api/rollehatafs/'
+    data = {"rollehataf_id": rollehataf_id, "gf_id": gf_id}
+    try:
+        requests.patch(url, data=data, headers=headers)
+        print("RolleHatAFs-GFS-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von rollehatafs_gfs")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def patch_afhatgfs_tfs(afhatgf_id, tf_id, headers):
+    url = docker_container_ip + '/api/afhatgfs/'
+    data = {"afhatgf_id": afhatgf_id, "tf_id": tf_id}
+    try:
+        requests.patch(url, data=data, headers=headers)
+        print("AfHatGFs-TFS-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von afhatgfs_tfs")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 def patch_af_gfs(af_id, gf_id, headers):
     url = docker_container_ip + '/api/afs/'
     data = {"af_id": af_id, "gf_id": gf_id}
@@ -1809,6 +1878,9 @@ def patch_gf_tfs(gf_id, tf_id, headers):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+def update_right_models(user_id, user_json_data, headers, request):
+
+
 def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     '''
     prepares Data for display as circlePacking and scatterplot
@@ -1829,7 +1901,6 @@ def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     counts = {'user': 0, 'roles': 0, 'afs': 0, 'gfs': 0, 'tfs': 0, }
     for e in user_json_data['userid_name']:
         userid_name_data = get_user_details_by_url(e, headers)
-        user_hat_userid_name_data = get_user_userid_name_combination(headers,user_json_data['id'],userid_name_data['id'],request)
         graph_data['children'].append(userid_name_data)
         for user in graph_data['children']:
             user['name'] = user.pop('userid')
@@ -2235,6 +2306,13 @@ class UserHatTblUserIDundNameViewSet(viewsets.ModelViewSet):
             return filtered
         return UserHatTblUserIDundName.objects.all()
 
+    def patch(self, request, *args, **kwargs):
+        print("in UserHatTblUserIDundName API-Viewset-PATCH-Method")
+        pk = request.POST['userhatuseridundname_id']
+        userhatuseridundname_to_update = UserHatTblUserIDundName.objects.get(id=pk)
+        update_rollen = userhatuseridundname_to_update.rollen
+        update_rollen.add(request.POST['rollen_id'])
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class TblUserhatrolleViewSet(viewsets.ModelViewSet):
@@ -2243,6 +2321,14 @@ class TblUserhatrolleViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return TblUserhatrolle.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        print("in UserHatRolle API-Viewset-PATCH-Method")
+        pk = request.POST['userhatrolle_id']
+        userhatrolle_to_update = TblUserhatrolle.objects.get(id=pk)
+        update_afs = userhatrolle_to_update.afs
+        update_afs.add(request.POST['af_id'])
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class TblUserhatrolle_TransferiertViewSet(viewsets.ModelViewSet):
@@ -2268,6 +2354,15 @@ class TblRollehatafViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return TblRollehataf.objects.all()
 
+    def patch(self, request, *args, **kwargs):
+        print("in RolleHatAf API-Viewset-PATCH-Method")
+        pk = request.POST['rollehataf_id']
+        rollehataf_to_update = TblRollehataf.objects.get(id=pk)
+        update_gfs = rollehataf_to_update.gfs
+        update_gfs.add(request.POST['gf_id'])
+        return Response(status=status.HTTP_201_CREATED)
+
+
 
 class TblRollehataf_TransferiertViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -2291,6 +2386,14 @@ class TblAfHatGfViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return TblAfHatGf.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        print("in AfHatGf API-Viewset-PATCH-Method")
+        pk = request.POST['afhatgf_id']
+        afhatgf_to_update = TblAfHatGf.objects.get(id=pk)
+        update_tfs = afhatgf_to_update.tfs
+        update_tfs.add(request.POST['tf_id'])
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class TblAfHatGf_TransferiertViewSet(viewsets.ModelViewSet):

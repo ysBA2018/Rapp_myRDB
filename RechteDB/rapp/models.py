@@ -159,6 +159,7 @@ class TblUebersichtAfGfs(models.Model):
     geloescht = models.IntegerField(db_column='geloescht', blank=True, null=True, db_index=True)
     kannweg = models.IntegerField(blank=True, null=True)
     modelliert = models.DateTimeField(blank=True, null=True)
+    tfs = models.ManyToManyField(to=TblGesamt,related_name='model_gf_hat_tfs',default=None)
 
     class Meta:
         managed = True
@@ -193,7 +194,7 @@ class TblAfliste(models.Model):
     af_name = models.CharField(db_column='af_name', unique=True, max_length=150,
                                verbose_name='AF-Name')  # Field name made lowercase. Field renamed to remove unsuitable characters.
     neu_ab = models.DateTimeField(db_column='neu_ab')  # Field renamed to remove unsuitable characters.
-
+    gfs = models.ManyToManyField(to=TblUebersichtAfGfs, through='TblAfHatGF', related_name='model_af_hat_gfs',default=None)
     class Meta:
         managed = True
         db_table = 'tbl_AFListe'
@@ -216,6 +217,7 @@ class TblRollen(models.Model):
     system = models.CharField(db_column='system', max_length=150, verbose_name='System', db_index=True)
     rollenbeschreibung = models.TextField(db_column='rollenbeschreibung', blank=True, null=True)
     datum = models.DateTimeField(db_column='datum', default=timezone.now, blank=True)
+    afs = models.ManyToManyField(to=TblAfliste, through='TblRollehataf', related_name='model_role_has_afs', default=None)
 
     class Meta:
         managed = True
@@ -395,8 +397,9 @@ class TblRollehataf_Transferiert(models.Model):
 
 class TblAfHatGF(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
-    rolleHatAf_id = models.ForeignKey('TblRollehataf', db_column='rolleHatAf_id', on_delete=models.CASCADE)
+    rolleHatAf_id = models.ForeignKey('TblRollehataf', null=True, db_column='rolleHatAf_id', on_delete=models.CASCADE)
     gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
+    af_id = models.ForeignKey('TblAfliste', db_column='af_id', on_delete=models.CASCADE,default=None)
     tfs = models.ManyToManyField(TblGesamt, default=None, related_name='tfs')
 
 
@@ -677,7 +680,7 @@ class TblUserIDundName(models.Model):
                                     db_index=True)
     abteilung = models.CharField(db_column='abteilung', max_length=64, )  # Field name made lowercase.
     gruppe = models.CharField(db_column='gruppe', max_length=32, db_index=True)  # Field name made lowercase.
-    rollen = models.ManyToManyField(TblRollen, related_name='applied_model_roles', through=TblUserhatrolle)
+    rollen = models.ManyToManyField(TblRollen, related_name='applied_model_roles', through=TblUserhatrolle, default=None)
 
     class Meta:
         managed = True

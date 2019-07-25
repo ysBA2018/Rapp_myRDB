@@ -41,10 +41,10 @@ class TblAfHatGf_GeloeschtSerializer(serializers.HyperlinkedModelSerializer):
 class TblRollenSerializer(serializers.ModelSerializer):
     class Meta:
         model = TblRollen
-        fields = ('url', 'rollenid', 'rollenname', 'system', 'rollenbeschreibung', 'datum')
+        fields = ('url', 'rollenid', 'rollenname', 'system', 'rollenbeschreibung', 'datum','afs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rolle-detail')
-    # url = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail', lookup_field='pk')
+    afs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:af-detail', lookup_field='pk')
 
 
 class TblRollehatafSerializer(serializers.HyperlinkedModelSerializer):
@@ -95,9 +95,11 @@ class TblUebersichtAfGfsSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url', 'id', 'name_gf_neu', 'name_af_neu', 'kommentar', 'zielperson', 'af_text', 'gf_text', 'af_langtext',
             'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise', 'geloescht', 'kannweg',
-            'modelliert')
+            'modelliert','tfs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:afgf-detail')
+    tfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:gesamt-detail')
+
 
 
 class TblOrgaSerializer(serializers.HyperlinkedModelSerializer):
@@ -240,9 +242,10 @@ class TblGesamtHistorieSerializer(serializers.HyperlinkedModelSerializer):
 class TblAflisteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAfliste
-        fields = ('url', 'id', 'af_name', 'neu_ab')
+        fields = ('url', 'id', 'af_name', 'neu_ab','gfs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:af-detail')
+    gfs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:afgf-detail')
 
 
 class TblsachgebieteSerializer(serializers.HyperlinkedModelSerializer):
