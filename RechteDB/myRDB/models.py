@@ -37,22 +37,26 @@ Letzter_import = modellist.Letzter_import
 Modellierung = modellist.Modellierung
 Direktverbindungen = modellist.Direktverbindungen
 User = modellist.User
+TblAppliedTf = modellist.TblAppliedTf
+TblAppliedGf = modellist.TblAppliedGf
+TblAppliedAf = modellist.TblAppliedAf
+TblAppliedRolle = modellist.TblAppliedRolle
 
-UserHatTblUserIDundName_Transferiert = modellist.UserHatTblUserIDundName_Transferiert
-UserHatTblUserIDundName_Geloescht = modellist.UserHatTblUserIDundName_Geloescht
+#UserHatTblUserIDundName_Transferiert = modellist.UserHatTblUserIDundName_Transferiert
+#UserHatTblUserIDundName_Geloescht = modellist.UserHatTblUserIDundName_Geloescht
 UserHatTblUserIDundName = modellist.UserHatTblUserIDundName
 
 TblUserhatrolle = modellist.TblUserhatrolle
-TblUserhatrolle_Transferiert = modellist.TblUserhatrolle_Transferiert
-TblUserhatrolle_Geloescht = modellist.TblUserhatrolle_Geloescht
+#TblUserhatrolle_Transferiert = modellist.TblUserhatrolle_Transferiert
+#TblUserhatrolle_Geloescht = modellist.TblUserhatrolle_Geloescht
 
 TblRollehataf = modellist.TblRollehataf
-TblRollehataf_Transferiert = modellist.TblRollehataf_Transferiert
-TblRollehataf_Geloescht = modellist.TblRollehataf_Geloescht
+#TblRollehataf_Transferiert = modellist.TblRollehataf_Transferiert
+#TblRollehataf_Geloescht = modellist.TblRollehataf_Geloescht
 
 TblAfHatGf = modellist.TblAfHatGF
-TblAfHatGF_Transferiert = modellist.TblAfHatGF_Transferiert
-TblAfHatGF_Geloescht = modellist.TblAfHatGF_Geloescht
+#TblAfHatGF_Transferiert = modellist.TblAfHatGF_Transferiert
+#TblAfHatGF_Geloescht = modellist.TblAfHatGF_Geloescht
 
 #TblModelAfHatModelGf = modellist.TblModelAfHatModelGf
 '''

@@ -417,14 +417,19 @@ class Direktverbindungen(ImportExportModelAdmin):
 
 admin.site.register(User)
 admin.site.register(UserHatTblUserIDundName)
+admin.site.register(TblAfHatGF)
+admin.site.register(TblAppliedRolle)
+admin.site.register(TblAppliedAf)
+admin.site.register(TblAppliedGf)
+admin.site.register(TblAppliedTf)
+'''
 admin.site.register(UserHatTblUserIDundName_Transferiert)
 admin.site.register(UserHatTblUserIDundName_Geloescht)
 admin.site.register(TblUserhatrolle_Transferiert)
 admin.site.register(TblUserhatrolle_Geloescht)
 admin.site.register(TblRollehataf_Transferiert)
 admin.site.register(TblRollehataf_Geloescht)
-admin.site.register(TblAfHatGF)
 admin.site.register(TblAfHatGF_Transferiert)
 admin.site.register(TblAfHatGF_Geloescht)
 
-
+'''

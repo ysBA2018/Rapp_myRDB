@@ -23,15 +23,22 @@ from myRDB import views
 from . import settings
 
 router = routers.DefaultRouter()
+
 router.register(r'users', views.UsersViewSet, 'user')
 router.register(r'useridundnamen', views.TblUserIDundNameViewSet, 'useridundname')
 router.register(r'rollen', views.TblRollenViewSet, 'rolle')
+router.register(r'afs', views.TblAflisteViewSet, 'af')
 router.register(r'afgfs', views.TblUebersichtAfGfsViewSet, 'afgf')
+router.register(r'gesamte', views.TblGesamtViewSet, 'gesamt')
+
+router.register(r'appliedroles', views.TblAppliedRolleViewSet, 'appliedrole')
+router.register(r'appliedafs', views.TblAppliedAfsViewSet, 'appliedaf')
+router.register(r'appliedgfs', views.TblAppliedGfsViewSet, 'appliedgf')
+router.register(r'appliedtfs', views.TblAppliedTfsViewSet, 'appliedtf')
+
 router.register(r'orgas', views.TblOrgaViewSet, 'orga')
 router.register(r'plattformen', views.TblPlattformViewSet, 'plattform')
-router.register(r'gesamte', views.TblGesamtViewSet, 'gesamt')
 router.register(r'gesamtehistorie', views.TblGesamtHistorieViewSet, 'gesamthistorie')
-router.register(r'afs', views.TblAflisteViewSet, 'af')
 router.register(r'sachgebiete', views.TblsachgebieteViewSet, 'sachgebiet')
 router.register(r'subsysteme', views.TblsubsystemeViewSet, 'subsystem')
 router.register(r'db2s', views.TblDb2ViewSet, 'db2')
@@ -41,25 +48,25 @@ router.register(r'rechteamneu', views.TblrechteamneuViewSet, 'rechtamneu')
 router.register(r'qriesf3rechteneuvonimportduplikatfrei', views.Qryf3RechteneuvonimportduplikatfreiViewSet, 'qryf3rechteneuvonimportduplikatfrei')
 router.register(r'RACF_Rechte', views.RACF_RechteViewSet, 'RACF_Recht')
 router.register(r'Orga_details', views.Orga_detailsViewSet, 'Orga_detail')
-router.register(r'Letzte_imports', views.Letzter_importViewSet, 'Letzter_import')
+router.register(r'letzte_imports', views.Letzter_importViewSet, 'letzter_import')
 router.register(r'Modellierungen', views.ModellierungViewSet, 'Modellierung')
 router.register(r'Direktverbindungen', views.DirektverbindungenViewSet, 'Direktverbindung')
 
 router.register(r'userhatuseridundnamen', views.UserHatTblUserIDundNameViewSet, 'userhatuseridundname')
-router.register(r'userhatuseridundname_transferierte', views.UserHatTblUserIDundName_TransferiertViewSet, 'userhatuseridundname_transferiert')
-router.register(r'userhatuseridundname_geloeschte', views.UserHatTblUserIDundName_GeloeschtViewSet, 'userhatuseridundname_geloescht')
+#router.register(r'userhatuseridundname_transferierte', views.UserHatTblUserIDundName_TransferiertViewSet, 'userhatuseridundname_transferiert')
+#router.register(r'userhatuseridundname_geloeschte', views.UserHatTblUserIDundName_GeloeschtViewSet, 'userhatuseridundname_geloescht')
 
 router.register(r'userhatrollen', views.TblUserhatrolleViewSet, 'userhatrolle')
-router.register(r'userhatrollen_transferierte', views.TblUserhatrolle_TransferiertViewSet, 'userhatrolle_transferiert')
-router.register(r'userhatrollen_geloeschte', views.TblUserhatrolle_GeloeschtViewSet, 'userhatrolle_geloescht')
+#router.register(r'userhatrollen_transferierte', views.TblUserhatrolle_TransferiertViewSet, 'userhatrolle_transferiert')
+#router.register(r'userhatrollen_geloeschte', views.TblUserhatrolle_GeloeschtViewSet, 'userhatrolle_geloescht')
 
 router.register(r'rollehatafs', views.TblRollehatafViewSet, 'rollehataf')
-router.register(r'rollehatafs_transferierte', views.TblRollehataf_TransferiertViewSet, 'rollehataf_transferiert')
-router.register(r'rollehatafs_geloeschte', views.TblRollehataf_GeloeschtViewSet, 'rollehataf_geloescht')
+#router.register(r'rollehatafs_transferierte', views.TblRollehataf_TransferiertViewSet, 'rollehataf_transferiert')
+#router.register(r'rollehatafs_geloeschte', views.TblRollehataf_GeloeschtViewSet, 'rollehataf_geloescht')
 
 router.register(r'afhatgfs', views.TblAfHatGfViewSet, 'afhatgf')
-router.register(r'afhatgf_transferierte', views.TblAfHatGf_TransferiertViewSet, 'afhatgf_transferiert')
-router.register(r'afhatgf_geloeschte', views.TblAfHatGf_GeloeschtViewSet, 'afhatgf_geloescht')
+#router.register(r'afhatgf_transferierte', views.TblAfHatGf_TransferiertViewSet, 'afhatgf_transferiert')
+#router.register(r'afhatgf_geloeschte', views.TblAfHatGf_GeloeschtViewSet, 'afhatgf_geloescht')
 
 
 admin.site.site_header = 'RechteDB - Adminseiten'

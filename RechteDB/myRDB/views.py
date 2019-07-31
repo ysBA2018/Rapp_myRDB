@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import datetime
 
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from requests import ConnectionError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -945,11 +946,17 @@ class Profile(generic.ListView):
         self.extra_context['legendData'] = sorted_legend_data
         user_pk = user.pk
         user_json_data = get_user_by_key(user_pk, headers, self.request)
-        transfer_list = user_json_data['transfer_list']
-        delete_list = user_json_data['delete_list']
-        update_personal_right_models(user_id, user_json_data, headers, self.request)
+        transfer_list = []#user_json_data['transfer_list']
+        delete_list = []#user_json_data['delete_list']
+
+        last_import = get_last_import(headers)[0]['end']
+        last_import_datetime = datetime.datetime.strptime(last_import,'%Y-%m-%dT%H:%M:%S.%fZ')
+        last_rights_update = user.last_rights_update
+        if last_rights_update is None or last_import_datetime > last_rights_update.replace(tzinfo=None):
+            update_personal_right_models(user_json_data, headers, self.request)
+            last_rights_update = datetime.datetime.now()
+            patch_user_last_rights_update(user_pk,last_rights_update,headers)
         graph_data, scatterData, counts = prepareJSONdata(user_id, user_json_data, False, headers, self.request)
-        #graph_data, new_counts = self.reduce_and_patch_to_personal_rights(graph_data, headers)
         self.extra_context['scatterData'] = scatterData
 
         transfer_list, transfer_list_with_category = prepareTransferJSONdata(transfer_list)
@@ -1004,26 +1011,6 @@ class Profile(generic.ListView):
 
         return []
         # return data
-
-    def reduce_and_patch_to_personal_rights(self, graph_data, headers):
-        counts = {'user':0,'roles':0,'afs':0,'gfs':0,'tfs':0}
-        new_graph_data = {}
-        print(graph_data)
-        for u in graph_data['children']:
-            for r in u['children']:
-                for a in r['children']:
-                    if not a['children']:
-                        r['children'].remove(a)
-                    else:
-                        for g in a['children']:
-                            if not g['children']:
-                                a['children'].remove(g)
-                        if not a['children']:
-                            r['children'].remove(a)
-                if not r['children']:
-                    u['children'].remove(r)
-        print(graph_data)
-        return graph_data, counts
 
 
 class RequestPool(generic.ListView):
@@ -1544,6 +1531,22 @@ def get_headers(request):
     return headers
 
 
+def get_last_import(headers):
+    '''
+    :param headers:
+    :return:
+    '''
+    url = docker_container_ip + '/api/letzte_imports/?specify=%s' % 'latest'
+    res = requests.get(url, headers=headers)
+    li_json = res.json()
+    if 'results' in li_json:
+        li_json = li_json['results']
+    elif 'detail' in li_json:
+        print(li_json['detail'])
+        raise ConnectionError(li_json['detail'])
+    return li_json
+
+
 def get_tf_applications(headers, request):
     '''
         Get-Method for API-Requests
@@ -1656,24 +1659,6 @@ def get_user_by_key(pk, headers, request):
     url = docker_container_ip + '/api/users/%s' % pk
     res = requests.get(url, headers=headers)
     json = res.json()
-    if 'results' in json:
-        json = json['results']
-    elif 'detail' in json:
-        print(json['detail'])
-        raise ConnectionError(json['detail'])
-    return json
-
-
-def get_user_details_by_url(url, headers):
-    '''
-        Get-Method for API-Requests
-        gets specific User by xvNumber as key
-    :param headers:
-    :param request:
-    :return:
-    '''
-    # url = 'http://' + request.get_host() + '/users/%s' % pk
-    json = requests.get(url=url, headers=headers).json()
     if 'results' in json:
         json = json['results']
     elif 'detail' in json:
@@ -1806,51 +1791,15 @@ def get_af_description_from_Tblrechteneuvonimport(user, af, gf, tf, headers):
     return json
 
 
-def patch_userhatuseridundnamen_rollen(userhatuseridundname_id, rollen_id, headers):
-    url = docker_container_ip + '/api/userhatuseridundnamen/'
-    data = {"userhatuseridundname_id": userhatuseridundname_id, "rollen_id": rollen_id}
+def patch_user_last_rights_update(user_id, last_rights_update, headers):
+    url = docker_container_ip + '/api/users/'
+    data = {"userid":user_id, "last_rights_update": last_rights_update}
     try:
-        requests.patch(url, data=data, headers=headers)
-        print("UserHatUseridundnamen-Rollen-patch-erfolg")
+        res = requests.patch(url, data=data, headers=headers)
+        print("User last_rights_update-patch-erfolg")
         return Response(status=status.HTTP_201_CREATED)
     except ConnectionError:
-        print("Error beim Patchen von userhatuseridundnamen_rollen")
-    return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-def patch_userhatrolle_afs(userhatrolle_id, af_id, headers):
-    url = docker_container_ip + '/api/rollehataf/'
-    data = {"userhatrolle_id": userhatrolle_id, "af_id": af_id}
-    try:
-        requests.patch(url, data=data, headers=headers)
-        print("UserHatRolle-AFS-patch-erfolg")
-        return Response(status=status.HTTP_201_CREATED)
-    except ConnectionError:
-        print("Error beim Patchen von userhatrolle_afs")
-    return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-def patch_rollehatafs_gfs(rollehataf_id, gf_id, headers):
-    url = docker_container_ip + '/api/rollehatafs/'
-    data = {"rollehataf_id": rollehataf_id, "gf_id": gf_id}
-    try:
-        requests.patch(url, data=data, headers=headers)
-        print("RolleHatAFs-GFS-patch-erfolg")
-        return Response(status=status.HTTP_201_CREATED)
-    except ConnectionError:
-        print("Error beim Patchen von rollehatafs_gfs")
-    return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-def patch_afhatgfs_tfs(afhatgf_id, tf_id, headers):
-    url = docker_container_ip + '/api/afhatgfs/'
-    data = {"afhatgf_id": afhatgf_id, "tf_id": tf_id}
-    try:
-        requests.patch(url, data=data, headers=headers)
-        print("AfHatGFs-TFS-patch-erfolg")
-        return Response(status=status.HTTP_201_CREATED)
-    except ConnectionError:
-        print("Error beim Patchen von afhatgfs_tfs")
+        print("Error beim Patchen von af_gfs")
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -1878,8 +1827,300 @@ def patch_gf_tfs(gf_id, tf_id, headers):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-def update_right_models(user_id, user_json_data, headers, request):
+def create_applied_role(role,uhatuid,headers):
+    url = docker_container_ip + '/api/appliedroles/'
+    data = {'model_rolle_id':role['rollenid'],'userHatUserID_id':uhatuid['id']}
+    try:
+        res = requests.post(url, data=data, headers=headers)
+        print("applied_role_create-erfolg")
+        return res
+    except ConnectionError:
+        print("Error beim Create von applied_role")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+def create_applied_af(af,applied_role,headers):
+    url = docker_container_ip + '/api/appliedafs/'
+    data = {'model_af_id':af['id'],'applied_role_id':applied_role['id']}
+    try:
+        res = requests.post(url, data=data, headers=headers)
+        print("applied_af_create-erfolg")
+        return res
+    except ConnectionError:
+        print("Error beim Create von applied_af")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def create_applied_gf(gf,applied_af,headers):
+    url = docker_container_ip + '/api/appliedgfs/'
+    data = {'model_gf_id':gf['id'],'applied_af_id':applied_af['id']}
+    try:
+        res = requests.post(url, data=data, headers=headers)
+        print("applied_gf_create-erfolg")
+        return res
+    except ConnectionError:
+        print("Error beim Create von applied_gf")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def create_applied_tf(tf,applied_gf,headers):
+    url = docker_container_ip + '/api/appliedtfs/'
+    data = {'model_tf_id':tf['id'],'applied_gf_id':applied_gf['id']}
+    try:
+        res = requests.post(url, data=data, headers=headers)
+        print("applied_tf_create-erfolg")
+        return res
+    except ConnectionError:
+        print("Error beim Create von applied_tf")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def patch_userhatuseridundnamen_rollen(userhatuseridundname_id, rollen_id, headers):
+    url = docker_container_ip + '/api/userhatuseridundnamen/'
+    data = {"userhatuseridundname_id": userhatuseridundname_id, "rollen_id": rollen_id}
+    try:
+        res = requests.patch(url, data=data, headers=headers)
+        print("UserHatUseridundnamen-Rollen-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von userhatuseridundnamen_rollen")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def patch_applied_rolle_applied_afs(applied_rolle_id, applied_af_id, headers):
+    url = docker_container_ip + '/api/appliedroles/'
+    data = {"applied_rolle_id": applied_rolle_id, "applied_af_id": applied_af_id}
+    try:
+        res = requests.patch(url, data=data, headers=headers)
+        print("UserHatUseridundnamen-Rollen-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von userhatuseridundnamen_rollen")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def patch_applied_af_applied_gfs(applied_af_id, applied_gf_id, headers):
+    url = docker_container_ip + '/api/appliedafs/'
+    data = {"applied_af_id": applied_af_id, "applied_gf_id": applied_gf_id}
+    try:
+        requests.patch(url, data=data, headers=headers)
+        print("AF-GFS-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von af_gfs")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def patch_applied_gf_applied_tfs(applied_gf_id, applied_tf_id, headers):
+    url = docker_container_ip + '/api/appliedgfs/'
+    data = {"applied_gf_id": applied_gf_id, "applied_tf_id": applied_tf_id}
+    try:
+        requests.patch(url, data=data, headers=headers)
+        print("GF-TFS-patch-erfolg")
+        return Response(status=status.HTTP_201_CREATED)
+    except ConnectionError:
+        print("Error beim Patchen von gf_tfs")
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def update_af_gfs(af,headers):
+    afgfs_iter = iter(af['gfs'])
+    gfs = get_AFGF_by_af_name(af['af_name'],headers)
+    for gf in gfs:
+        try:
+            next_gf = next(afgfs_iter)
+            if next_gf==gf['url']:
+                print('found gf')
+            else:
+                full_check_iterator = iter(af['gfs'])
+                try:
+                    next_full_check_iter = next(full_check_iterator)
+                    while next_full_check_iter:
+                        if next_full_check_iter == gf['url']:
+                            # update_personal_af_gfs(af, applied_af, headers)
+                            break
+                        else:
+                            next_full_check_iter = next(full_check_iterator)
+                except StopIteration:
+                    patch_af_gfs(af['id'], gf['id'], headers)
+        except StopIteration:
+            patch_af_gfs(af['id'],gf['id'],headers)
+
+
+def update_gf_tfs(gf,af,user,headers):
+    gftfs_iter = iter(gf['tfs'])
+    tfs = get_tf_aus_gesamt_by_user_name_af_name_gf_name(user['id'], af['af_name'], gf['name_gf_neu'], headers)
+    for tf in tfs:
+        try:
+            next_tf = next(gftfs_iter)
+            if next_tf==tf['url']:
+                print('found tf')
+            else:
+                full_check_iterator = iter(gf['tfs'])
+                try:
+                    next_full_check_iter = next(full_check_iterator)
+                    while next_full_check_iter:
+                        if next_full_check_iter == tf['url']:
+                            print('found tf')
+                            break
+                        else:
+                            next_full_check_iter = next(full_check_iterator)
+                except StopIteration:
+                    patch_gf_tfs(gf['id'], tf['id'], headers)
+        except StopIteration:
+            patch_gf_tfs(gf['id'],tf['id'],headers)
+
+
+def update_personal_gf_tfs(gf, applied_gf, headers):
+    print(gf)
+    print(applied_gf)
+    applied_tfs_iter = iter(applied_gf['applied_tfs'])
+    for tf in gf['tfs']:
+        tf = get_by_url(tf,headers)
+        try:
+            next_applied_tf =next(applied_tfs_iter)
+            applied_tf = get_by_url(next_applied_tf, headers)
+            if applied_tf['model_tf_id'] == tf['url']:
+                print('found personal tf')
+            else:
+                full_check_iterator = iter(applied_gf['applied_tfs'])
+                try:
+                    next_full_check_iter = next(full_check_iterator)
+                    while next_full_check_iter:
+                        applied_tf = get_by_url(next_full_check_iter, headers)
+                        if applied_tf['model_gf_id'] == tf['url']:
+                            print('found personal tf')
+                            break
+                        else:
+                            next_full_check_iter = next(full_check_iterator)
+                except StopIteration:
+                    res = create_applied_tf(tf, applied_tf, headers)
+                    applied_tf = json.loads(res.text)
+                    patch_applied_gf_applied_tfs(applied_gf['id'], applied_tf['id'], headers)
+        except StopIteration:
+            res = create_applied_tf(tf, applied_gf, headers)
+            applied_tf = json.loads(res.text)
+            patch_applied_gf_applied_tfs(applied_gf['id'], applied_tf['id'], headers)
+    return
+
+
+def update_personal_af_gfs(af, user, applied_af, headers):
+    print(af)
+    print(applied_af)
+    applied_gfs_iter = iter(applied_af['applied_gfs'])
+    for gf in af['gfs']:
+        gf = get_by_url(gf,headers)
+        update_gf_tfs(gf, af, user, headers)
+        try:
+            next_applied_gf =next(applied_gfs_iter)
+            applied_gf = get_by_url(next_applied_gf, headers)
+            if applied_gf['model_gf_id'] == gf['url']:
+                print('found personal gf')
+                update_personal_gf_tfs(gf, applied_gf, headers)
+            else:
+                full_check_iterator = iter(applied_af['applied_gfs'])
+                try:
+                    next_full_check_iter = next(full_check_iterator)
+                    while next_full_check_iter:
+                        applied_gf = get_by_url(next_full_check_iter, headers)
+                        if applied_gf['model_gf_id'] == gf['url']:
+                            print('found personal gf')
+                            update_personal_gf_tfs(gf, applied_gf, headers)
+                            break
+                        else:
+                            next_full_check_iter = next(full_check_iterator)
+                except StopIteration:
+                    res = create_applied_gf(gf, applied_af, headers)
+                    applied_gf = json.loads(res.text)
+                    patch_applied_af_applied_gfs(applied_af['id'], applied_gf['id'], headers)
+                    update_personal_gf_tfs(gf, applied_gf, headers)
+        except StopIteration:
+            res = create_applied_gf(gf, applied_af, headers)
+            applied_gf = json.loads(res.text)
+            patch_applied_af_applied_gfs(applied_af['id'], applied_gf['id'], headers)
+            update_personal_gf_tfs(gf, applied_gf, headers)
+    return
+
+
+def update_personal_role_afs(role, user ,applied_role, headers):
+    print(role)
+    print(applied_role)
+    applied_afs_iter = iter(applied_role['applied_afs'])
+    for af in role['afs']:
+        af = get_by_url(af,headers)
+        update_af_gfs(af, headers)
+        try:
+            next_applied_af =next(applied_afs_iter)
+            applied_af = get_by_url(next_applied_af, headers)
+            if applied_af['model_af_id'] == af['url']:
+                print('found personal af')
+                update_personal_af_gfs(af, user ,applied_af, headers)
+            else:
+                full_check_iterator = iter(applied_role['applied_afs'])
+                try:
+                    next_full_check_iter = next(full_check_iterator)
+                    while next_full_check_iter:
+                        applied_af = get_by_url(next_full_check_iter, headers)
+                        if applied_af['model_af_id'] == af['url']:
+                            print('found personal af')
+                            update_personal_af_gfs(af,  user ,applied_af, headers)
+                            break
+                        else:
+                            next_full_check_iter = next(full_check_iterator)
+                except StopIteration:
+                    res = create_applied_af(af, applied_role, headers)
+                    applied_af = json.loads(res.text)
+                    patch_applied_rolle_applied_afs(applied_role['id'], applied_af['id'], headers)
+                    update_personal_af_gfs(af,  user ,applied_af, headers)
+        except StopIteration:
+            res = create_applied_af(af, applied_role, headers)
+            applied_af = json.loads(res.text)
+            patch_applied_rolle_applied_afs(applied_role['id'], applied_af['id'], headers)
+            update_personal_af_gfs(af,  user ,applied_af, headers)
+    return
+
+
+def update_personal_right_models(user_json_data, headers, request):
+    print(user_json_data)
+    for user in user_json_data['userid_name']:
+        userid_name_data = get_by_url(user, headers)
+        user_userid_combination = get_user_userid_name_combination(headers,user_json_data['id'],userid_name_data['id'],request)
+        print(userid_name_data)
+        print(user_userid_combination)
+        applied_role_iter = iter(user_userid_combination[0]['rollen'])
+        for role in userid_name_data['rollen']:
+            role = get_by_url(role, headers)
+            try:
+                next_applied_role = next(applied_role_iter)
+                applied_role = get_by_url(next_applied_role, headers)
+                if role['url'] == applied_role['model_rolle_id']:
+                    print('found personal role')
+                    update_personal_role_afs(role, userid_name_data, applied_role, headers)
+                else:
+                    full_check_iterator = iter(user_userid_combination[0]['rollen'])
+                    try:
+                        next_full_check_iter = next(full_check_iterator)
+                        while next_full_check_iter:
+                            applied_role = get_by_url(next_full_check_iter, headers)
+                            if role['url'] == applied_role['model_rolle_id']:
+                                print('found personal role')
+                                update_personal_role_afs(role, userid_name_data, applied_role, headers)
+                                break
+                            else:
+                                next_full_check_iter = next(full_check_iterator)
+                    except StopIteration:
+                        res = create_applied_role(role, user_userid_combination[0], headers)
+                        applied_role = json.loads(res.text)
+                        patch_userhatuseridundnamen_rollen(user_userid_combination[0]['id'], applied_role['id'],
+                                                           headers)
+                        update_personal_role_afs(role, userid_name_data, applied_role, headers)
+            except StopIteration:
+                res = create_applied_role(role,user_userid_combination[0],headers)
+                applied_role = json.loads(res.text)
+                patch_userhatuseridundnamen_rollen(user_userid_combination[0]['id'],applied_role['id'],headers)
+                update_personal_role_afs(role, userid_name_data, applied_role, headers)
+
+    return
 
 def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     '''
@@ -1891,94 +2132,97 @@ def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     :param request:
     :return:
     '''
-    print(type(user_json_data), user_json_data)
     scatterData = []
-    # user_json_data['children'] = user_json_data.pop('user_afs')
+   # user_json_data['children'] = user_json_data.pop('user_afs')
     user_detail_data = []
     graph_data = dict()
     graph_data['children'] = []
     old_plattform = None
     counts = {'user': 0, 'roles': 0, 'afs': 0, 'gfs': 0, 'tfs': 0, }
+
     for e in user_json_data['userid_name']:
-        userid_name_data = get_user_details_by_url(e, headers)
+        userid_name_data = get_by_url(e, headers)
         graph_data['children'].append(userid_name_data)
         for user in graph_data['children']:
             user['name'] = user.pop('userid')
             user['children'] = []
             counts['user'] += 1
-            for rolle in user['rollen']:
-                user['children'].append(get_by_url(rolle,headers))
+            user_userid_combination = get_user_userid_name_combination(headers, user_json_data['id'],
+                                                                       userid_name_data['id'], request)
+            for rolle in user_userid_combination[0]['rollen']:
+                user['children'].append(get_by_url(rolle, headers))
             for rolle in user['children']:
-                rolle['name'] = rolle.pop('rollenname')
-                rolle['description'] = rolle.pop('rollenbeschreibung')
+                rolle_details = get_by_url(rolle['model_rolle_id'],headers)
+                rolle['name'] = rolle_details['rollenname']
+                rolle['description'] = rolle_details['rollenbeschreibung']
                 rolle['children'] = []
                 counts['roles'] += 1
-                for af in rolle['afs']:
-                    rolle['children'].append(get_by_url(af, headers))
                 af_old = None
-                for af in rolle['children']:
-                    related_gfs = get_AFGF_by_af_name(af['af_name'], headers)
-                    for gf in related_gfs:
-                        url = docker_container_ip + "/api/afgfs/" + str(gf['id']) + "/"
-                        if not url in af['gfs']:
-                            patch_af_gfs(af['id'], gf['id'], headers)
-                    af['name'] = af.pop('af_name')
-                    af['children'] = []
-                    for gf in af['gfs']:
-                        af['children'].append(get_by_url(gf, headers))
+                for af in rolle['applied_afs']:
+                    af = get_by_url(af, headers)
+                    print(af['applied_gfs'])
+                    if af['applied_gfs']:
+                        af_details = get_by_url(af['model_af_id'], headers)
+                        af['name'] = af_details['af_name']
+                        af['children'] = []
+                        rolle['children'].append(af)
 
-                    counts['afs'] += 1
-                    gf_old = None
-                    for gf in af['children']:
-                        related_tfs = get_tf_aus_gesamt_by_user_name_af_name_gf_name(user['id'], af['name'],
-                                                                                     gf['name_gf_neu'], headers)
-                        for tf in related_tfs:
-                            url = docker_container_ip + "/api/gesamte/" + str(tf['id']) + "/"
-                            if not url in gf['tfs']:
-                                patch_gf_tfs(gf['id'], tf['id'], headers)
-                        gf['name'] = gf.pop('name_gf_neu')
-                        gf['children'] = []
-                        for tf in gf['tfs']:
-                            gf['children'].append(get_by_url(tf, headers))
-                        counts['gfs'] += 1
-                        gf_beschreibung = None
-                        for tf in gf['children']:
-                            tf['name'] = tf.pop('tf')
-                            tf['size'] = 3000
-                            counts['tfs'] += 1
-                            if tf['plattform'] != old_plattform:
-                                plattform = get_by_url(tf['plattform'], headers)
-                                old_plattform = tf['plattform']
-                            hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
-                            tf['color'] = hslColor
-                            tf['description'] = tf.pop('tf_beschreibung')
-                            if tf['description'] is None:
-                                tf['description'] = "Keine Beschreibung vorhanden!"
-                            if tf['datum'] is None:
-                                af_applied = ""
-                            else:
-                                af_applied = tf['datum']
-                            scatterData.append(
-                                {"name": tf['name'], "gf_name": gf['name'], "af_name": af['name'],
-                                 "role": rolle['name'],
-                                 "user": user['name'], "plattform": plattform["tf_technische_plattform"],
-                                 "af_applied": af_applied, "color": hslColor})
-                            if af['name'] != af_old:
-                                af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
-                                                                                                      af['name'],
-                                                                                                      gf['name'],
-                                                                                                      tf['name'],
-                                                                                                      headers)
-                                if not af_description_helper:
-                                    af['description'] = "Keine Beschreibung vorhanden!"
-                                else:
-                                    af['description'] = af_description_helper[0]['af_beschreibung']
-                                af_old = af['name']
-                            if gf['name'] != gf_old:
-                                if tf['gf_beschreibung'] is None:
-                                    gf['description'] = "Keine Beschreibung vorhanden!"
-                                else:
-                                    gf['description'] = tf['gf_beschreibung']
+                        gf_old = None
+                        for gf in af['applied_gfs']:
+                            gf = get_by_url(gf, headers)
+                            print(gf['applied_tfs'])
+                            if gf['applied_tfs']:
+                                gf_details = get_by_url(gf['model_gf_id'], headers)
+                                gf['name'] = gf_details['name_gf_neu']
+                                gf['children'] = []
+                                counts['gfs'] += 1
+                                af['children'].append(gf)
+
+                                old_plattform = None
+                                for tf in gf['applied_tfs']:
+                                    tf = get_by_url(tf, headers)
+                                    tf_details = get_by_url(tf['model_tf_id'], headers)
+                                    tf['name'] = tf_details['tf']
+                                    tf['size'] = 3000
+                                    gf['children'].append(tf)
+                                    counts['tfs'] += 1
+                                    if tf_details['plattform'] != old_plattform:
+                                        plattform = get_by_url(tf_details['plattform'], headers)
+                                        old_plattform = tf_details['plattform']
+                                    hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                                    tf['color'] = hslColor
+                                    af_applied = None
+                                    tf['description'] = tf_details['tf_beschreibung']
+                                    if tf['description'] is None:
+                                        tf['description'] = "Keine Beschreibung vorhanden!"
+                                    if tf_details['datum'] is None:
+                                        af_applied = ""
+                                    else:
+                                        af_applied = tf_details['datum']
+                                    scatterData.append(
+                                        {"name": tf['name'], "gf_name": gf['name'], "af_name": af['name'],
+                                         "role": rolle['name'],
+                                         "user": user['name'], "plattform": plattform["tf_technische_plattform"],
+                                         "af_applied": af_applied, "color": hslColor})
+                                    if af['name'] != af_old:
+                                        counts['afs'] += 1
+                                        af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
+                                                                                                              af['name'],
+                                                                                                              gf['name'],
+                                                                                                              tf['name'],
+                                                                                                              headers)
+                                        if not af_description_helper:
+                                            af['description'] = "Keine Beschreibung vorhanden!"
+                                        else:
+                                            af['description'] = af_description_helper[0]['af_beschreibung']
+                                        af_old = af['name']
+                                    if gf['name'] != gf_old:
+                                        if not tf_details['gf_beschreibung']:
+                                            gf['description'] = "Keine Beschreibung vorhanden!"
+                                        else:
+                                            gf['description'] = tf_details['gf_beschreibung']
+                                        gf_old = gf['name']
+
 
     if not compareUser:
         scatterData.sort(key=lambda r: r["af_applied"])
@@ -1999,7 +2243,7 @@ def prepare_delete_list(delete_list, headers):
     delete_list_with_category = []
     single_rights_count = 0
     for user_url in delete_list:
-        delete_graph_data['children'].append(get_user_details_by_url(user_url, headers))
+        delete_graph_data['children'].append(get_by_url(user_url, headers))
         for user in delete_graph_data['children']:
             user['name'] = user.pop('userid')
             user['children'] = user.pop('rollen')
@@ -2238,6 +2482,10 @@ class Letzter_importViewSet(viewsets.ModelViewSet):
     serializer_class = Letzter_importSerializer
 
     def get_queryset(self):
+        if 'specify' in self.request.GET:
+            specify = self.request.GET['specify']
+            res = Letzter_import.objects.order_by('-id')[:2]
+            return res
         return Letzter_import.objects.all()
 
 
@@ -2264,7 +2512,17 @@ class UsersViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return User.objects.all()
 
+    def patch(self, request, *args, **kwargs):
+        print("in Users API-Viewset-PATCH-Method")
+        if 'last_rights_update' in request.POST:
+            last_rights_update = request.POST['last_rights_update']
+            userid = request.POST['userid']
+            user = User.objects.get(id=userid)
+            user.last_rights_update = last_rights_update
+            user.save()
+        return Response(status=status.HTTP_201_CREATED)
 
+'''
 class UserHatTblUserIDundName_TransferiertViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserHatTblUserIDundName_TransferiertSerializer
@@ -2291,7 +2549,7 @@ class UserHatTblUserIDundName_GeloeschtViewSet(viewsets.ModelViewSet):
                 .filter(userid_name_pk=userid_name_pk)
             return filtered
         return UserHatTblUserIDundName_Geloescht.objects.all()
-
+'''
 
 class UserHatTblUserIDundNameViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -2322,15 +2580,7 @@ class TblUserhatrolleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return TblUserhatrolle.objects.all()
 
-    def patch(self, request, *args, **kwargs):
-        print("in UserHatRolle API-Viewset-PATCH-Method")
-        pk = request.POST['userhatrolle_id']
-        userhatrolle_to_update = TblUserhatrolle.objects.get(id=pk)
-        update_afs = userhatrolle_to_update.afs
-        update_afs.add(request.POST['af_id'])
-        return Response(status=status.HTTP_201_CREATED)
-
-
+'''
 class TblUserhatrolle_TransferiertViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = TblUserhatrolle_TransferiertSerializer
@@ -2345,7 +2595,7 @@ class TblUserhatrolle_GeloeschtViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return TblUserhatrolle_Geloescht.objects.all()
-
+'''
 
 class TblRollehatafViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -2354,16 +2604,8 @@ class TblRollehatafViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return TblRollehataf.objects.all()
 
-    def patch(self, request, *args, **kwargs):
-        print("in RolleHatAf API-Viewset-PATCH-Method")
-        pk = request.POST['rollehataf_id']
-        rollehataf_to_update = TblRollehataf.objects.get(id=pk)
-        update_gfs = rollehataf_to_update.gfs
-        update_gfs.add(request.POST['gf_id'])
-        return Response(status=status.HTTP_201_CREATED)
 
-
-
+'''
 class TblRollehataf_TransferiertViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = TblRollehataf_TransferiertSerializer
@@ -2378,7 +2620,7 @@ class TblRollehataf_GeloeschtViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return TblRollehataf_Geloescht.objects.all()
-
+'''
 
 class TblAfHatGfViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -2387,15 +2629,98 @@ class TblAfHatGfViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return TblAfHatGf.objects.all()
 
+
+class TblAppliedRolleViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAppliedRolleSerializer
+
+    def get_queryset(self):
+        return TblAppliedRolle.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        print("In AppliedRoleViewSet-Create")
+        serializer = TblAppliedRolleSerializer(data=request.data)
+        if serializer.is_valid():
+            applied_rolle = serializer.save()
+            return Response(data=TblAppliedRolleSerializer(applied_rolle,context={'request':request}).data,status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
     def patch(self, request, *args, **kwargs):
-        print("in AfHatGf API-Viewset-PATCH-Method")
-        pk = request.POST['afhatgf_id']
-        afhatgf_to_update = TblAfHatGf.objects.get(id=pk)
-        update_tfs = afhatgf_to_update.tfs
-        update_tfs.add(request.POST['tf_id'])
+        print("In AppliedRoleViewSet-Patch")
+        pk = request.POST['applied_rolle_id']
+        applied_rolle_to_update = TblAppliedRolle.objects.get(id=pk)
+        update_afs = applied_rolle_to_update.applied_afs
+        update_afs.add(request.POST['applied_af_id'])
         return Response(status=status.HTTP_201_CREATED)
 
 
+    def post(self,request, *args, **kwargs):
+        print("In AppliedRoleViewSet-POST")
+        return
+
+class TblAppliedAfsViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAppliedAfSerializer
+
+    def get_queryset(self):
+        return TblAppliedAf.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        print("In AppliedAfViewSet-Create")
+        serializer = TblAppliedAfSerializer(data=request.data)
+        if serializer.is_valid():
+            applied_af = serializer.save()
+            return Response(data=TblAppliedAfSerializer(applied_af,context={'request':request}).data,status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        print("In AppliedAfViewSet-Patch")
+        pk = request.POST['applied_af_id']
+        applied_af_to_update = TblAppliedAf.objects.get(id=pk)
+        update_gfs = applied_af_to_update.applied_gfs
+        update_gfs.add(request.POST['applied_gf_id'])
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class TblAppliedGfsViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAppliedGfSerializer
+
+    def get_queryset(self):
+        return TblAppliedGf.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        print("In AppliedGfViewSet-Create")
+        serializer = TblAppliedGfSerializer(data=request.data)
+        if serializer.is_valid():
+            applied_gf = serializer.save()
+            return Response(data=TblAppliedGfSerializer(applied_gf,context={'request':request}).data,status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, *args, **kwargs):
+        print("In AppliedGfViewSet-Patch")
+        pk = request.POST['applied_gf_id']
+        applied_gf_to_update = TblAppliedGf.objects.get(id=pk)
+        update_tfs = applied_gf_to_update.applied_tfs
+        update_tfs.add(request.POST['applied_tf_id'])
+        return Response(status=status.HTTP_201_CREATED)
+
+
+class TblAppliedTfsViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TblAppliedTfSerializer
+
+    def get_queryset(self):
+        return TblAppliedTf.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        print("In AppliedTfViewSet-Create")
+        serializer = TblAppliedTfSerializer(data=request.data)
+        if serializer.is_valid():
+            applied_tf = serializer.save()
+            return Response(data=TblAppliedGfSerializer(applied_tf,context={'request':request}).data,status=status.HTTP_201_CREATED)
+        return Response(data=serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+'''
 class TblAfHatGf_TransferiertViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = TblAfHatGf_TransferiertSerializer
@@ -2410,7 +2735,7 @@ class TblAfHatGf_GeloeschtViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return TblAfHatGF_Geloescht.objects.all()
-'''
+
 class UserModelRightsViewSet(viewsets.ModelViewSet):
     
        # API endpoint that allows usermodelrights to be listed and detail-viewed

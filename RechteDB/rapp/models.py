@@ -211,6 +211,39 @@ class TblAfliste(models.Model):
 
 # Die drei Rollentabellen sowie die AF-Liste hängen inhaltlich zusammen
 # Die Definition der Rollen
+class TblAppliedTf(models.Model):
+    id = models.AutoField(primary_key=True)
+    model_tf_id = models.ForeignKey(to='TblGesamt', on_delete=models.PROTECT)
+    userHatUserID_id = models.ForeignKey(to='UserHatTblUserIDundName', on_delete=models.PROTECT)
+    applied_rolle_id = models.ForeignKey(to='TblAppliedRolle', on_delete=models.PROTECT)
+    applied_af_id = models.ForeignKey(to='TblAppliedAf', on_delete=models.PROTECT)
+    applied_gf_id = models.ForeignKey(to='TblAppliedGf', on_delete=models.PROTECT)
+
+
+class TblAppliedGf(models.Model):
+    id = models.AutoField(primary_key=True)
+    model_gf_id = models.ForeignKey(to='TblUebersichtAfGfs', on_delete=models.PROTECT)
+    userHatUserID_id = models.ForeignKey(to='UserHatTblUserIDundName', on_delete=models.PROTECT)
+    applied_rolle_id = models.ForeignKey(to='TblAppliedRolle', on_delete=models.PROTECT)
+    applied_af_id = models.ForeignKey(to='TblAppliedAf', on_delete=models.PROTECT)
+    applied_tfs = models.ManyToManyField(to='TblAppliedTf', related_name='applied_tfs', default=None)
+
+
+class TblAppliedAf(models.Model):
+    id = models.AutoField(primary_key=True)
+    model_af_id = models.ForeignKey(to='TblAfliste',on_delete=models.PROTECT)
+    userHatUserID_id = models.ForeignKey(to='UserHatTblUserIDundName',on_delete=models.PROTECT)
+    applied_rolle_id = models.ForeignKey(to='TblAppliedRolle', on_delete=models.PROTECT)
+    applied_gfs = models.ManyToManyField(to='TblAppliedGf',related_name='applied_gfs',default=None)
+
+
+class TblAppliedRolle(models.Model):
+    id = models.AutoField(primary_key=True)
+    model_rolle_id = models.ForeignKey(to='TblRollen', to_field='rollenid',on_delete=models.PROTECT)
+    userHatUserID_id = models.ForeignKey(to='UserHatTblUserIDundName',on_delete=models.PROTECT)
+    applied_afs = models.ManyToManyField(to='TblAppliedAf',related_name='applied_afs',default=None)
+
+
 class TblRollen(models.Model):
     rollenid = models.AutoField(primary_key=True)
     rollenname = models.CharField(db_column='rollenname', unique=True, max_length=100, verbose_name='Rollen-Name')
@@ -263,12 +296,6 @@ class TblRollehataf(models.Model):
     bemerkung = models.CharField(db_column='bemerkung', max_length=250, blank=True,
                                  null=True)  # Field name made lowercase.
     einsatz = models.IntegerField(db_column='einsatz', choices=EINSATZ_CHOICES, default=EINSATZ_NONE)
-    userHatRolle_id = models.ForeignKey('TblUserhatrolle', models.CASCADE, to_field='userundrollenid',
-                                        db_column='userHatRolle', blank=True, null=True)  # Field name made lowercase.
-
-    gfs = models.ManyToManyField(TblUebersichtAfGfs, default=None, related_name='gfs', through='TblAfHatGF')
-    on_transfer_list = models.BooleanField(default=False)
-    on_delete_list = models.BooleanField(default=False)
 
     class Meta:
         managed = True
@@ -289,7 +316,7 @@ class TblRollehataf(models.Model):
     get_muss.short_description = 'Muss'
     mussfeld.boolean = True
 
-
+'''
 class TblRollehataf_Geloescht(models.Model):
     EINSATZ_NONE = 0
     EINSATZ_NURDV = 1
@@ -393,16 +420,14 @@ class TblRollehataf_Transferiert(models.Model):
     get_muss.admin_order_field = 'mussfeld'
     get_muss.short_description = 'Muss'
     mussfeld.boolean = True
-
+'''
 
 class TblAfHatGF(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
-    rolleHatAf_id = models.ForeignKey('TblRollehataf', null=True, db_column='rolleHatAf_id', on_delete=models.CASCADE)
     gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
     af_id = models.ForeignKey('TblAfliste', db_column='af_id', on_delete=models.CASCADE,default=None)
-    tfs = models.ManyToManyField(TblGesamt, default=None, related_name='tfs')
 
-
+'''
 class TblAfHatGF_Geloescht(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
     rolleHatAf_id = models.ForeignKey('TblRollehataf_Geloescht', db_column='rolleHatAf_id', on_delete=models.CASCADE)
@@ -417,7 +442,7 @@ class TblAfHatGF_Transferiert(models.Model):
     gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
     trans_tfs = models.ManyToManyField(TblGesamt, default=None, related_name='trans_tfs')
     on_transfer_list = models.BooleanField(default=False)
-
+'''
 
 # Referenz der User auf die ihnen zur Verfügung stehenden Rollen
 class TblUserhatrolle(models.Model):
@@ -429,7 +454,7 @@ class TblUserhatrolle(models.Model):
     userundrollenid = models.AutoField(db_column='userundrollenid', primary_key=True,
                                        verbose_name='ID')  # Field name made lowercase.
     userid = models.ForeignKey('TblUserIDundName', models.PROTECT, to_field='userid', db_column='userid',
-                               verbose_name='UserID, Name')  # Field name made lowercase.
+                               verbose_name='UserID, Name', null=True)  # Field name made lowercase.
     rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
                                    db_column='rollenname')  # Field name made lowercase.
     schwerpunkt_vertretung = models.CharField(db_column='schwerpunkt_vertretung',
@@ -441,12 +466,6 @@ class TblUserhatrolle(models.Model):
     bemerkung = models.TextField(db_column='bemerkung', blank=True, null=True)  # Field name made lowercase.
     letzte_aenderung = models.DateTimeField(db_column='letzte_aenderung', default=timezone.now, blank=True,
                                             db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    userHatUserID_id = models.ForeignKey('UserHatTblUserIDundName', models.CASCADE, db_column='userHatUserID_id',
-                                         default=None, null=True)  # Field name made lowercase.
-
-    afs = models.ManyToManyField(TblAfliste, through='TblRollehataf', default=None, related_name='afs')
-    on_transfer_list = models.BooleanField(default=False)
-    on_delete_list = models.BooleanField(default=False)
 
     class Meta:
         managed = True
@@ -480,7 +499,7 @@ class TblUserhatrolle(models.Model):
         # Returns the url to access a particular instance of the model.
         return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
 
-
+'''
 class TblUserhatrolle_Geloescht(models.Model):
     SCHWERPUNKT_TYPE = (
         ('Schwerpunkt', 'Schwerpunktaufgabe'),
@@ -605,7 +624,7 @@ class TblUserhatrolle_Transferiert(models.Model):
     def get_absolute_delete_url(self):
         # Returns the url to access a particular instance of the model.
         return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
-
+'''
 
 # Die Tabelle enthält die Teambeschreibungen. Das eigentliche Team ist das Feld "team"
 class TblOrga(models.Model):
@@ -646,9 +665,9 @@ class UserHatTblUserIDundName(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
     user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
     userid_name_id = models.ForeignKey('TblUserIDundName', db_column='userid_name_id', on_delete=models.CASCADE)
-    rollen = models.ManyToManyField(TblRollen, through='TblUserhatrolle', default=None, related_name='rollen')
+    rollen = models.ManyToManyField(to='TblAppliedRolle', related_name='applied_rollen', null=True, default=None, blank=True)
 
-
+'''
 class UserHatTblUserIDundName_Geloescht(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
     user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
@@ -665,7 +684,7 @@ class UserHatTblUserIDundName_Transferiert(models.Model):
     trans_rollen = models.ManyToManyField(TblRollen, through='TblUserhatrolle_Transferiert', default=None,
                                           related_name='trans_rollen')
     on_transfer_list = models.BooleanField(default=True)
-
+'''
 
 # Die Namen aller aktiven und gelöschten UserIDen und der dazugehörenden Namen (Realnamen und Technische User)
 class TblUserIDundName(models.Model):
@@ -1301,10 +1320,11 @@ class User(AbstractUser):
                                          through=UserHatTblUserIDundName)  # Field name made lowercase. Field renamed to remove unsuitable characters.
 
     deleted = models.BooleanField(default=False)
-    transfer_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="transfer_list",
-                                           through=UserHatTblUserIDundName_Transferiert)
-    delete_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="delete_list",
-                                         through=UserHatTblUserIDundName_Geloescht)
+    last_rights_update = models.DateTimeField(editable=True, null=True, blank=True, default=None)
+    #transfer_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="transfer_list",
+    #                                       through=UserHatTblUserIDundName_Transferiert)
+    #delete_list = models.ManyToManyField(TblUserIDundName, default=None, related_name="delete_list",
+    #                                     through=UserHatTblUserIDundName_Geloescht)
 
     # identity = models.CharField(max_length=7, unique=True)
     # avatar = models.ImageField()
