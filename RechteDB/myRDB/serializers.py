@@ -254,220 +254,13 @@ class TblUserhatrolleSerializer(serializers.HyperlinkedModelSerializer):
 class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserHatTblUserIDundName
-        fields = ('url', 'id', 'user_name', 'userid_name_id', 'rollen')
+        fields = ('url', 'id', 'user_name', 'userid_name_id', 'rollen','delete_list','transfer_list')
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatuseridundname-detail')
     user_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:user-detail')
     userid_name_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
     rollen = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:appliedrole-detail')
-'''
-class UserHatTblUserIDundName_GeloeschtSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = UserHatTblUserIDundName_Geloescht
-        fields = ('url', 'id', 'user_name', 'userid_name_id', 'del_rollen', 'on_delete_list')
-
-    user_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:user-detail')
-    userid_name_id = TblUserIDundNameSerializer()
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatuseridundname_geloescht-detail')
-    del_rollen = TblRollenSerializer(many=True, read_only=True)
-
-
-class UserHatTblUserIDundName_TransferiertSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = UserHatTblUserIDundName_Transferiert
-        fields = ('url', 'id', 'user_name', 'userid_name_id', 'trans_rollen', 'on_transfer_list')
-
-    user_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:user-detail')
-    userid_name_id = TblUserIDundNameSerializer()
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatuseridundname_transferiert-detail')
-    trans_rollen = TblRollenSerializer(many=True, read_only=True)
-'''
-
-class TblPlattformSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblPlattform
-        fields = ('url', 'id', 'tf_technische_plattform', 'color')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:plattform-detail')
-
-
-class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblGesamt
-        fields = ('url', 'id', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell', 'tf_kritikalitaet',
-                  'tf_eigentuemer_org', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab',
-                  'af_gueltig_bis', 'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung',
-                  'af_zuweisungsdatum', 'datum', 'geloescht', 'gefunden', 'wiedergefunden', 'geaendert', 'neueaf',
-                  'nicht_ai', 'patchdatum', 'wertmodellvorpatch', 'loeschdatum', 'letzte_aenderung')
-
-    userid_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
-    modell = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
-    plattform = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:plattform-detail')
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:gesamt-detail')
-
-
-class TblGesamtHistorieSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblGesamtHistorie
-        fields = (
-            'url', 'id', 'id_alt', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell',
-            'tf_kritikalitaet',
-            'tf_eigentuemer_org', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'datum', 'geloescht',
-            'gefunden', 'wiedergefunden', 'geaendert', 'neueaf', 'loeschdatum', 'af_zuweisungsdatum',
-            'af_zuweisungsdatum_alt', 'af_gueltig_ab', 'af_gueltig_bis', 'direct_connect',
-            'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'nicht_ai', 'patchdatum', 'wertmodellvorpatch',
-            'letzte_aenderung')
-
-    userid_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
-    # modell = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgfs')
-    modell = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
-    plattform = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:plattform-detail')
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:gesamthistorie-detail')
-
-
-class TblAflisteSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblAfliste
-        fields = ('url', 'id', 'af_name', 'neu_ab','gfs')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:af-detail')
-    gfs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:afgf-detail')
-
-
-class TblsachgebieteSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Tblsachgebiete
-        fields = (
-            'url', 'sachgebiet', 'definition', 'verantwortlicher', 'telefon_verantwortlicher',
-            'user_id_verantwortlicher',
-            'fk')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:sachgebiet-detail')
-
-
-class TblsubsystemeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Tblsubsysteme
-        fields = (
-            'url', 'sgss', 'definition', 'verantwortlicher', 'telefon_verantwortlicher', 'user_id_verantwortlicher',
-            'fk')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:subsystem-detail')
-
-
-class TblDb2Serializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblDb2
-        fields = ('url', 'id', 'source', 'grantee', 'creator', 'table', 'selectauth', 'insertauth', 'updateauth',
-                  'deleteauth', 'alterauth', 'indexauth', 'grantor', 'grantedts', 'datum')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:db2-detail')
-    # grantee = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:racfgruppen')
-
-
-class TblRacfGruppenSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblRacfGruppen
-        fields = ('url', 'group', 'test', 'produktion', 'readonly', 'db2_only', 'stempel')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:racfgruppe-detail')
-
-
-class TblrechteneuvonimportSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Tblrechteneuvonimport
-        fields = ('url', 'id', 'identitaet', 'nachname', 'vorname', 'tf_name', 'tf_beschreibung', 'af_anzeigename',
-                  'af_beschreibung',
-                  'hoechste_kritikalitaet_tf_in_af', 'tf_eigentuemer_org', 'tf_applikation', 'tf_kritikalitaet',
-                  'gf_name',
-                  'gf_beschreibung', 'direct_connect', 'af_zugewiesen_an_account_name', 'af_gueltig_ab',
-                  'af_gueltig_bis',
-                  'af_zuweisungsdatum')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rechtneuvonimport-detail')
-
-
-class TblrechteamneuSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Tblrechteamneu
-        fields = ('url', 'id', 'userid', 'name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'tf_kritikalitaet',
-                  'tf_eigentuemer_org',
-                  'tf_technische_plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab',
-                  'af_gueltig_bis',
-                  'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'af_zuweisungsdatum',
-                  'gefunden',
-                  'geaendert', 'angehaengt_bekannt', 'angehaengt_sonst', 'doppelerkennung')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rechtamneu-detail')
-
-
-class Qryf3RechteneuvonimportduplikatfreiSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Qryf3Rechteneuvonimportduplikatfrei
-        fields = (
-            'url', 'userid', 'name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'tf_kritikalitaet',
-            'tf_eigentuemer_org',
-            'tf_technische_plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab', 'af_gueltig_bis',
-            'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'af_zuweisungsdatum')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:qryf3rechteneuvonimportduplikatfrei-detail')
-
-
-class RACF_RechteSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = RACF_Rechte
-        fields = ('url', 'id', 'type', 'group', 'ressource_class', 'profil', 'access', 'test', 'produktion',
-                  'alter_control_update', 'datum')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:RACF_Recht-detail')
-
-
-class Orga_detailsSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Orga_details
-        fields = ('url', 'id', 'abteilungsnummer', 'organisation', 'orgaBezeichnung', 'fk', 'kostenstelle', 'orgID',
-                  'parentOrga', 'parentOrgID', 'orgaTyp', 'fkName', 'delegationEigentuemer', 'delegationFK', 'datum')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Orga_detail-detail')
-
-
-class Letzter_importSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Letzter_import
-        fields = ('url', 'id', 'start', 'user', 'end', 'max', 'aktuell', 'schritt')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:letzter_import-detail')
-
-
-class ModellierungSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Modellierung
-        fields = ('url', 'entitlement', 'neue_beschreibung', 'plattform', 'gf', 'beschreibung_der_gf', 'af',
-                  'beschreibung_der_af', 'organisation_der_af', 'eigentuemer_der_af', 'aus_modellierung_entfernen',
-                  'datei', 'letzte_aenderung')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Modellierung-detail')
-
-
-class DirektverbindungenSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Direktverbindungen
-        fields = ('url', 'organisation', 'entscheidung', 'entitlement', 'applikation', 'instanz',
-                  'identitaet', 'manager', 'vorname', 'nachname', 'account_name', 'status', 'typ', 'nicht_anmailen',
-                  'ansprechpartner', 'letzte_aenderung')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Direktverbindung-detail')
-
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('url', 'id', 'password', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name',
-                  'email', 'is_staff', 'is_active', 'date_joined', 'userid_name', 'deleted','last_rights_update')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:user-detail')
-    userid_name = serializers.HyperlinkedRelatedField(many=True, read_only=True,
-                                                      view_name='myRDBNS:useridundname-detail')
-
+    delete_list = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:appliedrole-detail')
+    transfer_list = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:appliedrole-detail')
 
     def update(self, instance, validated_data):
         print("im in the serializer-update-method")
@@ -938,140 +731,772 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     def remove_from_delete_list(self, instance, data):
         print("in remove_from_delete_list")
-        if data['right_type'] == 'user':
-            for user in instance.delete_list.all():
-                if user.userid == data['right_name']:
-                    user.on_delete_list = True
-                    instance.userid_name.add(user.id)
-                    instance.delete_list.remove(TblUserIDundName.objects.get(id=user.id))
-                    return instance
-        elif data['right_type'] == 'role':
-            for user in instance.delete_list.all():
-                if user.userid == data['parent']:
-                    for role in user.del_rollen.all():
-                        if role.rollenname == data['right_name']:
-                            role.on_delete_list = True
-                            user.rollen.add(role.id)
-                            user.del_rollen.remove(TblRollen.objects.get(id=role.id))
-                            return instance
-        elif data['right_type'] == 'af':
-            for user in instance.delete_list.all():
-                if user.userid == data['grandparent']:
-                    for role in user.del_rollen.all():
-                        if role.rollenname == data['parent']:
-                            for af in role.del_afs.all():
-                                if af.af_name == data['right_name']:
-                                    af.on_delete_list = True
-                                    role.afs.add(af.id)
-                                    role.del_afs.remove(TblAfliste.objects.get(id=af.id))
-                                    return instance
-        elif data['right_type'] == 'gf':
-            for user in instance.delete_list.all():
-                if user.userid == data['greatgrandparent']:
-                    for role in user.del_rollen.all():
-                        if role.rollenname == data['grandparent']:
-                            for af in role.del_afs.all():
-                                if af.af_name == data['parent']:
-                                    for gf in af.del_gfs.all():
-                                        if gf.name_gf_neu == data['right_name']:
-                                            gf.on_delete_list = True
-                                            af.gfs.add(gf.id)
-                                            af.del_gfs.remove(TblUebersichtAfGfs.objects.get(id=gf.id))
-                                            return instance
-        elif data['right_type'] == 'tf':
-            for user in instance.delete_list.all():
-                if user.userid == data['greatgreatgrandparent']:
-                    for role in user.del_rollen.all():
-                        if role.rollenname == data['greatgrandparent']:
-                            for af in role.del_afs.all():
-                                if af.af_name == data['grandparent']:
-                                    for gf in af.del_gfs.all():
-                                        if gf.name_gf_neu == data['parent']:
-                                            for tf in gf.del_tfs.all():
-                                                if tf.tf_name == data['right_name']:
-                                                    tf.on_delete_list = True
-                                                    gf.tfs.add(tf.id)
-                                                    gf.del_tfs.remove(TblGesamt.objects.get(id=tf.id))
-                                                    return instance
+        if data['right_type'] == 'role':
+            for del_rolle in instance.delete_list.all():
+                if del_rolle.model_rolle_id.rollenname == data['right_name']:
+                    rolle_found = False
+                    for rolle in instance.rollen.all():
+                        if rolle.model_rolle_id.rollenid == del_rolle.model_rolle_id.rollenid:
+                            rolle_found = True
+                            break
+                    if not rolle_found:
+                        instance.rollen.add(del_rolle.id)
+                        instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                        return instance
+                    else:
+                        for del_af in del_rolle.applied_afs.all():
+                            af_found = False
+                            for af in rolle.applied_afs.all():
+                                if del_af.model_af_id.id == af.model_af_id.id:
+                                    af_found = True
+                                    break
+                            if not af_found:
+                                rolle.applied_afs.add(del_af.id)
+                            else:
+                                for del_gf in del_af.applied_gfs.all():
+                                    gf_found = False
+                                    for gf in af.applied_gfs.all():
+                                        if del_gf.model_gf_id.id == gf.model_gf_id.id:
+                                            gf_found = True
+                                            break
+                                    if not gf_found:
+                                        af.applied_gfs.add(del_gf.id)
+                                    else:
+                                        for del_tf in del_gf.applied_tfs.all():
+                                            tf_found = False
+                                            for tf in gf.applied_tfs.all():
+                                                if del_tf.model_tf_id.id == tf.model_tf_id.id:
+                                                    tf_found = True
+                                                    break
+                                            if not tf_found:
+                                                gf.applied_tfs.add(del_tf.id)
+                        instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                        return instance
 
+        elif data['right_type'] == 'af':
+            for del_rolle in instance.delete_list.all():
+                if del_rolle.model_rolle_id.rollenname == data['parent']:
+                    for del_af in del_rolle.applied_afs.all():
+                        if del_af.model_af_id.af_name == data['right_name']:
+                            rolle_found = False
+                            for rolle in instance.rollen.all():
+                                if del_rolle.model_rolle_id.rollenid == rolle.model_rolle_id.rollenid:
+                                    rolle_found = True
+                                    break
+                            if not rolle_found:
+                                helper_rolle = TblAppliedRolle.objects.create(model_rolle_id=del_rolle.model_rolle_id,userHatUserID_id=instance)
+                                helper_rolle.applied_afs.add(del_af.id)
+                                instance.rollen.add(helper_rolle.id)
+                                del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                if not del_rolle.applied_afs.all():
+                                    instance.delete_list.remove(
+                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                return instance
+                            else:
+                                af_found = False
+                                for af in rolle.applied_afs.all():
+                                    if del_af.model_af_id.id == af.model_af_id.id:
+                                        af_found = True
+                                        break
+                                if not af_found:
+                                    rolle.applied_afs.add(del_af.id)
+                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                    if not del_rolle.applied_afs.all():
+                                        instance.delete_list.remove(
+                                            TblAppliedRolle.objects.get(id=del_rolle.id))
+                                    return instance
+                                else:
+                                    for del_gf in del_af.applied_gfs.all():
+                                        gf_found = False
+                                        for gf in af.applied_gfs.all():
+                                            if del_gf.model_gf_id.id == gf.model_gf_id.id:
+                                                gf_found = True
+                                                break
+                                        if not gf_found:
+                                            af.applied_gfs.add(del_gf.id)
+                                        else:
+                                            for del_tf in del_gf.applied_tfs.all():
+                                                tf_found = False
+                                                for tf in gf.applied_tfs.all():
+                                                    if del_tf.model_tf_id.id == tf.model_tf_id.id:
+                                                        tf_found = True
+                                                        break
+                                                if not tf_found:
+                                                    gf.applied_tfs.add(del_tf.id)
+                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                    if not del_rolle.applied_afs.all():
+                                        instance.delete_list.remove(
+                                            TblAppliedRolle.objects.get(id=del_rolle.id))
+                                    return instance
+
+        elif data['right_type'] == 'gf':
+            for del_rolle in instance.delete_list.all():
+                if del_rolle.model_rolle_id.rollenname == data['grandparent']:
+                    for del_af in del_rolle.applied_afs.all():
+                        if del_af.model_af_id.af_name == data['parent']:
+                            for del_gf in del_af.applied_gfs.all():
+                                if del_gf.model_gf_id.name_gf_neu == data['right_name']:
+                                    rolle_found = False
+                                    for rolle in instance.rollen.all():
+                                        if del_rolle.model_rolle_id.rollenid == rolle.model_rolle_id.rollenid:
+                                            rolle_found = True
+                                            break
+                                    if not rolle_found:
+                                        helper_rolle = TblAppliedRolle.objects.create(
+                                            model_rolle_id=del_rolle.model_rolle_id, userHatUserID_id=instance)
+                                        helper_af = TblAppliedAf.objects.create(model_af_id=del_af.model_af_id,
+                                                                                applied_rolle_id=del_rolle,
+                                                                                userHatUserID_id=instance)
+                                        helper_af.applied_gfs.add(del_gf.id)
+                                        helper_rolle.applied_afs.add(helper_af.id)
+                                        instance.rollen.add(helper_rolle.id)
+                                        del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                        if not del_af.applied_gfs.all():
+                                            del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                        if not del_rolle.applied_afs.all():
+                                            instance.delete_list.remove(
+                                                TblAppliedRolle.objects.get(id=del_rolle.id))
+                                        return instance
+                                    else:
+                                        af_found = False
+                                        for af in rolle.applied_afs.all():
+                                            if af.model_af_id.id == del_af.model_af_id.id:
+                                                af_found = True
+                                                break
+                                        if not af_found:
+                                            helper_af = TblAppliedAf.objects.create(model_af_id=del_af.model_af_id,
+                                                                                    applied_rolle_id=del_rolle,
+                                                                                    userHatUserID_id=instance)
+                                            helper_af.applied_gfs.add(del_gf.id)
+                                            rolle.applied_afs.add(helper_af.id)
+                                            del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                            if not del_af.applied_gfs.all():
+                                                del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                            if not del_rolle.applied_afs.all():
+                                                instance.delete_list.remove(
+                                                    TblAppliedRolle.objects.get(id=del_rolle.id))
+                                            return instance
+                                        else:
+                                            gf_found = False
+                                            for gf in af.applied_gfs.all():
+                                                if gf.model_gf_id.id == del_gf.model_gf_id.id:
+                                                    gf_found = True
+                                                    break
+                                            if not gf_found:
+                                                af.applied_gfs.add(del_gf.id)
+                                                del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                if not del_af.applied_gfs.all():
+                                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                if not del_rolle.applied_afs.all():
+                                                    instance.delete_list.remove(
+                                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                return instance
+                                            else:
+                                                for del_tf in del_gf.applied_tfs.all():
+                                                    tf_found = False
+                                                    for tf in gf.applied_tfs.all():
+                                                        if tf.model_tf_id.id == del_tf.model_tf_id.id:
+                                                            tf_found = True
+                                                            break
+                                                    if not tf_found:
+                                                        gf.applied_tfs.add(del_tf.id)
+                                                del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                if not del_af.applied_gfs.all():
+                                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                if not del_rolle.applied_afs.all():
+                                                    instance.delete_list.remove(
+                                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                return instance
+
+        elif data['right_type'] == 'tf':
+            for del_rolle in instance.delete_list.all():
+                if del_rolle.model_rolle_id.rollenname == data['greatgrandparent']:
+                    for del_af in del_rolle.applied_afs.all():
+                        if del_af.model_af_id.af_name == data['grandparent']:
+                            for del_gf in del_af.applied_gfs.all():
+                                if del_gf.model_gf_id.name_gf_neu == data['parent']:
+                                    for del_tf in del_gf.applied_tfs.all():
+                                        if del_tf.model_tf_id.tf == data['right_name']:
+                                            rolle_found = False
+                                            for rolle in instance.rollen.all():
+                                                if del_rolle.model_rolle_id.rollenid == rolle.model_rolle_id.rollenid:
+                                                    rolle_found = True
+                                                    break
+                                            if not rolle_found:
+                                                helper_rolle = TblAppliedRolle.objects.create(
+                                                    model_rolle_id=del_rolle.model_rolle_id, userHatUserID_id=instance)
+                                                helper_af = TblAppliedAf.objects.create(model_af_id=del_af.model_af_id,
+                                                                                        applied_rolle_id=helper_rolle,
+                                                                                        userHatUserID_id=instance)
+                                                helper_gf = TblAppliedGf.objects.create(model_gf_id=del_gf.model_gf_id,
+                                                                                        applied_af_id=helper_af,
+                                                                                        applied_rolle_id=helper_rolle,
+                                                                                        userHatUserID_id=instance)
+                                                helper_gf.applied_tfs.add(del_tf.id)
+                                                helper_af.applied_gfs.add(helper_gf.id)
+                                                helper_rolle.applied_afs.add(helper_af.id)
+                                                instance.rollen.add(helper_rolle.id)
+                                                del_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=del_tf.id))
+                                                if not del_gf.applied_tfs.all():
+                                                    del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                if not del_af.applied_gfs.all():
+                                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                if not del_rolle.applied_afs.all():
+                                                    instance.delete_list.remove(
+                                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                return instance
+                                            else:
+                                                af_found = False
+                                                for af in rolle.applied_afs.all():
+                                                    if af.model_af_id.id == del_af.model_af_id.id:
+                                                        af_found = True
+                                                        break
+                                                if not af_found:
+                                                    helper_af = TblAppliedAf.objects.create(model_af_id=del_af.model_af_id,
+                                                                                            applied_rolle_id=rolle,
+                                                                                            userHatUserID_id=instance)
+                                                    helper_gf = TblAppliedGf.objects.create(
+                                                        model_gf_id=del_gf.model_gf_id,
+                                                        applied_af_id=helper_af,
+                                                        applied_rolle_id=rolle,
+                                                        userHatUserID_id=instance)
+                                                    helper_gf.applied_tfs.add(del_tf.id)
+                                                    helper_af.applied_gfs.add(helper_gf.id)
+                                                    rolle.applied_afs.add(helper_af.id)
+                                                    del_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=del_tf.id))
+                                                    if not del_gf.applied_tfs.all():
+                                                        del_af.applied_gfs.remove(
+                                                            TblAppliedGf.objects.get(id=del_gf.id))
+                                                    if not del_af.applied_gfs.all():
+                                                        del_rolle.applied_afs.remove(
+                                                            TblAppliedAf.objects.get(id=del_af.id))
+                                                    if not del_rolle.applied_afs.all():
+                                                        instance.delete_list.remove(
+                                                            TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                    return instance
+                                                else:
+                                                    gf_found = False
+                                                    for gf in af.applied_gfs.all():
+                                                        if gf.model_gf_id.id == del_gf.model_gf_id.id:
+                                                            gf_found = True
+                                                            break
+                                                    if not gf_found:
+                                                        helper_gf = TblAppliedGf.objects.create(
+                                                            model_gf_id=del_gf.model_gf_id,
+                                                            applied_af_id=af,
+                                                            applied_rolle_id=rolle,
+                                                            userHatUserID_id=instance)
+                                                        helper_gf.applied_tfs.add(del_tf.id)
+                                                        af.applied_gfs.add(helper_gf.id)
+                                                        del_gf.applied_tfs.remove(
+                                                            TblAppliedTf.objects.get(id=del_tf.id))
+                                                        if not del_gf.applied_tfs.all():
+                                                            del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                        if not del_af.applied_gfs.all():
+                                                            del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                        if not del_rolle.applied_afs.all():
+                                                            instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                        return instance
+                                                    else:
+                                                        tf_found = False
+                                                        for tf in gf.applied_tfs.all():
+                                                            if tf.model_tf_id.id == del_tf.model_tf_id.id:
+                                                                tf_found = True
+                                                                break
+                                                        if not tf_found:
+                                                            gf.applied_tfs.add(del_tf.id)
+                                                        del_gf.applied_tfs.remove(
+                                                                TblAppliedTf.objects.get(id=del_tf.id))
+                                                        if not del_gf.applied_tfs.all():
+                                                            del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                        if not del_af.applied_gfs.all():
+                                                            del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                        if not del_rolle.applied_afs.all():
+                                                            instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                        return instance
     def add_to_delete_list(self, instance, data):
         print("in add_to_delete_list")
-        if data['right_type'] == 'user':
-            for user in instance.userid_name.all():
-                if user.userid == data['right_name']:
-                    user.on_delete_list = True
-                    instance.delete_list.add(user.id)
-                    instance.userid_name.remove(TblUserIDundName.objects.get(id=user.id))
+        if data['right_type'] == 'role':
+            for rolle in instance.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['right_name']:
+                    rolle_found = False
+                    for del_rolle in instance.delete_list.all():
+                        if rolle.model_rolle_id.rollenid == del_rolle.model_rolle_id.rollenid:
+                            rolle_found = True
+                            break
+                    if not rolle_found:
+                        instance.delete_list.add(rolle.id)
+                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                        return instance
+                    else:
+                        for applied_af in rolle.applied_afs.all():
+                            af_found = False
+                            for del_af in del_rolle.applied_afs.all():
+                                if applied_af.model_af_id.id == del_af.model_af_id.id:
+                                    af_found = True
+                                    break
+                            if not af_found:
+                                del_rolle.applied_afs.add(applied_af.id)
+                            else:
+                                for applied_gf in applied_af.applied_gfs.all():
+                                    gf_found = False
+                                    for del_gf in del_af.applied_gfs.all():
+                                        if applied_gf.model_gf_id.id == del_gf.model_gf_id.id:
+                                            gf_found = True
+                                            break
+                                    if not gf_found:
+                                        del_af.applied_gfs.add(applied_gf.id)
+                                    else:
+                                        for applied_tf in applied_gf.applied_tfs.all():
+                                            tf_found = False
+                                            for del_tf in del_gf.applied_tfs.all():
+                                                if applied_tf.model_tf_id.id == del_tf.model_tf_id.id:
+                                                    tf_found = True
+                                                    break
+                                            if not tf_found:
+                                                del_gf.applied_tfs.add(applied_tf.id)
+                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
                     return instance
-        elif data['right_type'] == 'role':
-            for user in instance.userid_name.all():
-                if user.userid == data['parent']:
-                    if not user.id in instance.delete_list:
-                        instance.delete_list.add(user.id)
-                    for role in user.rollen.all():
-                        if role.rollenname == data['right_name']:
-                            role.on_delete_list = True
-                            user.del_rollen.add(role.id)
-                            user.rollen.remove(TblRollen.objects.get(id=role.id))
-                            return instance
         elif data['right_type'] == 'af':
-            for user in instance.userid_name.all():
-                if user.userid == data['grandparent']:
-                    if not user.id in instance.delete_list:
-                        instance.delete_list.add(user.id)
-                    for role in user.rollen.all():
-                        if role.rollenname == data['parent']:
-                            if not role.rollenname in user.del_rollen:
-                                instance.del_rollen.add(role.rollenname)
-                            for af in role.afs.all():
-                                if af.af_name == data['right_name']:
-                                    af.on_delete_list = True
-                                    role.del_afs.add(af.id)
-                                    role.afs.remove(TblAfliste.objects.get(id=af.id))
+            for rolle in instance.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['parent']:
+                    for applied_af in rolle.applied_afs.all():
+                        if applied_af.model_af_id.af_name == data['right_name']:
+                            rolle_found = False
+                            for del_rolle in instance.delete_list.all():
+                                if rolle.model_rolle_id.rollenid == del_rolle.model_rolle_id.rollenid:
+                                    rolle_found = True
+                                    break
+                            if not rolle_found:
+                                helper_rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle.model_rolle_id,userHatUserID_id=instance)
+                                helper_rolle.applied_afs.add(applied_af.id)
+                                instance.delete_list.add(helper_rolle.id)
+                                rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                if not rolle.applied_afs.all():
+                                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                return instance
+                            else:
+                                af_found = False
+                                for del_af in del_rolle.applied_afs.all():
+                                    if applied_af.model_af_id.id == del_af.model_af_id.id:
+                                        af_found = True
+                                        break
+                                if not af_found:
+                                    del_rolle.applied_afs.add(applied_af.id)
+                                    rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                    if not rolle.applied_afs.all():
+                                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
                                     return instance
+                                else:
+                                    for applied_gf in applied_af.applied_gfs.all():
+                                        gf_found = False
+                                        for del_gf in del_af.applied_gfs.all():
+                                            if applied_gf.model_gf_id.id == del_gf.model_gf_id.id:
+                                                gf_found = True
+                                                break
+                                        if not gf_found:
+                                            del_af.applied_gfs.add(applied_gf.id)
+                                        else:
+                                            for applied_tf in applied_gf.applied_tfs.all():
+                                                tf_found = False
+                                                for del_tf in del_gf.applied_tfs.all():
+                                                    if applied_tf.model_tf_id.id == del_tf.model_tf_id.id:
+                                                        tf_found = True
+                                                        break
+                                                if not tf_found:
+                                                    del_gf.applied_tfs.add(applied_tf.id)
+                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                            if not rolle.applied_afs.all():
+                                instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                            return instance
         elif data['right_type'] == 'gf':
-            for user in instance.userid_name.all():
-                if user.userid == data['greatgrandparent']:
-                    if not user.id in instance.delete_list:
-                        instance.delete_list.add(user.id)
-                    for role in user.rollen.all():
-                        if role.rollenname == data['grandparent']:
-                            if not role.rollenname in user.del_rollen:
-                                instance.del_rollen.add(role.rollenname)
-                            for af in role.afs.all():
-                                if af.af_name == data['parent']:
-                                    if not af.id in role.del_afs:
-                                        role.del_afs.add(af.id)
-                                    for gf in af.gfs.all():
-                                        if gf.name_gf_neu == data['right_name']:
-                                            gf.on_delete_list = True
-                                            af.del_gfs.add(gf.id)
-                                            af.gfs.remove(TblUebersichtAfGfs.objects.get(id=gf.id))
+            for rolle in instance.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['grandparent']:
+                    for applied_af in rolle.applied_afs.all():
+                        if applied_af.model_af_id.af_name == data['parent']:
+                            for applied_gf in applied_af.applied_gfs.all():
+                                if applied_gf.model_gf_id.name_gf_neu == data['right_name']:
+                                    rolle_found = False
+                                    for del_rolle in instance.delete_list.all():
+                                        if rolle.model_rolle_id.rollenid == del_rolle.model_rolle_id.rollenid:
+                                            rolle_found = True
+                                            break
+                                    if not rolle_found:
+                                        helper_rolle = TblAppliedRolle.objects.create(
+                                            model_rolle_id=rolle.model_rolle_id,
+                                            userHatUserID_id=instance)
+                                        helper_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
+                                                                                applied_rolle_id=helper_rolle,
+                                                                                userHatUserID_id=instance)
+                                        helper_af.applied_gfs.add(applied_gf.id)
+                                        helper_rolle.applied_afs.add(helper_af.id)
+                                        instance.delete_list.add(helper_rolle.id)
+                                        applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                        if not applied_af.applied_gfs.all():
+                                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                        if not rolle.applied_afs.all():
+                                            instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                        return instance
+                                    else:
+                                        af_found = False
+                                        for del_af in del_rolle.applied_afs.all():
+                                            if applied_af.model_af_id.id == del_af.model_af_id.id:
+                                                af_found = True
+                                                break
+                                        if not af_found:
+                                            helper_af = TblAppliedAf.objects.create(
+                                                model_af_id=applied_af.model_af_id,
+                                                applied_rolle_id=del_rolle,
+                                                userHatUserID_id=instance)
+                                            helper_af.applied_gfs.add(applied_gf.id)
+                                            del_rolle.applied_afs.add(helper_af.id)
+                                            applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                            if not applied_af.applied_gfs.all():
+                                                rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                            if not rolle.applied_afs.all():
+                                                instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
                                             return instance
+                                        else:
+                                            gf_found = False
+                                            for del_gf in del_af.applied_gfs.all():
+                                                if applied_gf.model_gf_id.id == del_gf.model_gf_id.id:
+                                                    gf_found = True
+                                                    break
+                                            if not gf_found:
+                                                del_af.applied_gfs.add(applied_gf.id)
+                                                applied_af.applied_gfs.remove(
+                                                    TblAppliedGf.objects.get(id=applied_gf.id))
+                                                if not applied_af.applied_gfs.all():
+                                                    rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                if not rolle.applied_afs.all():
+                                                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                return instance
+                                            else:
+                                                for applied_tf in applied_gf.applied_tfs.all():
+                                                    tf_found = False
+                                                    for del_tf in del_gf.applied_tfs.all():
+                                                        if applied_tf.model_tf_id.id == del_tf.model_tf_id.id:
+                                                            tf_found = True
+                                                            break
+                                                    if not tf_found:
+                                                            del_gf.applied_tfs.add(applied_tf.id)
+                                    applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                    if not applied_af.applied_gfs.all():
+                                        rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                    if not rolle.applied_afs.all():
+                                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                    return instance
         elif data['right_type'] == 'tf':
-            for user in instance.userid_name.all():
-                if user.userid == data['greatgreatgrandparent']:
-                    if not user.id in instance.delete_list:
-                        instance.delete_list.add(user.id)
-                    for role in user.rollen.all():
-                        if role.rollenname == data['greatgrandparent']:
-                            if not role.rollenname in user.del_rollen:
-                                instance.del_rollen.add(role.rollenname)
-                            for af in role.afs.all():
-                                if af.af_name == data['grandparent']:
-                                    if not af.id in role.del_afs:
-                                        role.del_afs.add(af.id)
-                                    for gf in af.gfs.all():
-                                        if gf.name_gf_neu == data['parent']:
-                                            if not gf.id in af.del_gfs:
-                                                af.del_gfs.add(gf.id)
-                                            for tf in gf.tfs.all():
-                                                if tf.tf_name == data['right_name']:
-                                                    tf.on_delete_list = True
-                                                    gf.del_tfs.add(tf.id)
-                                                    gf.tfs.remove(TblGesamt.objects.get(id=tf.id))
+            for rolle in instance.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['greatgrandparent']:
+                    for applied_af in rolle.applied_afs.all():
+                        if applied_af.model_af_id.af_name == data['grandparent']:
+                            for applied_gf in applied_af.applied_gfs.all():
+                                if applied_gf.model_gf_id.name_gf_neu == data['parent']:
+                                    for applied_tf in applied_gf.applied_tfs.all():
+                                        if applied_tf.model_tf_id.tf == data['right_name']:
+                                            rolle_found = False
+                                            for del_rolle in instance.delete_list.all():
+                                                if rolle.model_rolle_id.rollenid == del_rolle.model_rolle_id.rollenid:
+                                                    rolle_found = True
+                                                    break
+                                            if not rolle_found:
+                                                helper_rolle = TblAppliedRolle.objects.create(
+                                                    model_rolle_id=rolle.model_rolle_id,
+                                                    userHatUserID_id=instance)
+                                                helper_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
+                                                                                        applied_rolle_id=helper_rolle,
+                                                                                        userHatUserID_id=instance)
+                                                helper_gf = TblAppliedGf.objects.create(model_gf_id=applied_gf.model_gf_id,
+                                                                                        applied_af_id=helper_af,
+                                                                                        applied_rolle_id=helper_rolle,
+                                                                                        userHatUserID_id=instance)
+                                                helper_gf.applied_tfs.add(applied_tf.id)
+                                                helper_af.applied_gfs.add(helper_gf.id)
+                                                helper_rolle.applied_afs.add(helper_af.id)
+                                                instance.delete_list.add(helper_rolle.id)
+                                                applied_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=applied_tf.id))
+                                                if not applied_gf.applied_tfs.all():
+                                                    applied_af.applied_gfs.remove(
+                                                        TblAppliedGf.objects.get(id=applied_gf.id))
+                                                if not applied_af.applied_gfs.all():
+                                                    rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                if not rolle.applied_afs.all():
+                                                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                return instance
+                                            else:
+                                                af_found = False
+                                                for del_af in del_rolle.applied_afs.all():
+                                                    if del_af.model_af_id.id==applied_af.model_af_id.id:
+                                                        af_found=True
+                                                        break
+                                                if not af_found:
+                                                    helper_af = TblAppliedAf.objects.create(
+                                                        model_af_id=applied_af.model_af_id,
+                                                        applied_rolle_id=del_rolle,
+                                                        userHatUserID_id=instance)
+                                                    helper_gf = TblAppliedGf.objects.create(
+                                                        model_gf_id=applied_gf.model_gf_id,
+                                                        applied_af_id=helper_af,
+                                                        applied_rolle_id=del_rolle,
+                                                        userHatUserID_id=instance)
+                                                    helper_gf.applied_tfs.add(applied_tf.id)
+                                                    helper_af.applied_gfs.add(helper_gf.id)
+                                                    del_rolle.applied_afs.add(helper_af.id)
+                                                    applied_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=applied_tf.id))
+                                                    if not applied_gf.applied_tfs.all():
+                                                        applied_af.applied_gfs.remove(
+                                                            TblAppliedGf.objects.get(id=applied_gf.id))
+                                                    if not applied_af.applied_gfs.all():
+                                                        rolle.applied_afs.remove(
+                                                            TblAppliedAf.objects.get(id=applied_af.id))
+                                                    if not rolle.applied_afs.all():
+                                                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
                                                     return instance
+                                                else:
+                                                    gf_found = False
+                                                    for del_gf in del_af.applied_gfs.all():
+                                                        if del_gf.model_gf_id.id == applied_gf.model_gf_id.id:
+                                                            gf_found = True
+                                                            break
+                                                    if not gf_found:
+                                                        helper_gf = TblAppliedGf.objects.create(
+                                                            model_gf_id=applied_gf.model_gf_id,
+                                                            applied_af_id=del_af,
+                                                            applied_rolle_id=del_rolle,
+                                                            userHatUserID_id=instance)
+                                                        helper_gf.applied_tfs.add(applied_tf.id)
+                                                        del_af.applied_gfs.add(helper_gf.id)
+                                                        applied_gf.applied_tfs.remove(
+                                                            TblAppliedTf.objects.get(id=applied_tf.id))
+                                                        if not applied_gf.applied_tfs.all():
+                                                            applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                                        if not applied_af.applied_gfs.all():
+                                                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                        if not rolle.applied_afs.all():
+                                                            instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                        return instance
+                                                    else:
+                                                        del_gf.applied_tfs.add(applied_tf.id)
+                                                        applied_gf.applied_tfs.remove(
+                                                            TblAppliedTf.objects.get(id=applied_tf.id))
+                                                        if not applied_gf.applied_tfs.all():
+                                                            applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                                        if not applied_af.applied_gfs.all():
+                                                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                        if not rolle.applied_afs.all():
+                                                            instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                        return instance
         return instance
+
+'''
+class UserHatTblUserIDundName_GeloeschtSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = UserHatTblUserIDundName_Geloescht
+        fields = ('url', 'id', 'user_name', 'userid_name_id', 'del_rollen', 'on_delete_list')
+
+    user_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:user-detail')
+    userid_name_id = TblUserIDundNameSerializer()
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatuseridundname_geloescht-detail')
+    del_rollen = TblRollenSerializer(many=True, read_only=True)
+
+
+class UserHatTblUserIDundName_TransferiertSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = UserHatTblUserIDundName_Transferiert
+        fields = ('url', 'id', 'user_name', 'userid_name_id', 'trans_rollen', 'on_transfer_list')
+
+    user_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:user-detail')
+    userid_name_id = TblUserIDundNameSerializer()
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatuseridundname_transferiert-detail')
+    trans_rollen = TblRollenSerializer(many=True, read_only=True)
+'''
+
+class TblPlattformSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblPlattform
+        fields = ('url', 'id', 'tf_technische_plattform', 'color')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:plattform-detail')
+
+
+class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblGesamt
+        fields = ('url', 'id', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell', 'tf_kritikalitaet',
+                  'tf_eigentuemer_org', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab',
+                  'af_gueltig_bis', 'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung',
+                  'af_zuweisungsdatum', 'datum', 'geloescht', 'gefunden', 'wiedergefunden', 'geaendert', 'neueaf',
+                  'nicht_ai', 'patchdatum', 'wertmodellvorpatch', 'loeschdatum', 'letzte_aenderung')
+
+    userid_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
+    modell = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
+    plattform = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:plattform-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:gesamt-detail')
+
+
+class TblGesamtHistorieSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblGesamtHistorie
+        fields = (
+            'url', 'id', 'id_alt', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'modell',
+            'tf_kritikalitaet',
+            'tf_eigentuemer_org', 'plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'datum', 'geloescht',
+            'gefunden', 'wiedergefunden', 'geaendert', 'neueaf', 'loeschdatum', 'af_zuweisungsdatum',
+            'af_zuweisungsdatum_alt', 'af_gueltig_ab', 'af_gueltig_bis', 'direct_connect',
+            'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'nicht_ai', 'patchdatum', 'wertmodellvorpatch',
+            'letzte_aenderung')
+
+    userid_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
+    # modell = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgfs')
+    modell = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
+    plattform = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:plattform-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:gesamthistorie-detail')
+
+
+class TblAflisteSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblAfliste
+        fields = ('url', 'id', 'af_name', 'neu_ab','gfs')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:af-detail')
+    gfs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:afgf-detail')
+
+
+class TblsachgebieteSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tblsachgebiete
+        fields = (
+            'url', 'sachgebiet', 'definition', 'verantwortlicher', 'telefon_verantwortlicher',
+            'user_id_verantwortlicher',
+            'fk')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:sachgebiet-detail')
+
+
+class TblsubsystemeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tblsubsysteme
+        fields = (
+            'url', 'sgss', 'definition', 'verantwortlicher', 'telefon_verantwortlicher', 'user_id_verantwortlicher',
+            'fk')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:subsystem-detail')
+
+
+class TblDb2Serializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblDb2
+        fields = ('url', 'id', 'source', 'grantee', 'creator', 'table', 'selectauth', 'insertauth', 'updateauth',
+                  'deleteauth', 'alterauth', 'indexauth', 'grantor', 'grantedts', 'datum')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:db2-detail')
+    # grantee = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:racfgruppen')
+
+
+class TblRacfGruppenSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblRacfGruppen
+        fields = ('url', 'group', 'test', 'produktion', 'readonly', 'db2_only', 'stempel')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:racfgruppe-detail')
+
+
+class TblrechteneuvonimportSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tblrechteneuvonimport
+        fields = ('url', 'id', 'identitaet', 'nachname', 'vorname', 'tf_name', 'tf_beschreibung', 'af_anzeigename',
+                  'af_beschreibung',
+                  'hoechste_kritikalitaet_tf_in_af', 'tf_eigentuemer_org', 'tf_applikation', 'tf_kritikalitaet',
+                  'gf_name',
+                  'gf_beschreibung', 'direct_connect', 'af_zugewiesen_an_account_name', 'af_gueltig_ab',
+                  'af_gueltig_bis',
+                  'af_zuweisungsdatum')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rechtneuvonimport-detail')
+
+
+class TblrechteamneuSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tblrechteamneu
+        fields = ('url', 'id', 'userid', 'name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'tf_kritikalitaet',
+                  'tf_eigentuemer_org',
+                  'tf_technische_plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab',
+                  'af_gueltig_bis',
+                  'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'af_zuweisungsdatum',
+                  'gefunden',
+                  'geaendert', 'angehaengt_bekannt', 'angehaengt_sonst', 'doppelerkennung')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rechtamneu-detail')
+
+
+class Qryf3RechteneuvonimportduplikatfreiSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Qryf3Rechteneuvonimportduplikatfrei
+        fields = (
+            'url', 'userid', 'name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'tf_kritikalitaet',
+            'tf_eigentuemer_org',
+            'tf_technische_plattform', 'gf', 'vip_kennzeichen', 'zufallsgenerator', 'af_gueltig_ab', 'af_gueltig_bis',
+            'direct_connect', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung', 'af_zuweisungsdatum')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:qryf3rechteneuvonimportduplikatfrei-detail')
+
+
+class RACF_RechteSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = RACF_Rechte
+        fields = ('url', 'id', 'type', 'group', 'ressource_class', 'profil', 'access', 'test', 'produktion',
+                  'alter_control_update', 'datum')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:RACF_Recht-detail')
+
+
+class Orga_detailsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Orga_details
+        fields = ('url', 'id', 'abteilungsnummer', 'organisation', 'orgaBezeichnung', 'fk', 'kostenstelle', 'orgID',
+                  'parentOrga', 'parentOrgID', 'orgaTyp', 'fkName', 'delegationEigentuemer', 'delegationFK', 'datum')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Orga_detail-detail')
+
+
+class Letzter_importSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Letzter_import
+        fields = ('url', 'id', 'start', 'user', 'end', 'max', 'aktuell', 'schritt')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:letzter_import-detail')
+
+
+class ModellierungSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Modellierung
+        fields = ('url', 'entitlement', 'neue_beschreibung', 'plattform', 'gf', 'beschreibung_der_gf', 'af',
+                  'beschreibung_der_af', 'organisation_der_af', 'eigentuemer_der_af', 'aus_modellierung_entfernen',
+                  'datei', 'letzte_aenderung')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Modellierung-detail')
+
+
+class DirektverbindungenSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Direktverbindungen
+        fields = ('url', 'organisation', 'entscheidung', 'entitlement', 'applikation', 'instanz',
+                  'identitaet', 'manager', 'vorname', 'nachname', 'account_name', 'status', 'typ', 'nicht_anmailen',
+                  'ansprechpartner', 'letzte_aenderung')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:Direktverbindung-detail')
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'id', 'password', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name',
+                  'email', 'is_staff', 'is_active', 'date_joined', 'userid_name', 'deleted','last_rights_update')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:user-detail')
+    userid_name = serializers.HyperlinkedRelatedField(many=True, read_only=True,
+                                                      view_name='myRDBNS:useridundname-detail')
 
 
 '''

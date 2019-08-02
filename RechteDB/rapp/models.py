@@ -665,7 +665,9 @@ class UserHatTblUserIDundName(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
     user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
     userid_name_id = models.ForeignKey('TblUserIDundName', db_column='userid_name_id', on_delete=models.CASCADE)
-    rollen = models.ManyToManyField(to='TblAppliedRolle', related_name='applied_rollen', null=True, default=None, blank=True)
+    rollen = models.ManyToManyField(to='TblAppliedRolle', related_name='applied_rollen', default=None, blank=True)
+    delete_list = models.ManyToManyField(to='TblAppliedRolle', related_name='deleted_applied_rollen', default=None, blank=True)
+    transfer_list = models.ManyToManyField(to='TblAppliedRolle', related_name='transfered_applied_rollen', default=None, blank=True)
 
 '''
 class UserHatTblUserIDundName_Geloescht(models.Model):

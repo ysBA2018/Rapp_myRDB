@@ -946,8 +946,6 @@ class Profile(generic.ListView):
         self.extra_context['legendData'] = sorted_legend_data
         user_pk = user.pk
         user_json_data = get_user_by_key(user_pk, headers, self.request)
-        transfer_list = []#user_json_data['transfer_list']
-        delete_list = []#user_json_data['delete_list']
 
         last_import = get_last_import(headers)[0]['end']
         last_import_datetime = datetime.datetime.strptime(last_import,'%Y-%m-%dT%H:%M:%S.%fZ')
@@ -959,19 +957,20 @@ class Profile(generic.ListView):
         graph_data, scatterData, counts = prepareJSONdata(user_id, user_json_data, False, headers, self.request)
         self.extra_context['scatterData'] = scatterData
 
-        transfer_list, transfer_list_with_category = prepareTransferJSONdata(transfer_list)
-        self.extra_context['transferlist'] = {"children": transfer_list}
+        transfer_graph_data, transfer_list_with_category, transfer_rights_count = prepareTransferJSONdata(user_json_data,
+                                                                             self.request, headers)
+        self.extra_context['transferlist'] = transfer_graph_data
         # transfer_list_table_data, transfer_list_count = prepareTransferTabledata(transfer_list)
         # self.extra_context['transfer_list_table_data'] = transfer_list_table_data
-        # self.extra_context['transfer_list_count'] = transfer_list_count
+        self.extra_context['transfer_list_count'] = transfer_rights_count
 
-        delete_graph_data, delete_list, delete_list_with_category, deleted_rights_count = prepare_delete_list(
-            delete_list, headers)
+        delete_graph_data, delete_list_with_category, delete_rights_count = prepare_delete_list(user_json_data,
+                                                                                                 self.request, headers)
         # delete_list, delete_list_with_category = [],[]
         self.extra_context['deletelist'] = delete_graph_data
         # delete_list_table_data, delete_list_count = prepareTrashTableData(delete_list)
         # self.extra_context['delete_list_table_data'] = delete_list_table_data
-        self.extra_context['delete_list_count'] = deleted_rights_count
+        self.extra_context['delete_list_count'] = delete_rights_count
 
         # afs = user_json_data['children']
         # data, gf_count, tf_count = prepareTableData(user_json_data, roles, afs, headers)
@@ -979,12 +978,12 @@ class Profile(generic.ListView):
         self.request.session['user_data'] = graph_data
 
         # self.request.session['table_data'] = data
-        self.request.session['delete_list_graph_data'] = {"children": delete_graph_data}
+        self.request.session['delete_list_graph_data'] = delete_graph_data
         # self.request.session['delete_list_table_data'] = delete_list_table_data
-        # self.request.session['delete_list_count'] = delete_list_count
-        self.request.session['transfer_list_graph_data'] = {"children": transfer_list}
+        self.request.session['delete_list_count'] = delete_rights_count
+        self.request.session['transfer_list_graph_data'] = transfer_graph_data
         # self.request.session['transfer_list_table_data'] = transfer_list_table_data
-        # self.request.session['transfer_list_count'] = transfer_list_count
+        self.request.session['transfer_list_count'] = transfer_rights_count
 
         self.extra_context['user_count'] = counts['user']
         self.extra_context['role_count'] = counts['roles']
@@ -1358,33 +1357,88 @@ def get_model_list(transfer_list_with_category, headers, request):
     return model_list
 
 
-def prepareTransferJSONdata(transfer_json_data):
+def prepareTransferJSONdata(user_json_data,request,headers):
     '''
     method to prepare transferlist-data for display as circlepacking
     :param transfer_json_data:
     :return:
     '''
+    transfer_graph_data = {"children": []}
     transfer_list_with_category = []
-    for right in transfer_json_data:
-        right["name"] = right.pop('af_name')
-        right["children"] = right.pop('gfs')
-        for gf in right['children']:
-            gf["name"] = gf.pop('gf_name')
-            gf["children"] = gf.pop('tfs')
-            for tf in gf['children']:
-                tf["name"] = tf.pop('tf_name')
-                tf["size"] = 2000
-                if tf['transfer']:
-                    type = 'tf'
-                    transfer_list_with_category.append({"right": tf, "type": type})
-            if gf['transfer']:
-                type = 'gf'
-                transfer_list_with_category.append({"right": gf, "type": type})
-        if right['transfer']:
-            type = 'af'
-            transfer_list_with_category.append({"right": right, "type": type})
+    single_rights_count = 0
+    old_plattform = None
+    for e in user_json_data['userid_name']:
+        user = get_by_url(e, headers)
+        user['name'] = user['userid']
+        user['children'] = []
+        user_userid_combination = get_user_userid_name_combination(headers, user_json_data['id'],
+                                                                   user['id'], request)
+        user['user_userid_combi_id'] = user_userid_combination[0]['id']
+        transfer_graph_data['children'].append(user)
+        for rolle in user_userid_combination[0]['transfer_list']:
+            rolle = get_by_url(rolle, headers)
+            rolle_details = get_by_url(rolle['model_rolle_id'], headers)
+            rolle['name'] = rolle_details['rollenname']
+            rolle['description'] = rolle_details['rollenbeschreibung']
+            rolle['children'] = []
+            user['children'].append(rolle)
+            af_old = None
+            for af in rolle['applied_afs']:
+                af = get_by_url(af, headers)
+                if af['applied_gfs']:
+                    af_details = get_by_url(af['model_af_id'], headers)
+                    af['name'] = af_details['af_name']
+                    af['children'] = []
+                    rolle['children'].append(af)
 
-    return transfer_json_data, transfer_list_with_category
+                    gf_old = None
+                    for gf in af['applied_gfs']:
+                        gf = get_by_url(gf, headers)
+                        if gf['applied_tfs']:
+                            gf_details = get_by_url(gf['model_gf_id'], headers)
+                            gf['name'] = gf_details['name_gf_neu']
+                            gf['children'] = []
+                            af['children'].append(gf)
+
+                            for tf in gf['applied_tfs']:
+                                tf = get_by_url(tf, headers)
+                                tf_details = get_by_url(tf['model_tf_id'], headers)
+                                tf['name'] = tf_details['tf']
+                                tf['size'] = 3000
+                                gf['children'].append(tf)
+                                single_rights_count += 1
+                                if tf_details['plattform'] != old_plattform:
+                                    plattform = get_by_url(tf_details['plattform'], headers)
+                                    old_plattform = tf_details['plattform']
+                                hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                                tf['color'] = hslColor
+                                af_applied = None
+                                tf['description'] = tf_details['tf_beschreibung']
+                                if tf['description'] is None:
+                                    tf['description'] = "Keine Beschreibung vorhanden!"
+                                if tf_details['datum'] is None:
+                                    af_applied = ""
+                                else:
+                                    af_applied = tf_details['datum']
+                                if af['name'] != af_old:
+                                    af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
+                                                                                                          af['name'],
+                                                                                                          gf['name'],
+                                                                                                          tf['name'],
+                                                                                                          headers)
+                                    if not af_description_helper:
+                                        af['description'] = "Keine Beschreibung vorhanden!"
+                                    else:
+                                        af['description'] = af_description_helper[0]['af_beschreibung']
+                                    af_old = af['name']
+                                if gf['name'] != gf_old:
+                                    if not tf_details['gf_beschreibung']:
+                                        gf['description'] = "Keine Beschreibung vorhanden!"
+                                    else:
+                                        gf['description'] = tf_details['gf_beschreibung']
+                                    gf_old = gf['name']
+
+    return transfer_graph_data, transfer_list_with_category, single_rights_count
 
 
 def prepareTransferTabledata(transfer_list):
@@ -2122,6 +2176,7 @@ def update_personal_right_models(user_json_data, headers, request):
 
     return
 
+
 def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     '''
     prepares Data for display as circlePacking and scatterplot
@@ -2141,87 +2196,85 @@ def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     counts = {'user': 0, 'roles': 0, 'afs': 0, 'gfs': 0, 'tfs': 0, }
 
     for e in user_json_data['userid_name']:
-        userid_name_data = get_by_url(e, headers)
-        graph_data['children'].append(userid_name_data)
-        for user in graph_data['children']:
-            user['name'] = user.pop('userid')
-            user['children'] = []
-            counts['user'] += 1
-            user_userid_combination = get_user_userid_name_combination(headers, user_json_data['id'],
-                                                                       userid_name_data['id'], request)
-            for rolle in user_userid_combination[0]['rollen']:
-                user['children'].append(get_by_url(rolle, headers))
-            for rolle in user['children']:
-                rolle_details = get_by_url(rolle['model_rolle_id'],headers)
-                rolle['name'] = rolle_details['rollenname']
-                rolle['description'] = rolle_details['rollenbeschreibung']
-                rolle['children'] = []
-                counts['roles'] += 1
-                af_old = None
-                for af in rolle['applied_afs']:
-                    af = get_by_url(af, headers)
-                    print(af['applied_gfs'])
-                    if af['applied_gfs']:
-                        af_details = get_by_url(af['model_af_id'], headers)
-                        af['name'] = af_details['af_name']
-                        af['children'] = []
-                        rolle['children'].append(af)
+        user = get_by_url(e, headers)
+        user['name'] = user['userid']
+        user['children'] = []
+        counts['user'] += 1
+        user_userid_combination = get_user_userid_name_combination(headers, user_json_data['id'],
+                                                                 user['id'], request)
+        user['user_userid_combi_id'] = user_userid_combination[0]['id']
+        graph_data['children'].append(user)
+        for rolle in user_userid_combination[0]['rollen']:
+            rolle = get_by_url(rolle, headers)
+            rolle_details = get_by_url(rolle['model_rolle_id'],headers)
+            rolle['name'] = rolle_details['rollenname']
+            rolle['description'] = rolle_details['rollenbeschreibung']
+            rolle['children'] = []
+            user['children'].append(rolle)
+            counts['roles'] += 1
+            af_old = None
+            for af in rolle['applied_afs']:
+                af = get_by_url(af, headers)
+                if af['applied_gfs']:
+                    af_details = get_by_url(af['model_af_id'], headers)
+                    af['name'] = af_details['af_name']
+                    af['children'] = []
+                    rolle['children'].append(af)
 
-                        gf_old = None
-                        for gf in af['applied_gfs']:
-                            gf = get_by_url(gf, headers)
-                            print(gf['applied_tfs'])
-                            if gf['applied_tfs']:
-                                gf_details = get_by_url(gf['model_gf_id'], headers)
-                                gf['name'] = gf_details['name_gf_neu']
-                                gf['children'] = []
-                                counts['gfs'] += 1
-                                af['children'].append(gf)
+                    gf_old = None
+                    for gf in af['applied_gfs']:
+                        gf = get_by_url(gf, headers)
+                        if gf['applied_tfs']:
+                            gf_details = get_by_url(gf['model_gf_id'], headers)
+                            gf['name'] = gf_details['name_gf_neu']
+                            gf['children'] = []
+                            counts['gfs'] += 1
+                            af['children'].append(gf)
 
-                                old_plattform = None
-                                for tf in gf['applied_tfs']:
-                                    tf = get_by_url(tf, headers)
-                                    tf_details = get_by_url(tf['model_tf_id'], headers)
-                                    tf['name'] = tf_details['tf']
-                                    tf['size'] = 3000
-                                    gf['children'].append(tf)
-                                    counts['tfs'] += 1
-                                    if tf_details['plattform'] != old_plattform:
-                                        plattform = get_by_url(tf_details['plattform'], headers)
-                                        old_plattform = tf_details['plattform']
-                                    hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
-                                    tf['color'] = hslColor
-                                    af_applied = None
-                                    tf['description'] = tf_details['tf_beschreibung']
-                                    if tf['description'] is None:
-                                        tf['description'] = "Keine Beschreibung vorhanden!"
-                                    if tf_details['datum'] is None:
-                                        af_applied = ""
+                            old_plattform = None
+                            for tf in gf['applied_tfs']:
+                                tf = get_by_url(tf, headers)
+                                tf_details = get_by_url(tf['model_tf_id'], headers)
+                                tf['name'] = tf_details['tf']
+                                tf['size'] = 3000
+                                gf['children'].append(tf)
+                                counts['tfs'] += 1
+                                if tf_details['plattform'] != old_plattform:
+                                    plattform = get_by_url(tf_details['plattform'], headers)
+                                    old_plattform = tf_details['plattform']
+                                hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                                tf['color'] = hslColor
+                                af_applied = None
+                                tf['description'] = tf_details['tf_beschreibung']
+                                if tf['description'] is None:
+                                    tf['description'] = "Keine Beschreibung vorhanden!"
+                                if tf_details['datum'] is None:
+                                    af_applied = ""
+                                else:
+                                    af_applied = tf_details['datum']
+                                scatterData.append(
+                                    {"name": tf['name'], "gf_name": gf['name'], "af_name": af['name'],
+                                     "role": rolle['name'],
+                                     "user": user['name'], "plattform": plattform["tf_technische_plattform"],
+                                     "af_applied": af_applied, "color": hslColor})
+                                if af['name'] != af_old:
+                                    counts['afs'] += 1
+                                    af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
+                                                                                                          af['name'],
+                                                                                                          gf['name'],
+                                                                                                          tf['name'],
+                                                                                                          headers)
+                                    if not af_description_helper:
+                                        af['description'] = "Keine Beschreibung vorhanden!"
                                     else:
-                                        af_applied = tf_details['datum']
-                                    scatterData.append(
-                                        {"name": tf['name'], "gf_name": gf['name'], "af_name": af['name'],
-                                         "role": rolle['name'],
-                                         "user": user['name'], "plattform": plattform["tf_technische_plattform"],
-                                         "af_applied": af_applied, "color": hslColor})
-                                    if af['name'] != af_old:
-                                        counts['afs'] += 1
-                                        af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
-                                                                                                              af['name'],
-                                                                                                              gf['name'],
-                                                                                                              tf['name'],
-                                                                                                              headers)
-                                        if not af_description_helper:
-                                            af['description'] = "Keine Beschreibung vorhanden!"
-                                        else:
-                                            af['description'] = af_description_helper[0]['af_beschreibung']
-                                        af_old = af['name']
-                                    if gf['name'] != gf_old:
-                                        if not tf_details['gf_beschreibung']:
-                                            gf['description'] = "Keine Beschreibung vorhanden!"
-                                        else:
-                                            gf['description'] = tf_details['gf_beschreibung']
-                                        gf_old = gf['name']
+                                        af['description'] = af_description_helper[0]['af_beschreibung']
+                                    af_old = af['name']
+                                if gf['name'] != gf_old:
+                                    if not tf_details['gf_beschreibung']:
+                                        gf['description'] = "Keine Beschreibung vorhanden!"
+                                    else:
+                                        gf['description'] = tf_details['gf_beschreibung']
+                                    gf_old = gf['name']
 
 
     if not compareUser:
@@ -2233,7 +2286,7 @@ def prepareJSONdata(identity, user_json_data, compareUser, headers, request):
     return graph_data, scatterData, counts
 
 
-def prepare_delete_list(delete_list, headers):
+def prepare_delete_list(user_json_data, request, headers):
     '''
     prepare delete_list for display as circlepacking
     :param delete_list:
@@ -2242,64 +2295,79 @@ def prepare_delete_list(delete_list, headers):
     delete_graph_data = {"children": []}
     delete_list_with_category = []
     single_rights_count = 0
-    for user_url in delete_list:
-        delete_graph_data['children'].append(get_by_url(user_url, headers))
-        for user in delete_graph_data['children']:
-            user['name'] = user.pop('userid')
-            user['children'] = user.pop('rollen')
-            for rolle in user['children']:
-                rolle['name'] = rolle.pop('rollenname')
-                rolle['description'] = rolle.pop('rollenbeschreibung')
-                rolle['children'] = []
-                for af in rolle['afs']:
-                    rolle['children'].append(get_by_url(af, headers))
-                for af in rolle['children']:
-                    af['name'] = af.pop('af_name')
-                    af['children'] = get_AFGF_by_af_name(af['name'], headers)
-                    for gf in af['children']:
-                        gf['name'] = gf.pop('name_gf_neu')
-                        gf['children'] = get_tf_aus_gesamt_by_user_name_af_name_gf_name(user['id'], af['name'],
-                                                                                        gf['name'], headers)
-                        gf_beschreibung = None
-                        for tf in gf['children']:
-                            tf['name'] = tf.pop('tf')
-                            tf['size'] = 2000
-                            single_rights_count += 1
-                            plattform = get_by_url(tf['plattform'], headers)
-                            hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
-                            tf['color'] = hslColor
-                            tf['description'] = tf.pop('tf_beschreibung')
-                            if tf['description'] == None:
-                                tf['description'] = "Keine Beschreibung vorhanden!"
-                            gf_beschreibung = tf['gf_beschreibung']
-                            if tf['on_delete_list']:
-                                type = 'tf'
-                                delete_list_with_category.append({"right": tf, "type": type})
-                        if gf_beschreibung == None:
-                            gf['description'] = "Keine Beschreibung vorhanden!"
-                        else:
-                            gf['description'] = tf['gf_beschreibung']
-                        if gf['on_delete_list']:
-                            type = 'gf'
-                            delete_list_with_category.append({"right": gf, "type": type})
-                    af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'], af['name'],
-                                                                                          gf['name'], tf['name'],
-                                                                                          headers)
-                    if af_description_helper == []:
-                        af['description'] = "Keine Beschreibung vorhanden!"
-                    else:
-                        af['description'] = af_description_helper[0]['af_beschreibung']
-                    if af['on_delete_list']:
-                        type = 'af'
-                        delete_list_with_category.append({"right": af, "type": type})
-                if rolle['on_delete_list']:
-                    type = 'role'
-                    delete_list_with_category.append({"right": rolle, "type": type})
-            if user['on_delete_list']:
-                type = 'user'
-                delete_list_with_category.append({"right": user, "type": type})
+    old_plattform = None
+    for e in user_json_data['userid_name']:
+        user = get_by_url(e, headers)
+        user['name'] = user['userid']
+        user['children'] = []
+        user_userid_combination = get_user_userid_name_combination(headers, user_json_data['id'],
+                                                                   user['id'], request)
+        user['user_userid_combi_id'] = user_userid_combination[0]['id']
+        delete_graph_data['children'].append(user)
+        for rolle in user_userid_combination[0]['delete_list']:
+            rolle = get_by_url(rolle, headers)
+            rolle_details = get_by_url(rolle['model_rolle_id'], headers)
+            rolle['name'] = rolle_details['rollenname']
+            rolle['description'] = rolle_details['rollenbeschreibung']
+            rolle['children'] = []
+            user['children'].append(rolle)
+            af_old = None
+            for af in rolle['applied_afs']:
+                af = get_by_url(af, headers)
+                if af['applied_gfs']:
+                    af_details = get_by_url(af['model_af_id'], headers)
+                    af['name'] = af_details['af_name']
+                    af['children'] = []
+                    rolle['children'].append(af)
 
-    return delete_graph_data, delete_list, delete_list_with_category, single_rights_count
+                    gf_old = None
+                    for gf in af['applied_gfs']:
+                        gf = get_by_url(gf, headers)
+                        if gf['applied_tfs']:
+                            gf_details = get_by_url(gf['model_gf_id'], headers)
+                            gf['name'] = gf_details['name_gf_neu']
+                            gf['children'] = []
+                            af['children'].append(gf)
+
+                            for tf in gf['applied_tfs']:
+                                tf = get_by_url(tf, headers)
+                                tf_details = get_by_url(tf['model_tf_id'], headers)
+                                tf['name'] = tf_details['tf']
+                                tf['size'] = 3000
+                                gf['children'].append(tf)
+                                single_rights_count += 1
+                                if tf_details['plattform'] != old_plattform:
+                                    plattform = get_by_url(tf_details['plattform'], headers)
+                                    old_plattform = tf_details['plattform']
+                                hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                                tf['color'] = hslColor
+                                af_applied = None
+                                tf['description'] = tf_details['tf_beschreibung']
+                                if tf['description'] is None:
+                                    tf['description'] = "Keine Beschreibung vorhanden!"
+                                if tf_details['datum'] is None:
+                                    af_applied = ""
+                                else:
+                                    af_applied = tf_details['datum']
+                                if af['name'] != af_old:
+                                    af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
+                                                                                                          af['name'],
+                                                                                                          gf['name'],
+                                                                                                          tf['name'],
+                                                                                                          headers)
+                                    if not af_description_helper:
+                                        af['description'] = "Keine Beschreibung vorhanden!"
+                                    else:
+                                        af['description'] = af_description_helper[0]['af_beschreibung']
+                                    af_old = af['name']
+                                if gf['name'] != gf_old:
+                                    if not tf_details['gf_beschreibung']:
+                                        gf['description'] = "Keine Beschreibung vorhanden!"
+                                    else:
+                                        gf['description'] = tf_details['gf_beschreibung']
+                                    gf_old = gf['name']
+
+    return delete_graph_data, delete_list_with_category, single_rights_count
 
 
 class TblRollenViewSet(viewsets.ModelViewSet):

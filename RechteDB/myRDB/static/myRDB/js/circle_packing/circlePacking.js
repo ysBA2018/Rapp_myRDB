@@ -126,11 +126,11 @@ $(document).ready(function(){
                   .duration(500)
                   .style("opacity",0)
           });
-
+      /*
       var leaves = d3.selectAll("circle").filter(function(d){
         return d.children === null;
       });
-
+       */
       //var text = g.selectAll("text")
       //  .data(nodes)
       //  .enter().append("text")
@@ -235,7 +235,7 @@ $(document).ready(function(){
           .on("click", function(d) { if(d3.event.defaultPrevented) return;
                 console.log("clicked");
               if (focus !== d) zoom(d), d3.event.stopPropagation(); })
-          .on("contextmenu", function(d,i){confirm_deletion(d,i)})
+          .on("contextmenu", function(d,i){confirm_deletion(d,i);})
           .on("mouseover",function (d) {
               d3.select(this).style("stroke","black");
               div.transition()
@@ -264,10 +264,11 @@ $(document).ready(function(){
                   .style("opacity",0)
           });
 
-      leaves = d3.selectAll("circle").filter(function(d){
+      /*
+        leaves = d3.selectAll("circle").filter(function(d){
         return d.children === null;
       });
-
+        */
       //var text = g.selectAll("text")
       //  .data(nodes)
       //  .enter().append("text")
@@ -294,12 +295,14 @@ $(document).ready(function(){
     };
       function confirm_deletion(d,i) {
           d3.event.preventDefault();
-          bootbox.confirm("Berechtigung:\n\n"+d.data.name+"\n\nwirklich zu Löschliste hinzufügen?\n\n", function (result) {
-                console.log('This was logged in the callback: ' + result);
-                if(result===true){
-                    deletefunction(d,i)
-                }
-            });
+          if (d.depth !== 1){
+              bootbox.confirm("Berechtigung:\n\n" + d.data.name + "\n\nwirklich zu Löschliste hinzufügen?\n\n", function (result) {
+                  console.log('This was logged in the callback: ' + result);
+                  if (result === true) {
+                      deletefunction(d, i)
+                  }
+              });
+          }
       }
     function deletefunction(d,i){
 
@@ -329,27 +332,35 @@ $(document).ready(function(){
                     }
                 }
             });
-            var right_type="",right_parent = "",right_grandparent = "",right_greatgrandparent = "",right_greatgreatgrandparent = "";
-            if(d.depth===1) right_type="user";
+            var right_type="",right_parent = "",right_grandparent = "",right_greatgrandparent = "",
+                right_greatgreatgrandparent = "",user_userid_combi_id = "";
+            if(d.depth===1){
+                right_type="user";
+                user_userid_combi_id = d.data.user_userid_combi_id;
+            }
             else if(d.depth===2) {
                 right_type="role";
                 right_parent = d.parent.data.name;
+                user_userid_combi_id = d.parent.data.user_userid_combi_id;
             }
             else if(d.depth===3){
                 right_type="af";
                 right_parent = d.parent.data.name;
                 right_grandparent = d.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.data.user_userid_combi_id;
             }else if(d.depth===4){
                 right_type="gf";
                 right_parent = d.parent.data.name;
                 right_grandparent = d.parent.parent.data.name;
                 right_greatgrandparent = d.parent.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.parent.data.user_userid_combi_id;
             }else if(d.depth===5){
                 right_type="tf";
                 right_parent = d.parent.data.name;
                 right_grandparent = d.parent.parent.data.name;
                 right_greatgrandparent = d.parent.parent.parent.data.name;
                 right_greatgreatgrandparent = d.parent.parent.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.parent.parent.data.user_userid_combi_id;
             }
             var data = {"X-CSRFToken":getCookie("csrftoken"),"X_METHODOVERRIDE":'PATCH',"user":window.user,
                 "action_type":"trash","right_type":right_type,"right_name":d.data.name,"parent":right_parent,
@@ -358,7 +369,7 @@ $(document).ready(function(){
             var successful=false;
             $.ajax({type:'POST',
                     data:data,
-                    url:window.current_host+'/api/Users/'+window.user_id+'/',
+                    url:window.current_host+'/api/userhatuseridundnamen/'+user_userid_combi_id+'/',
                     async:false,
                     success: function(res){console.log(res);
                         successful=true},
@@ -495,7 +506,7 @@ $(document).ready(function(){
               parent_cpy['children'] = [right];
               delete_list.push(parent_cpy);
           }
-          if (level === "af") {
+          else if (level === "af") {
               for (i in delete_list) {
                   var curr_user = delete_list[i];
                   if (curr_user['name'] === grandparent_right['name']) {
@@ -525,7 +536,7 @@ $(document).ready(function(){
               parent_cpy['children'] = [right];
               grandparent_cpy['children'] = [parent_cpy];
               delete_list.push(grandparent_cpy);
-          }if (level === "gf") {
+          }else if (level === "gf") {
               user_found = false;
               for (i in delete_list) {
                   var curr_user = delete_list[i];
@@ -575,7 +586,7 @@ $(document).ready(function(){
               grandparent_cpy['children'] = [parent_cpy];
               greatgrandparent_cpy['children'] = [grandparent_cpy];
               delete_list.push(greatgrandparent_cpy);
-          }if (level === "tf") {
+          }else if (level === "tf") {
               user_found = false;
               for (i in delete_list) {
                   var curr_user = delete_list[i];
@@ -595,8 +606,8 @@ $(document).ready(function(){
                                       var curr_af_gfs = curr_af['children'];
                                       var gf_found = false;
                                       af_found = true;
-                                      for (l in curr_role_gfs){
-                                           var curr_gf=curr_role_gfs[l];
+                                      for (l in curr_af_gfs){
+                                           var curr_gf=curr_af_gfs[l];
                                            if (curr_gf['name'] === parent_right['name']) {
                                                gf_found = true;
                                                break;
@@ -653,18 +664,7 @@ $(document).ready(function(){
 
       //-------> TODO: an ein level für Rollen denken sobald rollen eingefügt
       function update_rights(rights, trash, d){
-        if (d.depth ===1){
-            for (i in rights) {
-                if (rights[i]['name'] === d.data.name) {
-                    console.log(i + "," + d.data.name);
-                    update_right_counters(rights[i],"user");
-                    trash.push(rights[i]);
-                    rights.splice(i, 1);
-                    return;
-                }
-            }
-        }
-        else if(d.depth===2){
+        if(d.depth===2){
             for (i in rights) {
                 var right = rights[i];
                 if (right['name'] === d.parent.data.name) {
@@ -674,7 +674,7 @@ $(document).ready(function(){
                             console.log(j + "," + d.data.name);
                             right_lev_2["parent"]=d.parent.data.name;
                             update_right_counters(right_lev_2,"role");
-                            add_to_delete_list(trash,right_lev_2,right,null,'role');
+                            add_to_delete_list(trash,right_lev_2,right,null,null,null,'role');
                             right['children'].splice(j, 1);
                             if(right['children'].length===0){
                                 rights.splice(i,1)
@@ -699,7 +699,7 @@ $(document).ready(function(){
                                     right_lev_3["grandparent"]= d.parent.parent.data.name;
                                     right_lev_3["parent"]=d.parent.data.name;
                                     update_right_counters(right_lev_3,"af");
-                                    add_to_delete_list(trash,right_lev_3,right_lev_2,right,'af');
+                                    add_to_delete_list(trash,right_lev_3,right_lev_2,right,null,null,'af');
                                     right_lev_2['children'].splice(k, 1);
                                     if(right_lev_2['children'].length===0){
                                         right['children'].splice(j,1)
@@ -716,14 +716,14 @@ $(document).ready(function(){
                 }
             }
         }else if(d.depth===4){
-            for (h in rightsBase) {
-                var rightBase = rightsBase[h];
-                if (rightBase['name'] === d.parent.parent.parent.data.name) {
-                    for (i in rights) {
-                        var right = rights[i];
-                        if (right['name'] === d.parent.parent.data.name) {
-                            for (j in right['children']) {
-                                var right_lev_2 = right['children'][j];
+            for (h in rights) {
+                var right = rights[h];
+                if (right['name'] === d.parent.parent.parent.data.name) {
+                    for (i in right['children']) {
+                        var rightBase = right['children'][i];
+                        if (rightBase['name'] === d.parent.parent.data.name) {
+                            for (j in rightBase['children']) {
+                                var right_lev_2 = rightBase['children'][j];
                                 if (right_lev_2['name'] === d.parent.data.name) {
                                     for (k in right_lev_2['children']) {
                                         var right_lev_3 = right_lev_2['children'][k];
@@ -733,16 +733,16 @@ $(document).ready(function(){
                                             right_lev_3["grandparent"] = d.parent.parent.data.name;
                                             right_lev_3["parent"] = d.parent.data.name;
                                             update_right_counters(right_lev_3, "gf");
-                                            add_to_delete_list(trash, right_lev_3, right_lev_2, right, rightBase, 'gf');
+                                            add_to_delete_list(trash, right_lev_3, right_lev_2, rightBase, right, null,'gf');
                                             right_lev_2['children'].splice(k, 1);
                                             if (right_lev_2['children'].length === 0) {
-                                                right['children'].splice(j, 1)
-                                            }
-                                            if (right['children'].length === 0) {
-                                                rights.splice(i, 1)
+                                                rightBase['children'].splice(j, 1)
                                             }
                                             if (rightBase['children'].length === 0) {
-                                                rightsBase.splice(h, 1)
+                                                right['children'].splice(i, 1)
+                                            }
+                                            if (right['children'].length === 0) {
+                                                rights.splice(h, 1)
                                             }
 
                                             return;
@@ -755,17 +755,17 @@ $(document).ready(function(){
                 }
             }
         }else if(d.depth===5){
-            for (g in rights0) {
-                var right0 = rights0[g];
-                if (right0['name'] === d.parent.parent.parent.parent.data.name) {
-                    for (h in rightsBase) {
-                        var rightBase = rightsBase[h];
+            for (g in rights) {
+                var right = rights[g];
+                if (right['name'] === d.parent.parent.parent.parent.data.name) {
+                    for (h in right['children']) {
+                        var rightBase = right['children'][h];
                         if (rightBase['name'] === d.parent.parent.parent.data.name) {
-                            for (i in rights) {
-                                var right = rights[i];
-                                if (right['name'] === d.parent.parent.data.name) {
-                                    for (j in right['children']) {
-                                        var right_lev_2 = right['children'][j];
+                            for (i in rightBase['children']) {
+                                var right0 = rightBase['children'][i];
+                                if (right0['name'] === d.parent.parent.data.name) {
+                                    for (j in right0['children']) {
+                                        var right_lev_2 = right0['children'][j];
                                         if (right_lev_2['name'] === d.parent.data.name) {
                                             for (k in right_lev_2['children']) {
                                                 var right_lev_3 = right_lev_2['children'][k];
@@ -776,19 +776,19 @@ $(document).ready(function(){
                                                     right_lev_3["grandparent"] = d.parent.parent.data.name;
                                                     right_lev_3["parent"] = d.parent.data.name;
                                                     update_right_counters(right_lev_3, "tf");
-                                                    add_to_delete_list(trash, right_lev_3, right_lev_2, right, rightBase, right0, 'tf');
+                                                    add_to_delete_list(trash, right_lev_3, right_lev_2, right0, rightBase, right, 'tf');
                                                     right_lev_2['children'].splice(k, 1);
                                                     if (right_lev_2['children'].length === 0) {
-                                                        right['children'].splice(j, 1)
-                                                    } else
-                                                    if (right['children'].length === 0) {
-                                                        rights.splice(i, 1)
-                                                    }
-                                                    if (rightBase['children'].length === 0) {
-                                                        rightsBase.splice(h, 1)
+                                                        right0['children'].splice(j, 1)
                                                     }
                                                     if (right0['children'].length === 0) {
-                                                        rights0.splice(g, 1)
+                                                        rightBase['children'].splice(i, 1)
+                                                    }
+                                                    if (rightBase['children'].length === 0) {
+                                                        right['children'].splice(h, 1)
+                                                    }
+                                                    if (right['children'].length === 0) {
+                                                        rights.splice(g, 1)
                                                     }
 
                                                     return;

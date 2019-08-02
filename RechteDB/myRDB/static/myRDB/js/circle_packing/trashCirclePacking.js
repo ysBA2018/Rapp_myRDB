@@ -221,11 +221,11 @@ $(document).ready(function(){
                   .duration(500)
                   .style("opacity",0)
           });
-
+      /*
       leaves = d3.selectAll("circle").filter(function(d){
         return d.children === null;
       });
-
+       */
       //var text = g.selectAll("text")
       //  .data(nodes)
       //  .enter().append("text")
@@ -250,12 +250,14 @@ $(document).ready(function(){
     };
       function confirm_restore(d,i) {
           d3.event.preventDefault();
-          bootbox.confirm("Berechtigung:\n\n"+d.data.name+"\n\nvon Löschliste entfernen\n\nund wiederherstellen?\n\n", function (result) {
-                console.log('This was logged in the callback: ' + result);
-                if(result===true){
-                    restorefunction(d,i)
-                }
-            });
+          if (d.depth !== 1) {
+              bootbox.confirm("Berechtigung:\n\n" + d.data.name + "\n\nvon Löschliste entfernen\n\nund wiederherstellen?\n\n", function (result) {
+                  console.log('This was logged in the callback: ' + result);
+                  if (result === true) {
+                      restorefunction(d, i)
+                  }
+              });
+          }
       }
     function restorefunction(d,i){
             function getCookie(name) {
@@ -283,27 +285,36 @@ $(document).ready(function(){
                         xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                     }
                 }
-            });var right_type="",right_parent = "",right_grandparent = "",right_greatgrandparent = "",right_greatgreatgrandparent = "";
+            });var right_type="",right_parent = "",right_grandparent = "",right_greatgrandparent = "",
+                    right_greatgreatgrandparent = "",user_userid_combi_id = "";
             if(d.depth===1) right_type="user";
             else if(d.depth===2) {
                 right_type="role";
                 right_parent = d.parent.data.name;
+                user_userid_combi_id = d.parent.data.user_userid_combi_id;
+
             }
             else if(d.depth===3){
                 right_type="af";
                 right_parent = d.parent.data.name;
                 right_grandparent = d.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.data.user_userid_combi_id;
+
             }else if(d.depth===4){
                 right_type="gf";
                 right_parent = d.parent.data.name;
                 right_grandparent = d.parent.parent.data.name;
                 right_greatgrandparent = d.parent.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.parent.data.user_userid_combi_id;
+
             }else if(d.depth===5){
                 right_type="tf";
                 right_parent = d.parent.data.name;
                 right_grandparent = d.parent.parent.data.name;
                 right_greatgrandparent = d.parent.parent.parent.data.name;
                 right_greatgreatgrandparent = d.parent.parent.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.parent.parent.data.user_userid_combi_id;
+
             }
             var data = {"X-CSRFToken":getCookie("csrftoken"),"X_METHODOVERRIDE":'PATCH',"user":window.user,
                 "action_type":"restore","right_type":right_type,"right_name":d.data.name,"parent":right_parent,
@@ -312,7 +323,7 @@ $(document).ready(function(){
             var successful=false;
             $.ajax({type:'POST',
                     data:data,
-                    url:window.current_host+'/api/Users/'+window.user_id+'/',
+                    url:window.current_host+'/api/userhatuseridundnamen/'+user_userid_combi_id+'/',
                     async:false,
                     success: function(res){console.log(res);
                         successful=true},
