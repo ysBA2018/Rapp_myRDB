@@ -2689,14 +2689,14 @@ class TblRollehataf_GeloeschtViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return TblRollehataf_Geloescht.objects.all()
 '''
-
+'''
 class TblAfHatGfViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = TblAfHatGfSerializer
 
     def get_queryset(self):
         return TblAfHatGf.objects.all()
-
+'''
 
 class TblAppliedRolleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)

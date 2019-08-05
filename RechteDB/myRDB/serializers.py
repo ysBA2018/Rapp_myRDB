@@ -93,7 +93,7 @@ class TblAppliedRolleSerializer(serializers.HyperlinkedModelSerializer):
         validated_data = {'model_rolle_id':rolle,'userHatUserID_id':userhatuid}
         print(type(validated_data),validated_data)
         return TblAppliedRolle.objects.create(**validated_data)
-
+'''
 class TblAfHatGfSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAfHatGf
@@ -102,7 +102,7 @@ class TblAfHatGfSerializer(serializers.HyperlinkedModelSerializer):
     rolleHatAf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rollehataf-detail')
     gf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:tbluebersichtafgfs-detail')
     url = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afhatgf-detail', lookup_field='pk')
-
+'''
 '''
 class TblAfHatGf_TransferiertSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

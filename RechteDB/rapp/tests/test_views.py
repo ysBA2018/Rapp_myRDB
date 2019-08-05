@@ -1,17 +1,15 @@
 from django.urls import reverse, resolve
 from django.test import TestCase
 
-from ..views import home
-
-from ..models import TblOrga, TblUebersichtAfGfs, TblUserIDundName, TblPlattform, TblGesamt, \
-	TblAfliste, TblUserhatrolle, TblRollehataf, TblRollen, Tblrechteneuvonimport
-
 from datetime import datetime, timedelta
 from django.utils import timezone
 # from django.core.files.base import ContentFile
-import re
+import re, time
 from ..anmeldung import Anmeldung
-
+from ..views import home
+from ..models import TblOrga, TblUebersichtAfGfs, TblUserIDundName, TblPlattform, TblGesamt, \
+					 TblAfliste, TblUserhatrolle, TblRollehataf, TblRollen, Tblrechteneuvonimport
+from ..view_import import patch_datum, neuer_import
 
 class HomeTests(TestCase):
 	def setup(self):
@@ -142,7 +140,6 @@ class AdminPageTests(TestCase):
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 301)
 
-
 class GesamtlisteTests(TestCase):
 	# Funktioniert die Gesamtliste?
 	def setUp(self):
@@ -255,7 +252,6 @@ class GesamtlisteTests(TestCase):
 			loeschdatum = 			None,
 			letzte_aenderung =		None
 		)
-
 
 	def test_gesamtliste_view_status_code(self):
 		url = reverse('gesamtliste')
@@ -380,6 +376,11 @@ class PanelTests(TestCase):
 			themeneigentuemer = 'Ihmchen_01'
 		)
 
+		TblOrga.objects.create(
+			team = 'Django-Team-02',
+			themeneigentuemer = 'Ihmchen_02'
+		)
+
 		TblUebersichtAfGfs.objects.create(
 			name_gf_neu =			'rvg_00458_neueGF mit echt mehr Zeichen als üblich',
 			name_af_neu =			'rva_00458_neue_AF auch mit mehr Zeichen als üblich',
@@ -431,7 +432,7 @@ class PanelTests(TestCase):
 			zufallsgenerator = 		'',
 			af_gueltig_ab = 		timezone.now() - timedelta(days=365),
 			af_gueltig_bis = 		timezone.now() + timedelta(days=365),
-			direct_connect = 		'no direct connect',
+			direct_connect = 		'nein',
 			hoechste_kritikalitaet_tf_in_af = 'u',
 			gf_beschreibung = 		'Die superlange, mindestens 250 Zeichen umfassende GF-Beschreibung. Hier könnte man auch mal nach CRLF suchen',
 			af_zuweisungsdatum = 	timezone.now() - timedelta(days=200),
@@ -463,10 +464,42 @@ class PanelTests(TestCase):
 			zufallsgenerator = 		'',
 			af_gueltig_ab = 		timezone.now() - timedelta(days=365),
 			af_gueltig_bis = 		timezone.now() + timedelta(days=365),
-			direct_connect = 		'no direct connect',
+			direct_connect = 		'nein',
 			hoechste_kritikalitaet_tf_in_af = 'u',
 			gf_beschreibung = 		'Die superlange, mindestens 250 Zeichen umfassende GF-Beschreibung. Hier könnte man auch mal nach CRLF suchen',
 			af_zuweisungsdatum = 	timezone.now() - timedelta(days=200),
+			datum = 				timezone.now() - timedelta(days=500),
+			geloescht = 			False,
+			gefunden = 				True,
+			wiedergefunden = 		timezone.now(),
+			geaendert = 			False,
+			neueaf = 				'',
+			nicht_ai = 				False,
+			patchdatum = 			None,
+			wertmodellvorpatch =	'Hier kommt nix rein',
+			loeschdatum = 			None,
+			letzte_aenderung =		None
+		)
+
+		TblGesamt.objects.create(
+			userid_name= 		TblUserIDundName.objects.get(userid = 'xv10099'),
+			tf = 					'Die direct connection TF3',
+			tf_beschreibung = 		'Die superlange schnuckelige TF-Beschreibung',
+			enthalten_in_af = 		'ka',
+			modell = 				TblUebersichtAfGfs.objects.get(name_af_neu='rva_00458_neue_AF auch mit mehr Zeichen als üblich',
+																   name_gf_neu='rvg_00458_neueGF mit echt mehr Zeichen als üblich'),
+			tf_kritikalitaet = 		'Superkritisch sich ist das auch schon zu lang',
+			tf_eigentuemer_org = 	'Keine Ahnung Org',
+			plattform = 			TblPlattform.objects.get(tf_technische_plattform = 'RACFP'),
+			gf = 					'ka',
+			vip_kennzeichen = 		'',
+			zufallsgenerator = 		'',
+			af_gueltig_ab = 		timezone.now() - timedelta(days=365),
+			af_gueltig_bis = 		timezone.now() + timedelta(days=365),
+			direct_connect = 		'ja',
+			hoechste_kritikalitaet_tf_in_af = 'u',
+			gf_beschreibung = 		'',
+			af_zuweisungsdatum = 	None,
 			datum = 				timezone.now() - timedelta(days=500),
 			geloescht = 			False,
 			gefunden = 				True,
@@ -503,6 +536,184 @@ class PanelTests(TestCase):
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "User_xv10099")
+
+
+	def test_panel_view_with_valid_userID(self):
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__userid=xv10099')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 8)
+
+	def test_panel_view_with_invalid_userID(self):
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__userid=xvabc99')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_valid_userName(self):
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__name=User_xv10099')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 8)
+
+	def test_panel_view_with_invalid_userName(self):
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__name=meier%2C+f')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_valid_team(self):
+		id = TblOrga.objects.get(team = 'Django-Team-01').id
+		url = '{0}{1}{2}'.format(reverse('panel'), '?userid_name__orga=', id)
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 6)
+
+	def test_panel_view_with_invalid_team(self):
+		id = TblOrga.objects.get(team = 'Django-Team-02').id
+		url = '{0}{1}{2}'.format(reverse('panel'), '?userid_name__orga=', id)
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_valid_TFBeschreibung(self):
+		url = '{0}{1}'.format(reverse('panel'), '?tf_beschreibung=TF')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 6)
+
+	def test_panel_view_with_validNotActive_TFBeschreibung(self):
+		url = '{0}{1}'.format(reverse('panel'), '?tf_beschreibung=TF2')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_invalid_TFBeschreibung(self):
+		url = '{0}{1}'.format(reverse('panel'), '?tf_beschreibung=gibtsnicht')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_valid_group(self):
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__gruppe=BA')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 6)
+
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__gruppe=AI-BA')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 6)
+
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__gruppe=AI-BA-PS')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 6)
+
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__gruppe=ZI-AI-BA')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 6)
+
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__gruppe=ZI-AI-BA-PS')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 6)
+
+	def test_panel_view_with_invalid_group(self):
+		url = '{0}{1}'.format(reverse('panel'), '?userid_name__gruppe=die-sollte-es-nicht-geben')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_valid_af(self):
+		url = '{0}{1}'.format(reverse('panel'), '?enthalten_in_af=rva_00458_neue_AF auch mit mehr Zeichen als üblich')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+		url = '{0}{1}'.format(reverse('panel'), '?enthalten_in_af=rva_00458_neue_AF')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+		url = '{0}{1}'.format(reverse('panel'), '?enthalten_in_af=Zeichen als üblich')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+		url = '{0}{1}'.format(reverse('panel'), '?enthalten_in_af=auch mit ')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+
+	def test_panel_view_with_invalid_af(self):
+		url = '{0}{1}'.format(reverse('panel'), '?enthalten_in_af=rvo_00458_org_ba')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_valid_tf(self):
+		url = '{0}{1}'.format(reverse('panel'), '?tf=Die superlange schnuckelige TF2')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 2)
+
+		url = '{0}{1}'.format(reverse('panel'), '?tf=Die superlange')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+
+		url = '{0}{1}'.format(reverse('panel'), '?tf=superlange schnuckelige')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+
+		url = '{0}{1}'.format(reverse('panel'), '?tf=TF2')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 2)
+
+	def test_panel_view_with_invalid_tf(self):
+		url = '{0}{1}'.format(reverse('panel'), '?tf=nö')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
+
+	def test_panel_view_with_valid_dc(self):
+		url = '{0}{1}'.format(reverse('panel'), '?direct_connect=n')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+
+		url = '{0}{1}'.format(reverse('panel'), '?direct_connect=nein')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+
+		url = '{0}{1}'.format(reverse('panel'), '?direct_connect=Nein')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 4)
+
+		url = '{0}{1}'.format(reverse('panel'), '?direct_connect=j')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 2)
+
+		url = '{0}{1}'.format(reverse('panel'), '?direct_connect=ja')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 2)
+
+		url = '{0}{1}'.format(reverse('panel'), '?direct_connect=Ja')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "xv10099", 2)
+
+
+	def test_panel_view_with_invalid_dc(self):
+		url = '{0}{1}'.format(reverse('panel'), '?tf=nö')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv10099")
 
 class Panel_exportCSVTest(TestCase):
 	# User / Rolle / AF : Das wird mal die Hauptseite für
@@ -643,7 +854,6 @@ class Panel_exportCSVTest(TestCase):
 		self.assertContains(response, "rvg_00458_neueGF mit echt mehr Zeichen als ", 1)
 		self.assertContains(response, "Die superlange schnuckelige TF2;Die superlange schnuckelige TF-Beschreibung;", 1)
 		self.assertContains(response, "User_xv10099;xv10099;AI-BA;", 1)
-
 
 class User_rolle_afTests_generate_pdf(TestCase):
 	# Der Testfall muss aufgrund der PDF-Lieferung separat gehalten werden
@@ -789,13 +999,13 @@ class User_rolle_afTests_generate_pdf(TestCase):
 			geloescht = 		True,
 		)
 	def test_panel_view_use_konzept_pdf(self):
+		print()	# weil das PDF immer irgend eine Warnung ausgibt
 		pdf_url = reverse('uhr_konzept_pdf')
 		response = self.client.get(pdf_url)
-		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.status_code, 200) # Und trotzdem funktioniert es
 
 class User_rolle_afTests(TestCase):
-	# User / Rolle / AF : Das wird mal die Hauptseite für
-	# Aktualisierungen / Ergänzungen / Löschungen von Rollen und Verbindungen
+	# User / Rolle / AF: Die Hauptseite für Aktualisierungen / Ergänzungen / Löschungen von Rollen und Verbindungen
 	def setUp(self):
 		Anmeldung(self.client.login)
 		Setup_database()
@@ -811,6 +1021,11 @@ class User_rolle_afTests(TestCase):
 
 		TblAfliste.objects.create (
 			af_name = 			'rva_01219_beta91_job_abst',
+			neu_ab = 			timezone.now(),
+		)
+
+		TblAfliste.objects.create (
+			af_name = 			'rva_01219_beta91_job_abst_nu',
 			neu_ab = 			timezone.now(),
 		)
 
@@ -910,6 +1125,11 @@ class User_rolle_afTests(TestCase):
 			name_af_neu =		"AF-foo-gelöscht in tblÜbersichtAFGF",
 			zielperson = 		'Fester BesterTester'
 		)
+		TblUebersichtAfGfs.objects.create(
+			name_gf_neu = 		"rvg_01219_beta91_job_abst_nu",
+			name_af_neu =		"rva_01219_beta91_job_abst_nu",
+			zielperson = 		'Fester BesterTester'
+		)
 		TblPlattform.objects.create(
 			tf_technische_plattform = 'Test-Plattform'
 		)
@@ -943,7 +1163,6 @@ class User_rolle_afTests(TestCase):
 			geloescht = 		True,
 		)
 
-
 	# Ist die Seite da?
 	def test_panel_view_status_code(self):
 		url = reverse('user_rolle_af')
@@ -968,8 +1187,6 @@ class User_rolle_afTests(TestCase):
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "User_xv13254")
-		#print('_____________')
-		#print (response.content)
 		self.assertContains(response, '(2 Rollen,')
 	# Sind bei einer der Rollen ein Recht nicht vergeben und zwei Rechte vergeben und insgesamt 3 Rechte behandelt?
 	def test_panel_view_with_deep_insight(self):
@@ -978,8 +1195,101 @@ class User_rolle_afTests(TestCase):
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "User_xv13254")
-		self.assertContains(response, 'icon-yes', 4)
-		self.assertContains(response, 'icon-no', 2)
+		self.assertContains(response, 'icon-yes', 2)
+		self.assertContains(response, 'icon-no', 4)
+	def test_panel_view_with_deep_insight_find_delete_link(self):
+		id = TblUserIDundName.objects.get(userid='xv13254').id
+		url = '{0}{1}/{2}'.format(reverse('user_rolle_af'), id, '?name=UseR&gruppe=BA-ps')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "User_xv13254")
+		rolle1 = TblUserhatrolle.objects.get(userid = 'xv13254', rollenname = 'Erste Neue Rolle')
+		rolle2 = TblUserhatrolle.objects.get(userid = 'xv13254', rollenname = 'Zweite Neue Rolle')
+		self.assertContains(response, '/rapp/user_rolle_af/{}/delete/?'.format(rolle1), 1)
+		self.assertContains(response, '/rapp/user_rolle_af/{}/delete/?'.format(rolle2), 1)
+
+		# Zum Abschluss klicken wir mal auf die Löschlinks und erhalten die Sicherheitsabfrage.
+		# Erster Link
+		loeschurl = '/rapp/user_rolle_af/{}/delete/'.format(rolle1)
+		response = self.client.get(loeschurl)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, '<p>Sie löschen gerade den folgenden Rollen-Eintrag:</p>')
+		self.assertContains(response, '<p>"Erste Neue Rolle":</p>')
+		# Zweiter Link
+		loeschurl = '/rapp/user_rolle_af/{}/delete/'.format(rolle2)
+		response = self.client.get(loeschurl)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, '<p>Sie löschen gerade den folgenden Rollen-Eintrag:</p>')
+		self.assertContains(response, '<p>"Zweite Neue Rolle":</p>')
+
+	def test_panel_view_with_deep_insight_find_change_link(self):
+		id = TblUserIDundName.objects.get(userid='xv13254').id
+		url = '{0}{1}/{2}'.format(reverse('user_rolle_af'), id, '?name=UseR&gruppe=BA-ps')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "User_xv13254")
+
+		rolle1 = TblUserhatrolle.objects.get(userid = 'xv13254', rollenname = 'Erste Neue Rolle')
+		rolle2 = TblUserhatrolle.objects.get(userid = 'xv13254', rollenname = 'Zweite Neue Rolle')
+		changeurl1 = '/adminrapp/tbluserhatrolle/{}/change/?'.format(rolle1)
+		changeurl2 = '/adminrapp/tbluserhatrolle/{}/change/?'.format(rolle2)
+
+		self.assertContains(response, changeurl1, 1)
+		self.assertContains(response, changeurl2, 1)
+
+		# ToDo Zum Abschluss klicken wir mal auf die Change-Links und erhalten den Änderungsdialog.
+		"""
+		Aus welchen Gründen auch immer das hier nur zu einer Weiterleitung 302 führt...
+		# Erster Link
+		response = self.client.get(changeurl1)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, 'User und Ihre Rollen ändern')
+		self.assertContains(response, '<option value="Erste Neue Rolle">')
+		#Zweiter Link
+		response = self.client.get(changeurl2)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, 'User und Ihre Rollen ändern')
+		self.assertContains(response, '<option value="Zweite Neue Rolle">')
+		"""
+	def test_panel_view_with_deep_insight_find_create_link(self):
+		id = TblUserIDundName.objects.get(userid='xv13254').id
+		url = '{0}{1}/{2}'.format(reverse('user_rolle_af'), id, '?name=UseR&gruppe=BA-ps')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "User_xv13254")
+		self.assertContains(response, '/rapp/user_rolle_af/create/xv13254/?&', 1)
+
+		# Zum Abschluss klicken wir mal auf den Create-Link und erhalten den Erstellungsdialog.
+		createurl = '/rapp/user_rolle_af/create/xv13254/?&name=&orga=1&rollenname=&gruppe=&user='
+		response = self.client.get(createurl)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, 'Rollen-Eintrag ergänzen für')
+		self.assertContains(response, '<option value="xv13254">xv13254 | User_xv13254</option>')
+		self.assertContains(response, '<option value="" selected>---------</option>', 2)
+		self.assertContains(response, '<option value="">---------</option>', 1)
+	def test_panel_view_with_deep_insight_find_export_link(self):
+		id = TblUserIDundName.objects.get(userid='xv13254').id
+		url = '{0}{1}/{2}'.format(reverse('user_rolle_af'), id, '?name=UseR&gruppe=BA-ps')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "User_xv13254")
+		# Nun klicken wir mal auf den Export-Link und erhalten den Erstellungsdialog.
+		exporturl = '/rapp/user_rolle_af/export/{}/?'.format(id)
+		self.assertContains(response, exporturl)
+		response = self.client.get(exporturl)
+		self.assertEqual(response.status_code, 200)
+		# print('____________')
+		# print(response.content)
+		gesuchter_exportstring = "Name,Rollenname,AF,Mussrecht,xv13254,dv13254\r\n"\
+			+ "User_xv13254,Erste Neue Rolle,rva_01219_beta91_job_abst,ja,nein,nein\r\n"\
+			+ "User_xv13254,Erste Neue Rolle,rva_01219_beta91_job_abst_nicht_zugewiesen,ja,nein,nein\r\n"\
+			+ "User_xv13254,Zweite Neue Rolle,rva_01219_beta91_job_abst,nein,nein,nein\r\n"
+		self.assertContains(response, 'Name,Rollenname,AF,Mussrecht,xv13254,dv13254\r\n')
+		self.assertContains(response, 'User_xv13254,Erste Neue Rolle,rva_01219_beta91_job_abst,ja,nein,nein\r\n')
+		self.assertContains(response, 'User_xv13254,Erste Neue Rolle,rva_01219_beta91_job_abst_nicht_zugewiesen,ja,nein,nein\r\n')
+		self.assertContains(response, 'User_xv13254,Zweite Neue Rolle,rva_01219_beta91_job_abst,nein,nein,nein\r\n')
+		self.assertContains(response, gesuchter_exportstring)
+
 	def test_panel_view_with_invalid_selection_status_code(self):
 		url = '{0}{1}'.format(reverse('user_rolle_af'), '?geloescht=99&zi_organisation=ZZ-XX')
 		response = self.client.get(url)
@@ -1103,7 +1413,7 @@ class User_rolle_variantsTest(TestCase):
 			neu_ab = 			timezone.now(),
 		)
 
-		# Drei User: XV und DV aktiv, AV gelöscht
+		# Drei UserIDen für eine Identität: XV und DV aktiv, AV gelöscht
 		TblUserIDundName.objects.create (
 			userid = 			'xv13254',
 			name = 				'User_xv13254',
@@ -1111,7 +1421,7 @@ class User_rolle_variantsTest(TestCase):
 			zi_organisation =	'AI-BA',
 			geloescht = 		False,
 			abteilung = 		'ZI-AI-BA',
-			gruppe = 			'ZI-AI-BA-PS',
+			gruppe = 			'ZI-AI-BA-LS',
 		)
 		TblUserIDundName.objects.create (
 			userid = 			'dv13254',
@@ -1120,7 +1430,7 @@ class User_rolle_variantsTest(TestCase):
 			zi_organisation =	'AI-BA',
 			geloescht = 		False,
 			abteilung = 		'ZI-AI-BA',
-			gruppe = 			'ZI-AI-BA-PS',
+			gruppe = 			'ZI-AI-BA-LS',
 		)
 		TblUserIDundName.objects.create (
 			userid = 			'av13254',
@@ -1129,10 +1439,32 @@ class User_rolle_variantsTest(TestCase):
 			zi_organisation =	'AI-BA',
 			geloescht = 		True,
 			abteilung = 		'ZI-AI-BA',
-			gruppe = 			'ZI-AI-BA-PS',
+			gruppe = 			'ZI-AI-BA-LS',
 		)
 
-		# Zwei Rollen, die auf den XV-User vergeben werden
+		# Eine UserID für eine weitere Identität: XV aktiv
+		TblUserIDundName.objects.create (
+			userid = 			'xv00042',
+			name = 				'User_xv00042',
+			orga = 				TblOrga.objects.get(team = 'Django-Team-01'),
+			zi_organisation =	'AI-BA',
+			geloescht = 		False,
+			abteilung = 		'ZI-AI-BA',
+			gruppe = 			'ZI-AI-BA-LS',
+		)
+
+		# Eine UserID für eine weitere Identität: XV aktiv: Für diesen User gibt es noch keine eingetragene Rolle
+		TblUserIDundName.objects.create (
+			userid = 			'xv00023',
+			name = 				'User_xv00023',
+			orga = 				TblOrga.objects.get(team = 'Django-Team-01'),
+			zi_organisation =	'AI-BA',
+			geloescht = 		False,
+			abteilung = 		'ZI-AI-BA',
+			gruppe = 			'ZI-AI-BA-LS',
+		)
+
+		# Zwei Rollen, die auf den ersten XV-User vergeben werden, die zweite wird auch dem m2. User vergeben
 		TblRollen.objects.create (
 			rollenname = 		'Erste Neue Rolle',
 			system =			'Testsystem',
@@ -1144,7 +1476,7 @@ class User_rolle_variantsTest(TestCase):
 			rollenbeschreibung = 'Das ist auch eine Testrolle',
 		)
 
-		# Drei AF-Zuordnungen
+		# Drei AF-Zuordnungen zu Rollen
 		TblRollehataf.objects.create (
 			mussfeld =			True,
 			einsatz =			TblRollehataf.EINSATZ_XABCV,
@@ -1167,21 +1499,30 @@ class User_rolle_variantsTest(TestCase):
 			rollenname = 		TblRollen.objects.get(rollenname= 'Zweite Neue Rolle'),
 		)
 
-		# Dem XV-User werden zwei Rollen zugewiesen, dem AV- und DV-User keine
+		# User 12354_ Dem XV-User werden zwei Rollen zugewiesen, dem AV- und DV-User keine
 		TblUserhatrolle.objects.create(
 			userid =	 		TblUserIDundName.objects.get(userid = 'xv13254'),
 			rollenname = 		TblRollen.objects.first(),
 			schwerpunkt_vertretung = 'Schwerpunkt',
-			bemerkung = 		'Das ist eine Testrolle für ZI-AI-BA-PS',
+			bemerkung = 		'Das ist eine Testrolle für ZI-AI-BA-LS',
 			letzte_aenderung= 	timezone.now(),
 		)
 		TblUserhatrolle.objects.create(
 			userid =	 		TblUserIDundName.objects.get(userid = 'xv13254'),
 			rollenname = 		TblRollen.objects.get(rollenname = 'Zweite Neue Rolle'),
 			schwerpunkt_vertretung = 'Vertretung',
-			bemerkung = 		'Das ist auch eine Testrolle für ZI-AI-BA-PS',
+			bemerkung = 		'Das ist auch eine Testrolle für ZI-AI-BA-LS',
 			letzte_aenderung= 	timezone.now(),
 		)
+		# Dem zweiten User 00042 wird nur eine Rolle zugeordnet
+		TblUserhatrolle.objects.create(
+			userid =	 		TblUserIDundName.objects.get(userid = 'xv00042'),
+			rollenname = 		TblRollen.objects.first(),
+			schwerpunkt_vertretung = 'Schwerpunkt',
+			bemerkung = 		'Das ist eine Testrolle für ZI-AI-BA-LS',
+			letzte_aenderung= 	timezone.now(),
+		)
+		# Und dem dritten User 00023 keine Rolle
 
 		# Die nächsten beiden Objekte werden für tblGesamt als ForeignKey benötigt
 		TblUebersichtAfGfs.objects.create(
@@ -1205,7 +1546,18 @@ class User_rolle_variantsTest(TestCase):
 			userid_name = 		TblUserIDundName.objects.get(userid = 'xv13254'),
 			tf = 				'foo-TF',
 			tf_beschreibung = 	'TF-Beschreibung für foo-TF',
-			enthalten_in_af = 	'Sollte die AF rva_01219_beta91_job_abst sein',
+			enthalten_in_af = 	'rva_01219_beta91_job_abst',
+			modell =			TblUebersichtAfGfs.objects.get(name_gf_neu = "GF-foo in tblÜbersichtAFGF"),
+			plattform = 		TblPlattform.objects.get(tf_technische_plattform = 'Test-Plattform'),
+			gf = 				'GF-foo',
+			datum = 			timezone.now(),
+			geloescht = 		False,
+		)
+		TblGesamt.objects.create(
+			userid_name = 		TblUserIDundName.objects.get(userid = 'xv00042'),
+			tf = 				'foo-TF',
+			tf_beschreibung = 	'TF-Beschreibung für foo-TF',
+			enthalten_in_af = 	'rva_01219_beta91_job_abst',
 			modell =			TblUebersichtAfGfs.objects.get(name_gf_neu = "GF-foo in tblÜbersichtAFGF"),
 			plattform = 		TblPlattform.objects.get(tf_technische_plattform = 'Test-Plattform'),
 			gf = 				'GF-foo',
@@ -1220,7 +1572,7 @@ class User_rolle_variantsTest(TestCase):
 			userid_name = 		TblUserIDundName.objects.get(userid = 'xv13254'),
 			tf = 				'foo-TF-gelöscht',
 			tf_beschreibung = 	'TF-Beschreibung für foo-TF-gelöscht',
-			enthalten_in_af = 	'Sollte die AF rva_01219_beta91_job_abst sein',
+			enthalten_in_af = 	'rva_01219_beta91_job_abst',
 			modell =			TblUebersichtAfGfs.objects.get(name_gf_neu = "GF-foo in tblÜbersichtAFGF"),
 			plattform = 		TblPlattform.objects.get(tf_technische_plattform = 'Test-Plattform'),
 			gf = 				'GF-foo',
@@ -1229,112 +1581,105 @@ class User_rolle_variantsTest(TestCase):
 		)
 
 	# Ist die Seite da?
-	def test_panel_view_status_code(self):
+	def test_panel_01_view_status_code(self):
 		url = reverse('user_rolle_af')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
 	# Eine gültige Auswahl für einen User in einer Gruppe: Das nutzt noch das erste Panel in der Ergebnisanzeige
-	def test_panel_view_with_valid_selection(self):
-		url = '{0}{1}'.format(reverse('user_rolle_af'), '?name=UseR&gruppe=BA-ps')
+	def test_panel_02_view_with_valid_selection(self):
+		url = '{0}{1}'.format(reverse('user_rolle_af'), '?name=UseR&gruppe=BA-ls')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "xv13254")
 		self.assertNotContains(response, "Betrachtung von Rollenvarianten")
-	def test_panel_view_with_valid_role_star_name_and_group(self):
-		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=*&name=UseR&gruppe=BA-ps')
+	def test_panel_03_view_with_valid_role_star_name_and_group(self):
+		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=*&name=UseR&gruppe=BA-ls')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "xv13254")
-	def test_panel_view_with_valid_role_star(self):
+		self.assertContains(response, "xv13254", 4)
+		self.assertContains(response, "xv00042", 5)
+		self.assertContains(response, "xv00023", 2)
+
+	def test_panel_03a_view_with_valid_role_star_unique_name_and_group(self):
+		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=*&name=UseR_xv00023&gruppe=BA-ls')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+		self.assertNotContains(response, "xv13254")
+		self.assertNotContains(response, "xv00042")
+		self.assertContains(response, "xv00023", 5)
+
+	def test_panel_04_view_with_valid_role_star(self):
 		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=*')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
 		self.assertContains(response, "xv13254")
 		self.assertContains(response, "Betrachtung von Rollenvarianten")
-		self.assertContains(response, "Sollte die AF rva_01219_beta91_job_abst sein")
-		# self.assertContains(response, "Erste Neue Rolle")
-	def test_panel_view_with_valid_rolestar_name_and_group(self):
-		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=*&name=UseR&gruppe=BA-ps')
-		response = self.client.get(url)
+		self.assertContains(response, "rva_01219_beta91_job_abst", 5)
+		# Beide Identitäten haben eine Rolle, für die es mehrere Varianten gibt.
+		self.assertContains(response,
+							'<a href="/rapp/user_rolle_af/xv00042/create/Zweite%2520Neue%2520Rolle/Schwerpunkt?&rollenname=*#xv00042.rva_01219_beta91_job_abst">Zweite Neue Rolle</a>', 1)
+		self.assertContains(response,
+							'<a href="/rapp/user_rolle_af/xv00042/create/Zweite%2520Neue%2520Rolle/Schwerpunkt?&rollenname=*#xv00042.rva_01219_beta91_job_abst">Zweite Neue Rolle</a>', 1)
+		# Die Löschlinks enthalten die Nummern der User-hat-Rolle-Definition. Das brauchen wir später nochmal
+		erste_rolle_des_ersten_users = TblUserhatrolle.objects.get(userid=TblUserIDundName.objects.get(userid='xv13254'),
+			rollenname=TblRollen.objects.first())
+		zweite_rolle_des_ersten_users = TblUserhatrolle.objects.get(userid=TblUserIDundName.objects.get(userid='xv13254'),
+			rollenname=TblRollen.objects.get(rollenname='Zweite Neue Rolle'))
+		rolle_des_zweiten_users = TblUserhatrolle.objects.get(userid=TblUserIDundName.objects.get(userid='xv00042'),
+															  rollenname=TblRollen.objects.first())
+		str11 = '<a href="/rapp/user_rolle_af/{}/delete/?&rollenname=*&user=">'.format(erste_rolle_des_ersten_users)
+		str12 = '<a href="/rapp/user_rolle_af/{}/delete/?&rollenname=*&user=">'.format(zweite_rolle_des_ersten_users)
+		str2 = '<a href="/rapp/user_rolle_af/{}/delete/?&rollenname=*&user=">'.format(rolle_des_zweiten_users)
+
+		self.assertContains(response, str11)
+		self.assertContains(response, str12)
+		self.assertContains(response, str2)
+
+		# Zum Abschluss klicken wir mal auf einen der Löschlinks und erhalten die Sicherheitsabfrage:
+		loeschurl = '/rapp/user_rolle_af/{}/delete/?&rollenname=*&user='.format(erste_rolle_des_ersten_users)
+		response = self.client.get(loeschurl)
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Betrachtung von Rollenvarianten", 1)
-		self.assertContains(response, "Mögliche (weitere) Rollen", 1)
-		self.assertContains(response, "<td>xv13254</td>", 1)
-		self.assertContains(response, "<td>dv13254</td>", 1)
-		self.assertContains(response, "<td>User_xv13254</td>", 2)
-		self.assertContains(response, "<td>Sollte die AF rva_01219_beta91_job_abst sein</td>", 1)
-		self.assertContains(response, "<td>Keine AF zugewiesen</td>", 1)
-	def test_panel_view_with_valid_rolestar(self):
+		self.assertContains(response, '<p>Sie löschen gerade den folgenden Rollen-Eintrag:</p>')
+		self.assertContains(response, '<p>"Erste Neue Rolle":</p>')
+
+		response = self.client.post(loeschurl, {'rollenname': erste_rolle_des_ersten_users,
+												'userid': TblUserIDundName.objects.get(userid='xv13254')
+												})
+		self.assertEqual(response.status_code, 302)
+		# ToDo Hier sollte eigentlich ein Eintrag gelöscht worden sein - das klappt aber nicht (XSRF-Token?)
+	def test_panel_06_view_with_valid_role_star(self):
 		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=*')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Betrachtung von Rollenvarianten", 1)
-		self.assertContains(response, "Mögliche (weitere) Rollen", 1)
-		self.assertContains(response, "<td>xv13254</td>", 1)
-		self.assertContains(response, "<td>dv13254</td>", 1)
-		self.assertContains(response, "<td>User_xv13254</td>", 2)
-		self.assertContains(response, "<td>Sollte die AF rva_01219_beta91_job_abst sein</td>", 1)
-		self.assertContains(response, "<td>Keine AF zugewiesen</td>", 1)
-	def test_panel_view_with_valid_role1(self):
-		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=Erste%20Neue%20Rolle')
-		response = self.client.get(url)
+		self.assertContains(response, "xv13254")
+		self.assertContains(response, "Betrachtung von Rollenvarianten")
+		self.assertContains(response, "rva_01219_beta91_job_abst", 5)
+		# Beide Identitäten haben eine Rolle, für die es mehrere Varianten gibt.
+		# ToDo Der Testfall muss angepasst werden, wenn die Doppelnennung von Rollen behandelt wird
+		self.assertContains(response, '<a href="/rapp/user_rolle_af/xv00042/create/Zweite%2520Neue%2520Rolle/Schwerpunkt?&rollenname=*#xv00042.rva_01219_beta91_job_abst">Zweite Neue Rolle</a>', 1)
+		# Zum Abschluss klicken wir mal auf einen der Löschlinks und erhalten die Sicherheitsabfrage:
+		createurl = '/rapp/user_rolle_af/{}/create/{}%20Neue%20Rolle/Schwerpunkt?&rollenname=*#{}.rva_01219_beta91_job_abst' \
+						   .format('xv00042', 'Zweite', 'xv00042')
+		response = self.client.get(createurl)
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Betrachtung von Rollenvarianten", 1)
-		self.assertContains(response, "Mögliche (weitere) Rollen", 1)
-		self.assertContains(response, "<td>xv13254</td>", 1)
-		self.assertContains(response, "<td>dv13254</td>", 1)
-		self.assertContains(response, "<td>User_xv13254</td>", 1)
-		self.assertContains(response, "<td>Sollte die AF rva_01219_beta91_job_abst sein</td>", 0)
-		self.assertContains(response, "<td>Keine AF zugewiesen</td>", 2)
-	def test_panel_view_with_valid_role2(self):
-		url = '{0}{1}'.format(reverse('user_rolle_af'), '?rollenname=Zweite+Neue+Rolle')
-		response = self.client.get(url)
+		self.assertContains(response, 'Rollen-Eintrag ergänzen für <strong></strong>')
+		self.assertContains(response, '<option value="">---------</option>', 3)
+		self.assertContains(response, '<option value="xv00042">xv00042 | User_xv00042</option>')
+		self.assertContains(response, '<option value="xv13254">xv13254 | User_xv13254</option>')
+		self.assertContains(response, '<option value="dv13254">dv13254 | User_xv13254</option>')
+		# ToDo Achtung, hier werden in der Liste auch gelöschte User angezeigt!
+		# self.assertNotContains(response, '<option value="av13254">av13254 | User_xv13254</option>')
+		self.assertContains(response, '<option value="Erste Neue Rolle">Erste Neue Rolle</option>')
+		self.assertContains(response, '<option value="Zweite Neue Rolle" selected>Zweite Neue Rolle</option>')
+		self.assertContains(response, '<option value="Schwerpunkt" selected>Schwerpunktaufgabe</option>')
+		self.assertContains(response, '<option value="Vertretung">Vertretungstätigkeiten, Zweitsysteme</option>')
+		self.assertContains(response, '<option value="Allgemein">Rollen, die nicht Systemen zugeordnet sind</option>')
+		self.assertContains(response, '<th><label for="id_bemerkung">Bemerkung:</label></th><td><textarea name="bemerkung" cols="40" rows="10" id="id_bemerkung">')
+		response = self.client.post(createurl, {'rollenname': "Erste Neue Rolle",
+												'userid': TblUserIDundName.objects.get(userid='xv13254')
+												})
+		# Todo: Warum geht das? Die Rolle ist doch schon vergeben...
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Betrachtung von Rollenvarianten", 1)
-		self.assertContains(response, "Mögliche (weitere) Rollen", 1)
-		self.assertContains(response, "<td>xv13254</td>", 1)
-		self.assertContains(response, "<td>dv13254</td>", 1)
-		self.assertContains(response, "<td>User_xv13254</td>", 1)
-		self.assertContains(response, "<td>Sollte die AF rva_01219_beta91_job_abst sein</td>", 0)
-		self.assertContains(response, "<td>Keine AF zugewiesen</td>", 2)
-	def test_panel_view_with_valid_rolestar_and_invalid_name(self):
-		id = TblUserIDundName.objects.get(userid='xv13254').id
-		url = '{0}{1}/{2}'.format(reverse('user_rolle_af'), id, '?rollenname=*&name=xx')
-		response = self.client.get(url)
-		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Betrachtung von Rollenvarianten", 0)
-		self.assertContains(response, "Mögliche (weitere) Rollen", 0)
-		self.assertContains(response, "<td>xv13254</td>", 0)
-		self.assertContains(response, "<td>dv13254</td>", 0)
-		self.assertContains(response, "<td>User_xv13254</td>", 0)
-		self.assertContains(response, "<td>Sollte die AF rva_01219_beta91_job_abst sein</td>", 0)
-		self.assertContains(response, "Keine angezeigten User", 1)
-		self.assertContains(response, "Kein User selektiert", 1)
-	def test_panel_view_with_valid_rolestar_and_invalid_group(self):
-		id = TblUserIDundName.objects.get(userid='xv13254').id
-		url = '{0}{1}/{2}'.format(reverse('user_rolle_af'), id, '?rollenname=*&name=xx')
-		response = self.client.get(url)
-		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Betrachtung von Rollenvarianten", 0)
-		self.assertContains(response, "Mögliche (weitere) Rollen", 0)
-		self.assertContains(response, "<td>xv13254</td>", 0)
-		self.assertContains(response, "<td>dv13254</td>", 0)
-		self.assertContains(response, "<td>User_xv13254</td>", 0)
-		self.assertContains(response, "<td>Sollte die AF rva_01219_beta91_job_abst sein</td>", 0)
-		self.assertContains(response, "Keine angezeigten User", 1)
-		self.assertContains(response, "Kein User selektiert", 1)
-	def test_panel_view_with_valid_rolestar_and_valid_orga(self):
-		id = TblUserIDundName.objects.get(userid='xv13254').id
-		url = '{0}{1}/{2}'.format(reverse('user_rolle_af'), id, '?rollenname=*&orga=1')
-		response = self.client.get(url)
-		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Betrachtung von Rollenvarianten", 1)
-		self.assertContains(response, "Mögliche (weitere) Rollen", 1)
-		self.assertContains(response, "<td>xv13254</td>", 1)
-		self.assertContains(response, "<td>dv13254</td>", 1)
-		self.assertContains(response, "<td>User_xv13254</td>", 2)
-		self.assertContains(response, "<td>Sollte die AF rva_01219_beta91_job_abst sein</td>", 1)
-		self.assertContains(response, "<td>Keine AF zugewiesen</td>", 1)
 
 class User_rolle_exportCSVTest(TestCase):
 	# User / Rolle / AF : Das wird mal die Hauptseite für
@@ -1488,7 +1833,7 @@ class User_rolle_exportCSVTest(TestCase):
 		)
 
 	# Eine leere Auswahl
-	def test_panel_online_without_selection(self):
+	def test_matrix_online_without_selection(self):
 		url = reverse('uhr_matrix')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
@@ -1502,7 +1847,7 @@ class User_rolle_exportCSVTest(TestCase):
 		self.assertContains(response, 'Vertretung', 1)
 
 	# Eine gültige Auswahl für einen User in einer Gruppe
-	def test_panel_online_with_valid_selection(self):
+	def test_matrix_online_with_valid_selection(self):
 		url = '{0}{1}'.format(reverse('uhr_matrix'), '?name=UseR&gruppe=BA-ps')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
@@ -1516,21 +1861,20 @@ class User_rolle_exportCSVTest(TestCase):
 		self.assertContains(response, 'Vertretung', 1)
 
 	# Eine gültige Auswahl für einen User in einer Gruppe, csv-Export Langvariante
-	def test_panel_long_pdf_with_valid_selection(self):
+	def test_matrix_long_csv_with_valid_selection(self):
 		url = '{0}{1}'.format(reverse('uhr_matrix_csv'), '?name=UseR&gruppe=BA-ps')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Name;Erste Neue Rolle;Zweite Neue Rolle\r\n", 1)
-		self.assertContains(response, "User_xv13254;Schwerpunkt;Vertretung\r\n", 1)
+		self.assertContains(response, "Name,Erste Neue Rolle,Zweite Neue Rolle\r\n", 1)
+		self.assertContains(response, "User_xv13254,Schwerpunkt,Vertretung\r\n", 1)
 
 	# Eine gültige Auswahl für einen User in einer Gruppe, csv-Export kurzvariante
-	def test_panel_short_pdf_with_valid_selection(self):
+	def test_matrix_short_scv_with_valid_selection(self):
 		url = '{0}{1}'.format(reverse('uhr_matrix_csv'), 'kompakt/?name=UseR&gruppe=BA-ps')
 		response = self.client.get(url)
 		self.assertEqual(response.status_code, 200)
-		self.assertContains(response, "Name;Erste Neue Rolle;Zweite Neue Rolle\r\n", 1)
-		self.assertContains(response, "User_xv13254;S;V\r\n", 1)
-
+		self.assertContains(response, "Name,Erste Neue Rolle,Zweite Neue Rolle\r\n", 1)
+		self.assertContains(response, "User_xv13254,S,V\r\n", 1)
 
 class Import_new_csv_single_record(TestCase):
 	# Tests für den Import neuer CSV-Listen und der zugehörigen Tabellen
@@ -1560,19 +1904,17 @@ class Import_new_csv_single_record(TestCase):
 			af_gueltig_bis = 		timezone.now() + timedelta(days=365),
 			af_zuweisungsdatum = 	timezone.now() - timedelta(days=366),
 		)
-
 	def test_importpage_table_entry(self):
 		num = Tblrechteneuvonimport.objects.filter(vorname = 'Fester').count()
 		self.assertEqual(num, 1)
-
 	def test_importpage_view_status_code(self):
 		url = reverse('import')
 		response = self.client.get(url)
 		self.assertEqual(self.response.status_code, 200)
-
 	def test_importpage_csrf(self):
 		self.assertContains(self.response, 'csrfmiddlewaretoken')
-
+	def test_importpage_has_cuurent_comments_active(self):
+		self.assertContains(self.response, 'nicht Excel wegen Unicode!')
 
 class Setup_database(TestCase):
 	# Tests für den Import der Stored Procedures in die Datenbank
@@ -1605,7 +1947,6 @@ class Setup_database(TestCase):
 		self.assertContains(self.response, 'setzeNichtAIFlag war erfolgreich.', 1)
 		self.assertContains(self.response, 'erzeuge_af_liste war erfolgreich.', 1)
 		self.assertContains(self.response, 'ueberschreibeModelle war erfolgreich.', 1)
-
 
 class Import_new_csv_single_record(TestCase):
 	# Tests für den Import neuer CSV-Listen und der zugehörigen Tabellen
@@ -1675,7 +2016,6 @@ class Import_new_csv_files_no_input(TestCase):
 		form = self.response.context.get('form')
 		self.assertTrue(form.errors)
 
-
 class Import_new_csv_files_wrong_input(TestCase):
 	# Und nun Test des Imports dreier Dateien.
 	# Die erste Datei erstellt zwei User mit Rechten
@@ -1703,8 +2043,6 @@ class Import_new_csv_files_wrong_input(TestCase):
 		form = self.response.context.get('form')
 		self.assertTrue(form.errors)
 
-from ..view_import import patch_datum, neuer_import
-
 class Import_helper_functions(TestCase):
 	def test_import_datum_konverter(self):
 		datum = patch_datum('07.03.2019')
@@ -1718,3 +2056,136 @@ class Import_helper_functions(TestCase):
 		# Neuer Aufruf sollte keinen Fehler liefern
 		(flag, imp) = neuer_import(None)
 		self.assertFalse(flag)
+
+class TestNeuAFGF(TestCase):
+	def setUp(self):
+		Anmeldung(self.client.login)
+		Setup_database()
+		TblOrga.objects.create (
+			team = 'Django-Team-01',
+			themeneigentuemer = 'Ihmchen_01',
+		)
+		TblOrga.objects.create (
+			team = 'Django-Team-02',
+			themeneigentuemer = 'Ihmchen_02',
+		)
+
+		# Drei User: XV und DV aktiv, AV gelöscht
+		TblUserIDundName.objects.create (
+			userid = 			'xv13254',
+			name = 				'User_xv13254',
+			orga = 				TblOrga.objects.get(team = 'Django-Team-01'),
+			zi_organisation =	'AI-BA',
+			geloescht = 		False,
+			abteilung = 		'ZI-AI-BA',
+			gruppe = 			'ZI-AI-BA-PS',
+		)
+		TblUserIDundName.objects.create (
+			userid = 			'dv13254',
+			name = 				'User_xv13254',
+			orga = 				TblOrga.objects.get(team = 'Django-Team-01'),
+			zi_organisation =	'AI-BA',
+			geloescht = 		False,
+			abteilung = 		'ZI-AI-BA',
+			gruppe = 			'ZI-AI-BA-PS',
+		)
+		TblUserIDundName.objects.create (
+			userid = 			'av13254',
+			name = 				'User_xv13254',
+			orga = 				TblOrga.objects.get(team = 'Django-Team-01'),
+			zi_organisation =	'AI-BA',
+			geloescht = 		True,
+			abteilung = 		'ZI-AI-BA',
+			gruppe = 			'ZI-AI-BA-PS',
+		)
+
+		# Die nächsten Objekte werden für tblGesamt als ForeignKey benötigt
+		TblUebersichtAfGfs.objects.create(
+			name_gf_neu = 		"GF-foo in tblÜbersichtAFGF",
+			name_af_neu =		"AF-foo in tblÜbersichtAFGF",
+			zielperson = 		'Fester BesterTester',
+			modelliert = 		timezone.now()
+		)
+		TblUebersichtAfGfs.objects.create(
+			name_gf_neu = 		"GF-foo2 in tblÜbersichtAFGF",
+			name_af_neu =		"AF-foo in tblÜbersichtAFGF",
+			zielperson = 		'Fester BesterTester'
+		)
+		TblUebersichtAfGfs.objects.create(
+			name_gf_neu = 		"GF-foo2 in tblÜbersichtAFGF",
+			name_af_neu =		"AF-foo2 in tblÜbersichtAFGF",
+			zielperson = 		'Fester BesterTester'
+		)
+		TblUebersichtAfGfs.objects.create(
+			name_gf_neu = 		"GF-foo-gelöscht in tblÜbersichtAFGF",
+			name_af_neu =		"AF-foo-gelöscht in tblÜbersichtAFGF",
+			zielperson = 		'Fester BesterTester'
+		)
+		# Eine der AFen ist bekannt - aber das sollte egal sein.
+		TblAfliste.objects.create (
+			af_name = 			'AF-foo in tblÜbersichtAFGF',
+			neu_ab = 			timezone.now(),
+		)
+
+		TblPlattform.objects.create(
+			tf_technische_plattform = 'Test-Plattform'
+		)
+
+		# Es werden in der Tabelle die vier Rechte vergeben, eines davon gelöscht
+		TblGesamt.objects.create(
+			userid_name = 		TblUserIDundName.objects.get(userid = 'xv13254'),
+			tf = 				'foo-TF',
+			tf_beschreibung = 	'TF-Beschreibung für foo-TF',
+			enthalten_in_af = 	'AF-foo in tblÜbersichtAFGF',
+			gf = 				'GF-foo in tblÜbersichtAFGF',
+			modell =			TblUebersichtAfGfs.objects.get(name_gf_neu = "GF-foo in tblÜbersichtAFGF"),
+			plattform = 		TblPlattform.objects.get(tf_technische_plattform = 'Test-Plattform'),
+			datum = 			timezone.now(),
+			geloescht = 		False,
+		)
+
+		TblGesamt.objects.create(
+			userid_name = 		TblUserIDundName.objects.get(userid = 'dv13254'),
+			tf = 				'foo-TF2',
+			tf_beschreibung = 	'TF-Beschreibung für foo-TF',
+			enthalten_in_af = 	'AF-foo in tblÜbersichtAFGF',
+			gf = 				'GF-foo2 in tblÜbersichtAFGF',
+			modell =			TblUebersichtAfGfs.objects.get(name_gf_neu = "GF-foo in tblÜbersichtAFGF"),
+			plattform = 		TblPlattform.objects.get(tf_technische_plattform = 'Test-Plattform'),
+			datum = 			timezone.now(),
+			geloescht = 		False,
+		)
+
+		TblGesamt.objects.create(
+			userid_name = 		TblUserIDundName.objects.get(userid = 'av13254'),
+			tf = 				'foo-TF3',
+			tf_beschreibung = 	'TF-Beschreibung für foo-TF',
+			gf = 				'GF-foo2 in tblÜbersichtAFGF',
+			enthalten_in_af = 	'AF-foo2 in tblÜbersichtAFGF',
+			modell =			TblUebersichtAfGfs.objects.get(name_gf_neu = "GF-foo in tblÜbersichtAFGF"),
+			plattform = 		TblPlattform.objects.get(tf_technische_plattform = 'Test-Plattform'),
+			datum = 			timezone.now(),
+			geloescht = 		False,
+		)
+
+		# und hier noch ein bereits gelöschtes Recht auf TF-Ebene.
+		TblGesamt.objects.create(
+			userid_name = 		TblUserIDundName.objects.get(userid = 'xv13254'),
+			tf = 				'foo-TF-gelöscht',
+			tf_beschreibung = 	'TF-Beschreibung für foo-TF-gelöscht',
+			enthalten_in_af = 	'AF-foo-gelöscht in tblÜbersichtAFGF',
+			gf = 				'GF-foo-gelöscht in tblÜbersichtAFGF',
+			modell =			TblUebersichtAfGfs.objects.get(name_gf_neu = "GF-foo in tblÜbersichtAFGF"),
+			plattform = 		TblPlattform.objects.get(tf_technische_plattform = 'Test-Plattform'),
+			datum = 			timezone.now() - timedelta(days=365),
+			geloescht = 		True,
+		)
+
+	# Eine leere Auswahl
+	def test_NeuAFGF_suche(self):
+		url = reverse('zeige_neue_afgf')
+		response = self.client.get(url)
+		self.assertEqual(response.status_code, 200)
+
+
+

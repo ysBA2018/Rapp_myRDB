@@ -54,7 +54,7 @@ TblRollehataf = modellist.TblRollehataf
 #TblRollehataf_Transferiert = modellist.TblRollehataf_Transferiert
 #TblRollehataf_Geloescht = modellist.TblRollehataf_Geloescht
 
-TblAfHatGf = modellist.TblAfHatGF
+#TblAfHatGf = modellist.TblAfHatGF
 #TblAfHatGF_Transferiert = modellist.TblAfHatGF_Transferiert
 #TblAfHatGF_Geloescht = modellist.TblAfHatGF_Geloescht
 

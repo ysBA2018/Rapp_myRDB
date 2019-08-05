@@ -24,21 +24,31 @@
 				{% if form.non_field_errors %}
 					<p>{{ form.non_field_errors }}</p>
 				{% endif %}
-				<h3>Rollen von {{ selektierter_name }}
+				<div class="row">
+					<div class="col-1">
+						<a href="{% url 'user_rolle_af_export' id %}?{% for key,value in request.GET.items %}&{{ key }}={{ value }}{% endfor %}"
+							class="btn btn-outline-primary btn-sm"
+							role="button">
+							Export
+						</a>
+					</div>
+					<div class="col-11">
+						<h3>Rollen von {{ selektierter_name }}
 
-					({{ userHatRolle_liste.count }} {% if userHatRolle_liste.count == 1 %}Rolle,
-					{% else %}Rollen,
-					{% endif %}
-					UserID-Liste =
-					{% for x in selektierte_userids %}
-						{% if forloop.last %}
-							{{ x }})
-						{% else %}
-							{{ x }},
-						{% endif %}
-					{% endfor %}
-				</h3>
-			</div>
+							({{ userHatRolle_liste.count }} {% if userHatRolle_liste.count == 1 %}Rolle,
+							{% else %}Rollen,
+							{% endif %}
+							UserID-Liste =
+							{% for x in selektierte_userids %}
+								{% if forloop.last %}
+									{{ x }})
+								{% else %}
+									{{ x }},
+								{% endif %}
+							{% endfor %}
+						</h3>
+					</div>
+				</div>
 			<div>
 				<table class="table table-striped table-sm">
 				<thead>
@@ -85,31 +95,31 @@
 							</td>
 							<td>
 								<input type="text" class="form-control col-12 col-sm-6 col-md-4 col-lg-4 col-xl-12"
-									   placeholder="Rollenname" disabled="disabled"
+									   placeholder="Rollenname" readonly="readonly"
 									   id="id_rollenname" name="rollenname" maxlength="100"
 									   value="{{ rolle.rollenname }}" />
 							</td>
 							<td>
 								<input type="text" class="form-control col-12 col-sm-6 col-md-4 col-lg-4 col-xl-12"
-									   placeholder="Bemerkung" disabled="disabled"
+									   placeholder="Bemerkung" readonly="readonly"
 									   id="id_bemerkung" name="bemerkung" maxlength="100"
 									   value="{{ rolle.bemerkung }}" />
 							</td>
 							<td>
 								<input type="text" class="form-control col-12 col-sm-6 col-md-4 col-lg-4 col-xl-12"
-									   placeholder="Bemerkung" disabled="disabled"
+									   placeholder="Bemerkung" readonly="readonly"
 									   id="id_schwerpunkt_vertretung" name="schwerpunkt_vertretung" maxlength="50"
 									   value="{{ rolle.schwerpunkt_vertretung }}" />
 							</td>
 							<td>
 								<input type="text" class="form-control" placeholder="System"
-									   id="id_system" name="system" maxlength="150" disabled="disabled"
+									   id="id_system" name="system" maxlength="150" readonly="readonly"
 									   value="{{ rolle.rollenname.system }}" />
 							</td>
 							<td width="16%">
-								<input type="text" class="form-control" disabled="disabled"
+								<input type="text" class="form-control" readonly="readonly"
 									   id="id_datum" name="datum"
-									   value="{{ rolle.rollenname.datum|date }}" />
+									   value="{{ rolle.letzte_aenderung }}" />
 							</td>
 						</tr>
 						<tr>
@@ -150,11 +160,16 @@
 																&nbsp;
 															{% else %}
 																{# Aus dem QueryElement meineaf.af muss ein String zur Suche in der Menge gemacht werden #}
-																{% if meineaf.af|stringformat:"s"|lower in afmenge_je_userID|hash:uid|lower %}
-																	<img src="{% static 'admin/img/icon-yes.svg' %}">
-																{% else %}
-																	<img src="{% static 'admin/img/icon-no.svg' %}">
-																{% endif %}
+																{# Das folgende Statement geht leider nicht (findet falsche Substrings: #}
+																{# if meineaf.af|stringformat:"s"|lower in afmenge_je_userID|hash:uid|lower #}
+																{# Also musste ein programmierter Vergleich her #}
+																{% with menge=afmenge_je_userID|hash:uid %}
+																	{% if meineaf.af|stringformat:"s"|lower|vergleich:menge %}
+																		<img src="{% static 'admin/img/icon-yes.svg' %}">
+																	{% else %}
+																		<img src="{% static 'admin/img/icon-no.svg' %}">
+																	{% endif %}
+																{% endwith %}
 															{% endif %}
 														</td>
 													{% endfor %}
