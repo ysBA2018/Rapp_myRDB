@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="07bde36f-4587-4eb4-8bc0-de3e4ba813de" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RechteDB/rapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/rapp/models.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -62,8 +59,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="38692">
-              <caret line="2306" selection-start-line="2306" selection-end-line="2306" />
+            <state relative-caret-position="339">
+              <caret line="2231" column="4" lean-forward="true" selection-start-line="2231" selection-start-column="4" selection-end-line="2231" selection-end-column="4" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -74,7 +71,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="158">
+            <state relative-caret-position="12767">
               <caret line="757" selection-start-line="757" selection-end-line="757" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
@@ -86,8 +83,16 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="422" lean-forward="true" selection-start-line="422" selection-end-line="422" />
+            <state relative-caret-position="152">
+              <caret line="711" column="68" selection-start-line="711" selection-start-column="68" selection-end-line="711" selection-end-column="68" />
+              <folding>
+                <element signature="e#15744#19635#0" />
+                <element signature="e#19671#23604#0" />
+                <element signature="e#19714#23299#0" />
+                <element signature="e#23629#27881#0" />
+                <element signature="e#24043#26703#0" />
+                <element signature="e#27060#27419#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -95,8 +100,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="609" column="67" selection-start-line="609" selection-start-column="67" selection-end-line="609" selection-end-column="67" />
+            <state relative-caret-position="90">
+              <caret line="452" column="44" lean-forward="true" selection-start-line="452" selection-start-column="44" selection-end-line="452" selection-end-column="44" />
+              <folding>
+                <element signature="e#18201#19749#0" />
+                <element signature="e#29247#39309#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -105,11 +114,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>print(tf</find>
-      <find>print(appl</find>
-      <find>print</find>
-      <find>prepare_dele</find>
-      <find>delete_graph_data</find>
       <find>profile</find>
       <find>single_rights_count</find>
       <find>userhattb</find>
@@ -135,6 +139,11 @@
       <find>model_rolle_id</find>
       <find>model_</find>
       <find>leaves</find>
+      <find>rights</find>
+      <find>model_ro</find>
+      <find>prepare_j</find>
+      <find>trash</find>
+      <find>model_rol</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -184,7 +193,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -288,6 +296,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -429,7 +438,8 @@
       <workItem from="1564555310970" duration="18809000" />
       <workItem from="1564650377900" duration="87000" />
       <workItem from="1564651230858" duration="12647000" />
-      <workItem from="1564730497516" duration="19800000" />
+      <workItem from="1564730497516" duration="20311000" />
+      <workItem from="1564989063601" duration="12290000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -466,11 +476,18 @@
       <option name="project" value="LOCAL" />
       <updated>1564561894311</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="add_to_delete_list (Serverseitig - DONE) (Clientseitig - VEW ERRORS - ALMOST DONE)&#10;remove_from_delete_list (Serverseitig - DONE) (Clientseitig - IN PROGRESS)">
+      <created>1564755577376</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1564755577376</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="295198000" />
+    <option name="totallyTimeSpent" value="307999000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -485,7 +502,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49779737" visible="true" weight="0.1505295" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49779737" visible="true" weight="0.15279879" />
       <window_info id="Structure" order="1" sideWeight="0.50220263" side_tool="true" weight="0.14977308" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -555,7 +572,8 @@
     <MESSAGE value="Models umgebaut - complex-middle-models für Tatsächliche Nutzerberechtigungen eingebaut" />
     <MESSAGE value="vor update_personalrights commit" />
     <MESSAGE value="update_personal_rights DONE&#10;prepare_json_data for graph DONE&#10;NEXT STEP trash_list, transfer_list, TableView" />
-    <option name="LAST_COMMIT_MESSAGE" value="update_personal_rights DONE&#10;prepare_json_data for graph DONE&#10;NEXT STEP trash_list, transfer_list, TableView" />
+    <MESSAGE value="add_to_delete_list (Serverseitig - DONE) (Clientseitig - VEW ERRORS - ALMOST DONE)&#10;remove_from_delete_list (Serverseitig - DONE) (Clientseitig - IN PROGRESS)" />
+    <option name="LAST_COMMIT_MESSAGE" value="add_to_delete_list (Serverseitig - DONE) (Clientseitig - VEW ERRORS - ALMOST DONE)&#10;remove_from_delete_list (Serverseitig - DONE) (Clientseitig - IN PROGRESS)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -909,16 +927,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38692">
-          <caret line="2306" selection-start-line="2306" selection-end-line="2306" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="106">
@@ -956,7 +964,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
+        <state relative-caret-position="12767">
           <caret line="757" selection-start-line="757" selection-end-line="757" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
@@ -964,17 +972,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="339">
+          <caret line="2231" column="4" lean-forward="true" selection-start-line="2231" selection-start-column="4" selection-end-line="2231" selection-end-column="4" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="422" lean-forward="true" selection-start-line="422" selection-end-line="422" />
+        <state relative-caret-position="152">
+          <caret line="711" column="68" selection-start-line="711" selection-start-column="68" selection-end-line="711" selection-end-column="68" />
+          <folding>
+            <element signature="e#15744#19635#0" />
+            <element signature="e#19671#23604#0" />
+            <element signature="e#19714#23299#0" />
+            <element signature="e#23629#27881#0" />
+            <element signature="e#24043#26703#0" />
+            <element signature="e#27060#27419#0" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="609" column="67" selection-start-line="609" selection-start-column="67" selection-end-line="609" selection-end-column="67" />
+        <state relative-caret-position="90">
+          <caret line="452" column="44" lean-forward="true" selection-start-line="452" selection-start-column="44" selection-end-line="452" selection-end-column="44" />
+          <folding>
+            <element signature="e#18201#19749#0" />
+            <element signature="e#29247#39309#0" />
+          </folding>
         </state>
       </provider>
     </entry>

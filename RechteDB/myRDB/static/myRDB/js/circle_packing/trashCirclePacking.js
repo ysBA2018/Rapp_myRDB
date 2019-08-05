@@ -259,225 +259,529 @@ $(document).ready(function(){
               });
           }
       }
-    function restorefunction(d,i){
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
+    function restorefunction(d,i) {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
                 }
-                return cookieValue;
             }
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-                    }
+            return cookieValue;
+        }
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                 }
-            });var right_type="",right_parent = "",right_grandparent = "",right_greatgrandparent = "",
-                    right_greatgreatgrandparent = "",user_userid_combi_id = "";
-            if(d.depth===1) right_type="user";
-            else if(d.depth===2) {
-                right_type="role";
-                right_parent = d.parent.data.name;
-                user_userid_combi_id = d.parent.data.user_userid_combi_id;
-
             }
-            else if(d.depth===3){
-                right_type="af";
-                right_parent = d.parent.data.name;
-                right_grandparent = d.parent.parent.data.name;
-                user_userid_combi_id = d.parent.parent.data.user_userid_combi_id;
+        });
+        var right_type = "", right_parent = "", right_grandparent = "", right_greatgrandparent = "",
+            right_greatgreatgrandparent = "", user_userid_combi_id = "";
+        if (d.depth === 1) right_type = "user";
+        else if (d.depth === 2) {
+            right_type = "role";
+            right_parent = d.parent.data.name;
+            user_userid_combi_id = d.parent.data.user_userid_combi_id;
 
-            }else if(d.depth===4){
-                right_type="gf";
-                right_parent = d.parent.data.name;
-                right_grandparent = d.parent.parent.data.name;
-                right_greatgrandparent = d.parent.parent.parent.data.name;
-                user_userid_combi_id = d.parent.parent.parent.data.user_userid_combi_id;
+        } else if (d.depth === 3) {
+            right_type = "af";
+            right_parent = d.parent.data.name;
+            right_grandparent = d.parent.parent.data.name;
+            user_userid_combi_id = d.parent.parent.data.user_userid_combi_id;
 
-            }else if(d.depth===5){
-                right_type="tf";
-                right_parent = d.parent.data.name;
-                right_grandparent = d.parent.parent.data.name;
-                right_greatgrandparent = d.parent.parent.parent.data.name;
-                right_greatgreatgrandparent = d.parent.parent.parent.parent.data.name;
-                user_userid_combi_id = d.parent.parent.parent.parent.data.user_userid_combi_id;
+        } else if (d.depth === 4) {
+            right_type = "gf";
+            right_parent = d.parent.data.name;
+            right_grandparent = d.parent.parent.data.name;
+            right_greatgrandparent = d.parent.parent.parent.data.name;
+            user_userid_combi_id = d.parent.parent.parent.data.user_userid_combi_id;
 
+        } else if (d.depth === 5) {
+            right_type = "tf";
+            right_parent = d.parent.data.name;
+            right_grandparent = d.parent.parent.data.name;
+            right_greatgrandparent = d.parent.parent.parent.data.name;
+            right_greatgreatgrandparent = d.parent.parent.parent.parent.data.name;
+            user_userid_combi_id = d.parent.parent.parent.parent.data.user_userid_combi_id;
+
+        }
+        var data = {
+            "X-CSRFToken": getCookie("csrftoken"), "X_METHODOVERRIDE": 'PATCH', "user": window.user,
+            "action_type": "restore", "right_type": right_type, "right_name": d.data.name, "parent": right_parent,
+            "grandparent": right_grandparent, "greatgrandparent": right_greatgrandparent,
+            "greatgreatgrandparent": right_greatgreatgrandparent,
+        };
+        var successful = false;
+        $.ajax({
+            type: 'POST',
+            data: data,
+            url: window.current_host + '/api/userhatuseridundnamen/' + user_userid_combi_id + '/',
+            async: false,
+            success: function (res) {
+                console.log(res);
+                successful = true
+            },
+            error: function (res) {
+                console.log(res);
             }
-            var data = {"X-CSRFToken":getCookie("csrftoken"),"X_METHODOVERRIDE":'PATCH',"user":window.user,
-                "action_type":"restore","right_type":right_type,"right_name":d.data.name,"parent":right_parent,
-                "grandparent":right_grandparent, "greatgrandparent":right_greatgrandparent,
-                "greatgreatgrandparent":right_greatgreatgrandparent, };
-            var successful=false;
-            $.ajax({type:'POST',
-                    data:data,
-                    url:window.current_host+'/api/userhatuseridundnamen/'+user_userid_combi_id+'/',
-                    async:false,
-                    success: function(res){console.log(res);
-                        successful=true},
-                    error: function(res){console.log(res);}
-                    });
-            if(successful===true){
-                var trash = window.trashlistdata['children'];
-                var rights;
-                if (window.current_site === 'analysis') {
-                    rights = window['jsondata_unequal'+svgIndex];
-                }else{
-                    rights = window.jsondata['children'];
-                }
-                update_rights(trash,rights,d);
+        });
+        if (successful === true) {
+            var trash = window.trashlistdata['children'];
+            var rights;
+            if (window.current_site === 'analysis') {
+                rights = window['jsondata_unequal' + svgIndex];
+            } else {
+                rights = window.jsondata['children'];
+            }
+            update_rights(trash, rights, d);
 
-                d3.select("body").selectAll("#trashTooltip").remove();
+            d3.select("body").selectAll("#trashTooltip").remove();
 
-                d3.select('#trashSVG').select("g").data(window.trashlistdata).exit().remove();
-                updateTrash(window['trashlistdata']);
+            d3.select('#trashSVG').select("g").data(window.trashlistdata).exit().remove();
+            updateTrash(window['trashlistdata']);
 
-                if (window.current_site === 'analysis') {
+            if (window.current_site === 'analysis') {
 
-                }else{
+            } else {
                 d3.select('#circlePackingSVG').select('g').data(window.jsondata).exit().remove();
-                    window.updateCP();
-                }
-                if(window.current_site==="compare"){
-                    d3.select('#compareCirclePackingSVG').select('g').data(window.compare_jsondata).exit().remove();
-                    window.updateCompareCP();
-                }
-                bootbox.alert("Berechtigung "+d.data.name+" erfolgreich wiederhergestellt!",function(){
-                    console.log(d.data.name+'wiederhergestellt!');
-                });
-            }else{
-                bootbox.alert("Beim Wiederherstellen der Berechtigung "+d.data.name+" ist ein Fehler aufgetreten!",function(){
-                    console.log("Fehler beim wiederherstellen von "+d.data.name+'!');
-                });
+                window.updateCP();
             }
-
-      }
-      function update_right_counters(right){
-        //TODO: Counters in Profile-head anpassen!
-        for (j in right['children']){
-            window.trash_table_count-=right['children'][j]['children'].length;
-        }
-        document.getElementById('graph_trash_badge').innerHTML = window.trash_table_count;
-
-      }
-
-      function rechain_right_to_rights(right,rights){
-        var af_found = false;
-        for(i in rights){
-            var curr_af = rights[i];
-            if(curr_af['name']===right['name']){
-                af_found = true;
-                break
+            if (window.current_site === "compare") {
+                d3.select('#compareCirclePackingSVG').select('g').data(window.compare_jsondata).exit().remove();
+                window.updateCompareCP();
             }
+            bootbox.alert("Berechtigung " + d.data.name + " erfolgreich wiederhergestellt!", function () {
+                console.log(d.data.name + 'wiederhergestellt!');
+            });
+        } else {
+            bootbox.alert("Beim Wiederherstellen der Berechtigung " + d.data.name + " ist ein Fehler aufgetreten!", function () {
+                console.log("Fehler beim wiederherstellen von " + d.data.name + '!');
+            });
         }
-        if(af_found){
-            var right_gfs = right['children'];
-            for(rgf in right_gfs){
-                var right_gf = right_gfs[rgf];
-                var gf_found = false;
-                for(j in curr_af['children']){
-                    var curr_gf = curr_af['children'][j];
-                    if(curr_gf['name']===right_gf['name']){
-                        gf_found = true;
-                        break
+
+        function update_right_counters(right, type) {
+            if (type === "user") {
+                for (h in right['children']) {
+                    for (i in right['children'][h]['children']) {
+                        for (j in right['children'][h]['children'][i]['children']) {
+                            window.trash_table_count -= right['children'][h]['children'][i]['children'][j]['children'].length;
+                        }
+                        document.getElementById('graph_trash_badge').innerHTML = window.trash_table_count;
                     }
                 }
-                if(gf_found){
-                    var right_tfs = right_gf['children'];
-                    for(rtf in right_tfs){
-                        var right_tf = right_tfs[rtf];
-                        var tf_found = false;
-                        for(k in curr_gf['children']){
-                            var curr_tf = curr_gf['children'][k];
-                            if(curr_tf['name']===right_tf['name']){
-                                tf_found = true;
+            }
+            if (type === "role") {
+                for (i in right['children']) {
+                    for (j in right['children'][i]['children']) {
+                        window.trash_table_count -= right['children'][i]['children'][j]['children'].length;
+                    }
+                    document.getElementById('graph_trash_badge').innerHTML = window.trash_table_count;
+                }
+            }
+            if (type === "af") {
+                for (j in right['children']) {
+                    window.trash_table_count -= right['children'][j]['children'].length;
+                }
+                document.getElementById('graph_trash_badge').innerHTML = window.trash_table_count;
+            } else if (type === "gf") {
+                window.trash_table_count -= right['children'].length;
+                document.getElementById('graph_trash_badge').innerHTML = window.trash_table_count;
+            } else if (type === "tf") {
+                window.trash_table_count -= 1;
+                document.getElementById('graph_trash_badge').innerHTML = window.trash_table_count;
+            }
+        }
+
+        function restore_from_delete_list(delete_list, right, parent_right, grandparent_right, greatgrandparent_right,
+                                    greatgreatgrandparent_right, level) {
+            if (level === "role") {
+                var user_found = false;
+                for (var i in delete_list) {
+                    var curr_user = delete_list[i];
+                    if (curr_user['name'] === parent_right['name']) {
+                        user_found = true;
+                        var role_found = false;
+                        var roles = curr_user['children'];
+                        for (var role in roles) {
+                            var curr_role = roles[role];
+                            if (curr_role['model_rolle_id'] === right['model_rolle_id']) {
+                                role_found = true;
                                 break
                             }
                         }
-                        if(! tf_found){
-                            curr_gf['children'].push(right_tf)
+                        if (role_found) {
+                            for (var child in right['children']) {
+                                var af_found = false;
+                                for (var s in curr_role['children']) {
+                                    var curr_af = curr_role['children'][s];
+                                    if (curr_af['model_af_id'] === right['children'][child]['model_af_id']) {
+                                        af_found = true;
+                                        break
+                                    }
+                                }
+                                if (af_found) {
+                                    for (var l in right['children'][child]['children']) {
+                                        var gf_found = false;
+                                        for (var t in curr_af['children']) {
+                                            var curr_gf = curr_af['children'][t];
+                                            if (curr_gf['model_gf_id'] === right['children'][child]['children'][l]['model_gf_id']) {
+                                                gf_found = true;
+                                                break
+                                            }
+                                        }
+                                        if (gf_found) {
+                                            for (var m in right['children'][child]['children'][l]['children']) {
+                                                var tf_found = false;
+                                                for (var u in curr_gf['children']) {
+                                                    var curr_tf = curr_gf['children'][u];
+                                                    if (curr_tf['model_tf_id'] === right['children'][child]['children'][l]['children'][m]['model_tf_id']) {
+                                                        tf_found = true;
+                                                        break
+                                                    }
+                                                }
+                                                if (!tf_found) {
+                                                    curr_gf['children'].push(right['children'][child]['children'][l]['children'][m]);
+                                                }
+                                            }
+                                        } else {
+                                            curr_af['children'].push(right['children'][child]['children'][l]);
+                                        }
+                                    }
+                                } else {
+                                    curr_role['children'].push(right['children'][child]);
+                                }
+                            }
+                            return;
+                        }
+                        break
+                    }
+                }
+                if (user_found) {
+                    curr_user['children'].push(right);
+                    return;
+                }
+                var parent_cpy = jQuery.extend({}, parent_right);
+                parent_cpy['children'] = [right];
+                delete_list.push(parent_cpy);
+            } else if (level === "af") {
+                for (var i in delete_list) {
+                    var curr_user = delete_list[i];
+                    if (curr_user['name'] === grandparent_right['name']) {
+                        var curr_user_roles = curr_user['children'];
+                        var role_found = false;
+                        for (var j in curr_user_roles) {
+                            var curr_role = curr_user_roles[j];
+                            var af_found = false;
+                            if (curr_role['model_rolle_id'] === parent_right['model_rolle_id']) {
+                                role_found = true;
+                                var afs = curr_role['children']
+                                for (var af in afs) {
+                                    var curr_af = afs[af];
+                                    if (curr_af['model_af_id'] === right['model_af_id']) {
+                                        af_found = true;
+                                        break
+                                    }
+                                }
+                                if (af_found) {
+                                    for (var gf in right['children']) {
+                                        var curr_gfs = curr_af['children'];
+                                        var gf_found = false;
+                                        for (var s in curr_gfs) {
+                                            var curr_gf = curr_gfs[s];
+                                            if (curr_gf['model_gf_id'] === right['children'][gf]['model_gf_id']) {
+                                                gf_found = true;
+                                                break
+                                            }
+                                        }
+                                        if (gf_found) {
+                                            for (var tf in right['children'][gf]['children']) {
+                                                var curr_tfs = curr_gf['children'];
+                                                var tf_found = false;
+                                                for (var t in curr_tfs) {
+                                                    var curr_tf = curr_tfs[t];
+                                                    if (curr_tf['model_tf_id'] === right['children'][gf]['children'][tf]['model_tf_id']) {
+                                                        tf_found = true;
+                                                        break
+                                                    }
+                                                }
+                                                if (!tf_found) {
+                                                    curr_gf['children'].push(right['children'][gf]['children'][tf]);
+                                                }
+                                            }
+                                        } else {
+                                            curr_af['children'].push(right['children'][gf]);
+                                        }
+                                    }
+                                    return;
+                                }
+                            }
+                        }
+                        if (role_found) {
+                            curr_role['children'].push(right);
+                            return;
+                        } else {
+                            var parent_cpy = jQuery.extend({}, parent_right);
+                            parent_cpy['children'] = [right];
+                            curr_user_roles.push(parent_cpy);
+                            return
+                        }
+
+                    }
+                }
+                var grandparent_cpy = jQuery.extend({}, grandparent_right);
+                var parent_cpy = jQuery.extend({}, parent_right);
+                parent_cpy['children'] = [right];
+                grandparent_cpy['children'] = [parent_cpy];
+                delete_list.push(grandparent_cpy);
+            } else if (level === "gf") {
+                user_found = false;
+                for (var i in delete_list) {
+                    var curr_user = delete_list[i];
+                    if (curr_user['name'] === greatgrandparent_right['name']) {
+                        user_found = true;
+                        var curr_user_roles = curr_user['children'];
+                        var role_found = false;
+                        for (var j in curr_user_roles) {
+                            var curr_role = curr_user_roles[j];
+                            var af_found = false;
+                            if (curr_role['model_rolle_id'] === grandparent_right['model_rolle_id']) {
+                                var curr_role_afs = curr_role['children'];
+                                role_found = true;
+                                for (var k in curr_role_afs) {
+                                    var curr_af = curr_role_afs[k];
+                                    var gf_found = false;
+                                    if (curr_af['model_af_id'] === parent_right['model_af_id']) {
+                                        var gfs = curr_af['children'];
+                                        af_found = true;
+                                        for (var gf in gfs) {
+                                            var curr_gf = gfs[gf];
+                                            if (curr_gf['model_gf_id'] === right['model_gf_id']) {
+                                                gf_found = true;
+                                                break
+                                            }
+                                        }
+                                        if (gf_found) {
+                                            var tfs = right['children'];
+                                            for (var tf in tfs) {
+                                                var curr_tfs = curr_gf['children'];
+                                                var tf_found = false;
+                                                for (var t in curr_tfs) {
+                                                    var curr_tf = curr_tfs[t];
+                                                    if (curr_tf['model_tf_id'] === tfs[tf]['model_tf_id']) {
+                                                        tf_found = true;
+                                                        break
+                                                    }
+                                                }
+                                                if (!tf_found) {
+                                                    curr_gf['children'].push(tfs[tf]);
+                                                }
+                                            }
+                                            return;
+                                        }
+                                        break
+                                    }
+                                }
+                                if (af_found) {
+                                    curr_af['children'].push(right);
+                                    return;
+                                }
+                            }
+                        }
+                        if (role_found) {
+                            var parent_cpy = jQuery.extend({}, parent_right);
+                            parent_cpy['children'] = [right];
+                            curr_role_afs.push(parent_cpy);
+                            return;
                         }
                     }
                 }
-                else{
-                    curr_af['children'].push(right_gf)
+                if (user_found) {
+                    var parent_cpy = jQuery.extend({}, parent_right);
+                    var grandparent_cpy = jQuery.extend({}, grandparent_right);
+                    parent_cpy['children'] = [right];
+                    grandparent_cpy['children'] = [parent_cpy];
+                    curr_user_roles.push(grandparent_cpy);
+                    return
                 }
-            }
-
-        }
-        else{
-            rights.push(right)
-        }
-
-
-      }
-      //-------> TODO: an ein level für Rollen denken sobald rollen eingefügt
-      function update_rights(trash,rights,d){
-        if (d.depth===1){
-            for (trash_item in trash) {
-                if (trash[trash_item]['name'] === d.data.name) {
-                    console.log(trash_item + "," + d.data.name);
-                    rechain_right_to_rights(trash[trash_item], rights);
-                    update_right_counters(trash[trash_item]);
-                    trash.splice(trash_item, 1);
-                    //alert("Berechtigung von\n\nLöschliste entfernt\n\nund wiederhergestellt!\n");
-                    break;
-                }
-            }
-        }
-        //else{
-        //    alert("Berechtigung:\n\n"+d.data.name+"\n\nkonnte nicht wiederhergestellt werden!\n\nBerechtigungsbündel können nur\nkomplett wiederhergestellt werden!");
-        //}
-            /*for (trash_item in trash){
-                if(trash[trash_item]['name']===d.data.name){
-                    console.log(trash_item+","+d.data.name);
-                    rechain_right_to_rights(trash[trash_item],rights,level);
-                    trash.splice(trash_item,1);
-                    alert("Berechtigung von\n\nLöschliste entfernt\n\nund wiederhergestellt!\n");
-                    break;
-                }
-                else{
-                    if(trash[trash_item].hasOwnProperty('children')){
-                        var trash_lev_2 = trash[trash_item]['children'];
-                        for (trash_item_lev_2 in trash_lev_2){
-                            if(trash_lev_2[trash_item_lev_2]['name']===d.data.name){
-                                console.log(trash_item_lev_2+","+d.data.name);
-                                if (d.depth===1) {
-                                    rechain_right_to_rights(trash_lev_2[trash_item_lev_2], rights, level);
-                                    trash_lev_2.splice(trash_item_lev_2, 1);
-                                    alert("Berechtigung von\n\nLöschliste entfernt\n\nund wiederhergestellt!\n");
-                                }else {
-                                    alert("Berechtigung:\n\n"+d.data.name+"\n\nkonnte nicht wiederhergestellt werden!\n\nBerechtigungsbündel können nur\nkomplett wiederhergestellt werden!");
+                var greatgrandparent_cpy = jQuery.extend({}, greatgrandparent_right);
+                var grandparent_cpy = jQuery.extend({}, grandparent_right);
+                var parent_cpy = jQuery.extend({}, parent_right);
+                parent_cpy['children'] = [right];
+                grandparent_cpy['children'] = [parent_cpy];
+                greatgrandparent_cpy['children'] = [grandparent_cpy];
+                delete_list.push(greatgrandparent_cpy);
+            } else if (level === "tf") {
+                user_found = false;
+                for (var i in delete_list) {
+                    var curr_user = delete_list[i];
+                    if (curr_user['name'] === greatgreatgrandparent_right['name']) {
+                        user_found = true;
+                        var curr_user_roles = curr_user['children'];
+                        var role_found = false;
+                        for (var j in curr_user_roles) {
+                            var curr_role = curr_user_roles[j];
+                            var af_found = false;
+                            if (curr_role['model_rolle_id'] === greatgrandparent_right['model_rolle_id']) {
+                                var curr_role_afs = curr_role['children'];
+                                role_found = true;
+                                for (var k in curr_role_afs) {
+                                    var curr_af = curr_role_afs[k];
+                                    var gf_found = false;
+                                    if (curr_af['model_af_id'] === grandparent_right['model_af_id']) {
+                                        var curr_af_gfs = curr_af['children'];
+                                        af_found = true;
+                                        for (var l in curr_af_gfs) {
+                                            var curr_gf = curr_af_gfs[l];
+                                            if (curr_gf['model_gf_id'] === parent_right['model_gf_id']) {
+                                                gf_found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (gf_found) {
+                                            curr_gf['children'].push(right);
+                                            return;
+                                        }
+                                    }
                                 }
-                                break;
+                                if (af_found) {
+                                    var parent_cpy = jQuery.extend({}, parent_right);
+                                    parent_cpy['children'] = [right];
+                                    curr_af_gfs.push(parent_cpy);
+                                    return;
+                                }
+
                             }
-                            else{
-                                if(trash_lev_2[trash_item_lev_2].hasOwnProperty('children')){
-                                    var trash_lev_3 = trash_lev_2[trash_item_lev_2]['children'];
-                                    for (trash_item_lev_3 in trash_lev_3){
-                                        if(trash_lev_3[trash_item_lev_3]['name']===d.data.name){
-                                            console.log(trash_item_lev_3+","+d.data.name);
-                                            if(d.depth===1) {
-                                                rechain_right_to_rights(trash_lev_3[trash_item_lev_3], rights, level);
-                                                trash_lev_3.splice(trash_item_lev_3, 1);
-                                                alert("Berechtigung von\n\nLöschliste entfernt\n\nund wiederhergestellt!\n");
+                        }
+                        if (role_found) {
+                            var parent_cpy = jQuery.extend({}, parent_right);
+                            var grandparent_cpy = jQuery.extend({}, grandparent_right);
+                            parent_cpy['children'] = [right];
+                            grandparent_cpy['children'] = [parent_cpy];
+                            curr_role_afs.push(grandparent_cpy);
+                            return
+                        }
+                    }
+                }
+                if (user_found) {
+                    var parent_cpy = jQuery.extend({}, parent_right);
+                    var grandparent_cpy = jQuery.extend({}, grandparent_right);
+                    var greatgrandparent_cpy = jQuery.extend({}, greatgrandparent_right);
+
+                    parent_cpy['children'] = [right];
+                    grandparent_cpy['children'] = [parent_cpy];
+                    greatgrandparent_cpy['children'] = [grandparent_cpy];
+                    curr_user_roles.push(greatgrandparent_cpy);
+                    return
+                }
+                var greatgreatgrandparent_cpy = jQuery.extend({}, greatgreatgrandparent_right);
+                var greatgrandparent_cpy = jQuery.extend({}, greatgrandparent_right);
+                var grandparent_cpy = jQuery.extend({}, grandparent_right);
+                var parent_cpy = jQuery.extend({}, parent_right);
+                parent_cpy['children'] = [right];
+                grandparent_cpy['children'] = [parent_cpy];
+                greatgrandparent_cpy['children'] = [grandparent_cpy];
+                greatgreatgrandparent_cpy['children'] = [greatgrandparent_cpy];
+                delete_list.push(greatgreatgrandparent_cpy);
+            }
+        }
+
+
+        function update_rights(trash, rights, d) {
+            if (d.depth === 2) {
+                for (var i in trash) {
+                    var right = trash[i];
+                    if (right['name'] === d.parent.data.name) {
+                        for (var j in right['children']) {
+                            var right_lev_2 = right['children'][j];
+                            if (right_lev_2['name'] === d.data.name) {
+                                console.log(j + "," + d.data.name);
+                                right_lev_2["parent"] = d.parent.data.name;
+                                update_right_counters(right_lev_2, "role");
+                                restore_from_delete_list(rights, right_lev_2, right, null, null, null, 'role');
+                                right['children'].splice(j, 1);
+                                if (right['children'].length === 0) {
+                                    trash.splice(i, 1)
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+            } else if (d.depth === 3) {
+                for (var i in trash) {
+                    var right = trash[i];
+                    if (right['name'] === d.parent.parent.data.name) {
+                        for (var j in right['children']) {
+                            var right_lev_2 = right['children'][j];
+                            if (right_lev_2['name'] === d.parent.data.name) {
+                                for (var k in right_lev_2['children']) {
+                                    var right_lev_3 = right_lev_2['children'][k];
+                                    if (right_lev_3['name'] === d.data.name) {
+                                        console.log(k + "," + d.data.name);
+                                        right_lev_3["grandparent"] = d.parent.parent.data.name;
+                                        right_lev_3["parent"] = d.parent.data.name;
+                                        update_right_counters(right_lev_3, "af");
+                                        restore_from_delete_list(rights, right_lev_3, right_lev_2, right, null, null, 'af');
+                                        right_lev_2['children'].splice(k, 1);
+                                        if (right_lev_2['children'].length === 0) {
+                                            right['children'].splice(j, 1)
+                                        }
+                                        if (right['children'].length === 0) {
+                                            trash.splice(i, 1)
+                                        }
+
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (d.depth === 4) {
+                for (var h in trash) {
+                    var right = trash[h];
+                    if (right['name'] === d.parent.parent.parent.data.name) {
+                        for (var i in right['children']) {
+                            var rightBase = right['children'][i];
+                            if (rightBase['name'] === d.parent.parent.data.name) {
+                                for (var j in rightBase['children']) {
+                                    var right_lev_2 = rightBase['children'][j];
+                                    if (right_lev_2['name'] === d.parent.data.name) {
+                                        for (var k in right_lev_2['children']) {
+                                            var right_lev_3 = right_lev_2['children'][k];
+                                            if (right_lev_3['name'] === d.data.name) {
+                                                console.log(k + "," + d.data.name);
+                                                right_lev_3["greatgrandparent"] = d.parent.parent.parent.data.name;
+                                                right_lev_3["grandparent"] = d.parent.parent.data.name;
+                                                right_lev_3["parent"] = d.parent.data.name;
+                                                update_right_counters(right_lev_3, "gf");
+                                                restore_from_delete_list(rights, right_lev_3, right_lev_2, rightBase, right, null, 'gf');
+                                                right_lev_2['children'].splice(k, 1);
+                                                if (right_lev_2['children'].length === 0) {
+                                                    rightBase['children'].splice(j, 1)
+                                                }
+                                                if (rightBase['children'].length === 0) {
+                                                    right['children'].splice(i, 1)
+                                                }
+                                                if (right['children'].length === 0) {
+                                                    trash.splice(h, 1)
+                                                }
+
+                                                return;
                                             }
-                                            else{
-                                                alert("Berechtigung:\n\n"+d.data.name+"\n\nkonnte nicht wiederhergestellt werden!\n\nBerechtigungsbündel können nur\nkomplett wiederhergestellt werden!");
-                                            }
-                                            break;
                                         }
                                     }
                                 }
@@ -485,7 +789,58 @@ $(document).ready(function(){
                         }
                     }
                 }
-            }*/
-      }
+            } else if (d.depth === 5) {
+                for (g in trash) {
+                    var right = trash[g];
+                    if (right['name'] === d.parent.parent.parent.parent.data.name) {
+                        for (h in right['children']) {
+                            var rightBase = right['children'][h];
+                            if (rightBase['name'] === d.parent.parent.parent.data.name) {
+                                for (var i in rightBase['children']) {
+                                    var right0 = rightBase['children'][i];
+                                    if (right0['name'] === d.parent.parent.data.name) {
+                                        for (var j in right0['children']) {
+                                            var right_lev_2 = right0['children'][j];
+                                            if (right_lev_2['name'] === d.parent.data.name) {
+                                                for (var k in right_lev_2['children']) {
+                                                    var right_lev_3 = right_lev_2['children'][k];
+                                                    if (right_lev_3['name'] === d.data.name) {
+                                                        console.log(k + "," + d.data.name);
+                                                        right_lev_3["greatgreatgrandparent"] = d.parent.parent.parent.parent.data.name;
+                                                        right_lev_3["greatgrandparent"] = d.parent.parent.parent.data.name;
+                                                        right_lev_3["grandparent"] = d.parent.parent.data.name;
+                                                        right_lev_3["parent"] = d.parent.data.name;
+                                                        update_right_counters(right_lev_3, "tf");
+                                                        restore_from_delete_list(rights, right_lev_3, right_lev_2, right0, rightBase, right, 'tf');
+                                                        right_lev_2['children'].splice(k, 1);
+                                                        if (right_lev_2['children'].length === 0) {
+                                                            right0['children'].splice(j, 1)
+                                                        }
+                                                        if (right0['children'].length === 0) {
+                                                            rightBase['children'].splice(i, 1)
+                                                        }
+                                                        if (rightBase['children'].length === 0) {
+                                                            right['children'].splice(h, 1)
+                                                        }
+                                                        if (right['children'].length === 0) {
+                                                            trash.splice(g, 1)
+                                                        }
+
+                                                        return;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
     });
 }());

@@ -395,7 +395,6 @@ $(document).ready(function(){
                 bootbox.alert("Berechtigung "+d.data.name+" zur\n\nLöschliste hinzugefügt\n",function(){
                     console.log(d.data.name+'gelöscht!');
                 });
-                //update_session();
             }
             else{
                 bootbox.alert("Beim Löschen der Berechtigung\nist ein Fehler aufgetreten!",function(){
@@ -404,39 +403,7 @@ $(document).ready(function(){
             }
 
       }
-      /**
-      function update_session() {
-        var trash_table_update_data = {"action_type":"update_session","trash_table_data":{"data":window.trash_table_data}};
-        $.ajax({type:'POST',
-            data:trash_table_update_data,
-            success: function(res){console.log(res);
-                alert("session-update-success");},
-            error: function(res){console.log(res);}
-            });
-        var trash_graph_update_data = {"action_type":"update_session","trash_graph_data":window.trashlistdata};
-        $.ajax({type:'POST',
-            data:trash_graph_update_data,
-            success: function(res){console.log(res);
-                alert("session-update-success");},
-            error: function(res){console.log(res);}
-            });
-        var user_graph_update_data = {"action_type":"update_session","user_graph_data":window.jsondata};
-        $.ajax({type:'POST',
-            data:user_graph_update_data,
-            success: function(res){console.log(res);
-                alert("session-update-success");},
-            error: function(res){console.log(res);}
-            });
-        var user_table_update_data = {"action_type":"update_session","user_table_data":{"data":window.user_table_data}};
-        $.ajax({type:'POST',
-            data:user_table_update_data,
-            success: function(res){console.log(res);
-                alert("session-update-success");},
-            error: function(res){console.log(res);}
-            });
 
-      }
-       **/
 
       function update_right_counters(right,type){
         if (type === "user"){
@@ -472,28 +439,69 @@ $(document).ready(function(){
             document.getElementById('graph_trash_badge').innerHTML = window.trash_table_count;
         }
       }
+
       function add_to_delete_list(delete_list, right, parent_right, grandparent_right, greatgrandparent_right,
                                   greatgreatgrandparent_right, level) {
           if (level === "role") {
               var user_found = false;
-              for (i in delete_list) {
+              for (var i in delete_list) {
                   var curr_user = delete_list[i];
                   if (curr_user['name'] === parent_right['name']) {
                       user_found = true;
                       var role_found = false;
                       var roles = curr_user['children'];
-                      for (role in roles) {
+                      for (var role in roles) {
                           var curr_role = roles[role];
-                          if (curr_role['name'] === right['name']) {
+                          if (curr_role['model_rolle_id'] === right['model_rolle_id']) {
                               role_found = true;
                               break
                           }
                       }
                       if (role_found) {
-                          for (child in right['children']) {
-                              curr_role['children'].push(right['children'][child]);
-                              return;
+                          for (var child in right['children']) {
+                              var af_found = false;
+                              for(var s in curr_role['children']){
+                                  var curr_af = curr_role['children'][s];
+                                  if (curr_af['model_af_id'] === right['children'][child]['model_af_id']) {
+                                      af_found = true;
+                                      break
+                                  }
+                              }
+                              if(af_found){
+                                  for (var l in right['children'][child]['children']) {
+                                      var gf_found = false;
+                                      for(var t in curr_af['children']){
+                                          var curr_gf = curr_af['children'][t];
+                                          if (curr_gf['model_gf_id'] === right['children'][child]['children'][l]['model_gf_id']) {
+                                              gf_found = true;
+                                              break
+                                          }
+                                      }
+                                      if(gf_found){
+                                          for (var m in right['children'][child]['children'][l]['children']) {
+                                              var tf_found = false;
+                                              for(var u in curr_gf['children']){
+                                                  var curr_tf = curr_gf['children'][u];
+                                                  if (curr_tf['model_tf_id'] === right['children'][child]['children'][l]['children'][m]['model_tf_id']) {
+                                                      tf_found = true;
+                                                      break
+                                                  }
+                                              }
+                                              if(!tf_found){
+                                                  curr_gf['children'].push(right['children'][child]['children'][l]['children'][m]);
+                                              }
+                                          }
+                                      }
+                                      else{
+                                          curr_af['children'].push(right['children'][child]['children'][l]);
+                                      }
+                                  }
+                              }
+                              else{
+                                  curr_role['children'].push(right['children'][child]);
+                              }
                           }
+                          return;
                       }
                       break
                   }
@@ -507,16 +515,57 @@ $(document).ready(function(){
               delete_list.push(parent_cpy);
           }
           else if (level === "af") {
-              for (i in delete_list) {
+              for (var i in delete_list) {
                   var curr_user = delete_list[i];
                   if (curr_user['name'] === grandparent_right['name']) {
                       var curr_user_roles = curr_user['children'];
                       var role_found = false;
-                      for (j in curr_user_roles) {
+                      for (var j in curr_user_roles) {
                           var curr_role = curr_user_roles[j];
-                          if (curr_role['name'] === parent_right['name']) {
+                          var af_found = false;
+                          if (curr_role['model_rolle_id'] === parent_right['model_rolle_id']) {
                               role_found = true;
-                              break
+                              var afs = curr_role['children']
+                              for (var af in afs) {
+                                  var curr_af = afs[af];
+                                  if (curr_af['model_af_id'] === right['model_af_id']) {
+                                      af_found = true;
+                                      break
+                                  }
+                              }
+                              if (af_found) {
+                                  for (var gf in right['children']) {
+                                      var curr_gfs = curr_af['children'];
+                                      var gf_found = false;
+                                      for (var s in curr_gfs) {
+                                          var curr_gf = curr_gfs[s];
+                                          if (curr_gf['model_gf_id'] === right['children'][gf]['model_gf_id']) {
+                                              gf_found = true;
+                                              break
+                                          }
+                                      }
+                                      if (gf_found) {
+                                          for (var tf in right['children'][gf]['children']) {
+                                              var curr_tfs = curr_gf['children'];
+                                              var tf_found = false;
+                                              for (var t in curr_tfs) {
+                                                  var curr_tf = curr_tfs[t];
+                                                  if (curr_tf['model_tf_id'] === right['children'][gf]['children'][tf]['model_tf_id']) {
+                                                      tf_found = true;
+                                                      break
+                                                  }
+                                              }
+                                              if (!tf_found) {
+                                                  curr_gf['children'].push(right['children'][gf]['children'][tf]);
+                                              }
+                                          }
+                                      }
+                                      else{
+                                          curr_af['children'].push(right['children'][gf]);
+                                      }
+                                  }
+                                  return;
+                              }
                           }
                       }
                       if (role_found) {
@@ -538,23 +587,50 @@ $(document).ready(function(){
               delete_list.push(grandparent_cpy);
           }else if (level === "gf") {
               user_found = false;
-              for (i in delete_list) {
+              for (var i in delete_list) {
                   var curr_user = delete_list[i];
                   if (curr_user['name'] === greatgrandparent_right['name']) {
                       user_found = true;
                       var curr_user_roles = curr_user['children'];
                       var role_found = false;
-                      for (j in curr_user_roles) {
+                      for (var j in curr_user_roles) {
                           var curr_role = curr_user_roles[j];
                           var af_found = false;
-                          if (curr_role['name'] === grandparent_right['name']) {
+                          if (curr_role['model_rolle_id'] === grandparent_right['model_rolle_id']) {
                               var curr_role_afs = curr_role['children'];
                               role_found = true;
-                              for (k in curr_role_afs){
+                              for (var k in curr_role_afs){
                                   var curr_af=curr_role_afs[k];
-                                  if (curr_af['name'] === parent_right['name']) {
+                                  var gf_found = false;
+                                  if (curr_af['model_af_id'] === parent_right['model_af_id']) {
+                                      var gfs = curr_af['children'];
                                       af_found = true;
-                                      break;
+                                      for (var gf in gfs) {
+                                          var curr_gf = gfs[gf];
+                                          if (curr_gf['model_gf_id'] === right['model_gf_id']) {
+                                              gf_found = true;
+                                              break
+                                          }
+                                      }
+                                      if (gf_found) {
+                                          var tfs = right['children'];
+                                          for (var tf in tfs) {
+                                              var curr_tfs = curr_gf['children'];
+                                              var tf_found = false;
+                                              for (var t in curr_tfs) {
+                                                  var curr_tf = curr_tfs[t];
+                                                  if (curr_tf['model_tf_id'] === tfs[tf]['model_tf_id']) {
+                                                      tf_found = true;
+                                                      break
+                                                  }
+                                              }
+                                              if (!tf_found) {
+                                                  curr_gf['children'].push(tfs[tf]);
+                                              }
+                                          }
+                                          return;
+                                      }
+                                      break
                                   }
                               }
                               if (af_found) {
@@ -588,27 +664,27 @@ $(document).ready(function(){
               delete_list.push(greatgrandparent_cpy);
           }else if (level === "tf") {
               user_found = false;
-              for (i in delete_list) {
+              for (var i in delete_list) {
                   var curr_user = delete_list[i];
                   if (curr_user['name'] === greatgreatgrandparent_right['name']) {
                       user_found = true;
                       var curr_user_roles = curr_user['children'];
                       var role_found = false;
-                      for (j in curr_user_roles) {
+                      for (var j in curr_user_roles) {
                           var curr_role = curr_user_roles[j];
                           var af_found = false;
-                          if (curr_role['name'] === greatgrandparent_right['name']) {
+                          if (curr_role['model_rolle_id'] === greatgrandparent_right['model_rolle_id']) {
                               var curr_role_afs = curr_role['children'];
                               role_found = true;
-                              for (k in curr_role_afs){
+                              for (var k in curr_role_afs){
                                   var curr_af=curr_role_afs[k];
-                                  if (curr_af['name'] === grandparent_right['name']) {
+                                  var gf_found = false;
+                                  if (curr_af['model_af_id'] === grandparent_right['model_af_id']) {
                                       var curr_af_gfs = curr_af['children'];
-                                      var gf_found = false;
                                       af_found = true;
-                                      for (l in curr_af_gfs){
+                                      for (var l in curr_af_gfs){
                                            var curr_gf=curr_af_gfs[l];
-                                           if (curr_gf['name'] === parent_right['name']) {
+                                           if (curr_gf['model_gf_id'] === parent_right['model_gf_id']) {
                                                gf_found = true;
                                                break;
                                            }
@@ -661,14 +737,12 @@ $(document).ready(function(){
           }
       }
 
-
-      //-------> TODO: an ein level für Rollen denken sobald rollen eingefügt
       function update_rights(rights, trash, d){
         if(d.depth===2){
-            for (i in rights) {
+            for (var i in rights) {
                 var right = rights[i];
                 if (right['name'] === d.parent.data.name) {
-                    for (j in right['children']) {
+                    for (var j in right['children']) {
                         var right_lev_2 = right['children'][j];
                         if (right_lev_2['name'] === d.data.name) {
                             console.log(j + "," + d.data.name);
@@ -686,13 +760,13 @@ $(document).ready(function(){
             }
         }
         else if(d.depth===3){
-            for (i in rights) {
+            for (var i in rights) {
                 var right = rights[i];
                 if (right['name'] === d.parent.parent.data.name) {
-                    for (j in right['children']) {
+                    for (var j in right['children']) {
                         var right_lev_2 = right['children'][j];
                         if (right_lev_2['name'] === d.parent.data.name) {
-                            for (k in right_lev_2['children']) {
+                            for (var k in right_lev_2['children']) {
                                 var right_lev_3 = right_lev_2['children'][k];
                                 if (right_lev_3['name'] === d.data.name) {
                                     console.log(k + "," + d.data.name);
@@ -716,16 +790,16 @@ $(document).ready(function(){
                 }
             }
         }else if(d.depth===4){
-            for (h in rights) {
+            for (var h in rights) {
                 var right = rights[h];
                 if (right['name'] === d.parent.parent.parent.data.name) {
-                    for (i in right['children']) {
+                    for (var i in right['children']) {
                         var rightBase = right['children'][i];
                         if (rightBase['name'] === d.parent.parent.data.name) {
-                            for (j in rightBase['children']) {
+                            for (var j in rightBase['children']) {
                                 var right_lev_2 = rightBase['children'][j];
                                 if (right_lev_2['name'] === d.parent.data.name) {
-                                    for (k in right_lev_2['children']) {
+                                    for (var k in right_lev_2['children']) {
                                         var right_lev_3 = right_lev_2['children'][k];
                                         if (right_lev_3['name'] === d.data.name) {
                                             console.log(k + "," + d.data.name);
@@ -761,13 +835,13 @@ $(document).ready(function(){
                     for (h in right['children']) {
                         var rightBase = right['children'][h];
                         if (rightBase['name'] === d.parent.parent.parent.data.name) {
-                            for (i in rightBase['children']) {
+                            for (var i in rightBase['children']) {
                                 var right0 = rightBase['children'][i];
                                 if (right0['name'] === d.parent.parent.data.name) {
-                                    for (j in right0['children']) {
+                                    for (var j in right0['children']) {
                                         var right_lev_2 = right0['children'][j];
                                         if (right_lev_2['name'] === d.parent.data.name) {
-                                            for (k in right_lev_2['children']) {
+                                            for (var k in right_lev_2['children']) {
                                                 var right_lev_3 = right_lev_2['children'][k];
                                                 if (right_lev_3['name'] === d.data.name) {
                                                     console.log(k + "," + d.data.name);
@@ -803,40 +877,7 @@ $(document).ready(function(){
                 }
             }
         }
-            /*for (right in rights){
-                if(rights[right]['name']===d.data.name){
-                    console.log(right+","+d.data.name);
-                    trash.push(rights[right]);
-                    rights.splice(right,1);
-                    return;
-                }
-                else{
-                    if(rights[right].hasOwnProperty('children')){
-                        var rights_lev_2 = rights[right]['children']
-                        for (right_lev_2 in rights_lev_2){
-                            if(rights_lev_2[right_lev_2]['name']===d.data.name){
-                                console.log(right_lev_2+","+d.data.name);
-                                trash.push(rights_lev_2[right_lev_2]);
-                                rights_lev_2.splice(right_lev_2,1);
-                                return;
-                            }
-                            else{
-                                if(rights_lev_2[right_lev_2].hasOwnProperty('children')){
-                                    var rights_lev_3 = rights_lev_2[right_lev_2]['children']
-                                    for (right_lev_3 in rights_lev_3){
-                                        if(rights_lev_3[right_lev_3]['name']===d.data.name){
-                                            console.log(right_lev_3+","+d.data.name);
-                                            trash.push(rights_lev_3[right_lev_3]);
-                                            rights_lev_3.splice(right_lev_3,1);
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }*/
+
       }
     });
 }());
