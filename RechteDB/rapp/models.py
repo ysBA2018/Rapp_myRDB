@@ -205,6 +205,11 @@ class TblAfliste(models.Model):
     def __str__(self) -> str:
         return str(self.af_name)
 
+class TblAfHatGF(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
+    af_id = models.ForeignKey('TblAfliste', db_column='af_id', on_delete=models.CASCADE,default=None)
+
 
 # class TblGfliste(models.Model):
 

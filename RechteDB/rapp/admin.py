@@ -417,7 +417,7 @@ class Direktverbindungen(ImportExportModelAdmin):
 
 admin.site.register(User)
 admin.site.register(UserHatTblUserIDundName)
-#admin.site.register(TblAfHatGF)
+admin.site.register(TblAfHatGF)
 admin.site.register(TblAppliedRolle)
 admin.site.register(TblAppliedAf)
 admin.site.register(TblAppliedGf)

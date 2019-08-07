@@ -42,23 +42,12 @@ TblAppliedGf = modellist.TblAppliedGf
 TblAppliedAf = modellist.TblAppliedAf
 TblAppliedRolle = modellist.TblAppliedRolle
 
-#UserHatTblUserIDundName_Transferiert = modellist.UserHatTblUserIDundName_Transferiert
-#UserHatTblUserIDundName_Geloescht = modellist.UserHatTblUserIDundName_Geloescht
 UserHatTblUserIDundName = modellist.UserHatTblUserIDundName
 
 TblUserhatrolle = modellist.TblUserhatrolle
-#TblUserhatrolle_Transferiert = modellist.TblUserhatrolle_Transferiert
-#TblUserhatrolle_Geloescht = modellist.TblUserhatrolle_Geloescht
-
 TblRollehataf = modellist.TblRollehataf
-#TblRollehataf_Transferiert = modellist.TblRollehataf_Transferiert
-#TblRollehataf_Geloescht = modellist.TblRollehataf_Geloescht
+TblAfHatGf = modellist.TblAfHatGF
 
-#TblAfHatGf = modellist.TblAfHatGF
-#TblAfHatGF_Transferiert = modellist.TblAfHatGF_Transferiert
-#TblAfHatGF_Geloescht = modellist.TblAfHatGF_Geloescht
-
-#TblModelAfHatModelGf = modellist.TblModelAfHatModelGf
 '''
 class ChangeRequests(models.Model):
     requesting_user = models.CharField(max_length=7)

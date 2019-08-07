@@ -33,31 +33,81 @@ $(document).ready(function(){
 
       function compare_graphs(d){
           var compare_data = window.compare_jsondata['children'];
-          if(d.depth===1){
-              for(i in compare_data){
-                  if(compare_data[i].name===d.data.name) return true;
-              }
-          }
-          else if (d.depth === 2){
-              for(i in compare_data){
-                  if(compare_data[i].name===d.parent.data.name){
-                      var level_2 = compare_data[i]['children'];
-                      for(j in level_2){
-                          if(level_2[j].name===d.data.name) return true;
+
+          if (d.depth === 2){
+              for(var i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.data.model_rolle_id.rollenid){
+                          console.log("ROLLE:"+level_2[j].model_rolle_id.rollenname+"==="+d.data.model_rolle_id.rollenname);
+                          console.log("ROLLE:"+level_2[j].model_rolle_id.rollenid+"==="+d.data.model_rolle_id.rollenid);
+                          return true;
                       }
                   }
               }
           }
           else if (d.depth === 3){
-              for(i in compare_data){
-                  if(compare_data[i].name===d.parent.parent.data.name){
-                      var level_2 = compare_data[i]['children'];
-                      for(j in level_2){
-                          if(level_2[j].name===d.parent.data.name){
-                              var level_3 = level_2[j]['children'];
-                              for(k in level_3){
-                                  if(level_3[k].name===d.data.name) return true;
+              for(var i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.parent.data.model_rolle_id.rollenid){
+                          var level_3 = level_2[j]['children'];
+                          for(var k in level_3){
+                              if(level_3[k].model_af_id.id===d.data.model_af_id.id){
+                                   console.log("AF: "+level_3[k].model_af_id.af_name+"==="+d.data.model_af_id.af_name);
+                                   console.log("AF: "+level_3[k].model_af_id.id+"==="+d.data.model_af_id.id);
+                                   return true;
                               }
+                          }
+                      }
+                  }
+
+              }
+          }else if (d.depth === 4){
+              for(i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.parent.parent.data.model_rolle_id.rollenid){
+                          var level_3 = level_2[j]['children'];
+                          for(var k in level_3){
+                              if(level_3[k].model_af_id.id===d.parent.data.model_af_id.id){
+                                  var level_4 = level_3[k]['children'];
+                                  for(var l in level_4){
+                                      if(level_4[l].model_gf_id.id===d.data.model_gf_id.id){
+                                          console.log("GF: "+ level_4[l].model_gf_id.name_gf_neu+"==="+d.data.model_gf_id.name_gf_neu);
+                                          console.log("GF: "+ level_4[l].model_gf_id.id+"==="+d.data.model_gf_id.id);
+                                          return true;
+                                      }
+                                  }
+                              }
+
+                          }
+                      }
+                  }
+              }
+          }else if (d.depth === 5){
+              for(var i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.parent.parent.parent.data.model_rolle_id.rollenid){
+                          var level_3 = level_2[j]['children'];
+                          for(var k in level_3){
+                              if(level_3[k].model_af_id.id===d.parent.parent.data.model_af_id.id){
+                                  var level_4 = level_3[k]['children'];
+                                  for(var l in level_4){
+                                      if(level_4[l].model_gf_id.id===d.parent.data.model_gf_id.id){
+                                          var level_5 = level_4[l]['children'];
+                                          for(var m in level_5) {
+                                              if (level_5[m].model_tf_id.id === d.data.model_tf_id.id){
+                                                 return true;
+                                                 console.log("TF: "+ level_5[m].model_tf_id.tf +"==="+ d.data.model_tf_id.tf);
+                                                 console.log("TF: "+ level_5[m].model_tf_id.id +"==="+ d.data.model_tf_id.id);
+                                              }
+                                          }
+                                      }
+                                  }
+                              }
+
                           }
                       }
                   }
@@ -73,11 +123,12 @@ $(document).ready(function(){
               console.log(window.current_site);
               if(window.current_site==="compare"){
                   if(compare_graphs(d)){
-                      if(d.depth===1)return "darkgrey";
-                      if(d.depth===2)return "grey";
-                      if(d.depth===3)return "lightgrey";
+                      if(d.depth===2)return "darkgrey";
+                      if(d.depth===3)return "grey";
+                      if(d.depth===4)return "dimgrey";
+                      if(d.depth===5)return "lightgrey";
                   }else{
-                      if(d.depth===3){return d.data.color}
+                      if(d.depth===5){return d.data.color}
                       else{return "white"}
                   }
               }
@@ -194,7 +245,7 @@ $(document).ready(function(){
       //        return d.r*k;
       //    });
       //}
-    function update(updated_data){
+      function update(updated_data){
           console.log(updated_data);
           root = updated_data;
 
@@ -290,9 +341,10 @@ $(document).ready(function(){
 
       zoomTo([root.x, root.y, root.r * 2 + margin]);
     }
-    window.updateCP=function () {
+
+      window.updateCP=function () {
         update(window.jsondata)
-    };
+      };
       function confirm_deletion(d,i) {
           d3.event.preventDefault();
           if (d.depth !== 1){
@@ -304,7 +356,7 @@ $(document).ready(function(){
               });
           }
       }
-    function deletefunction(d,i){
+      function deletefunction(d,i){
 
             function getCookie(name) {
                 var cookieValue = null;
@@ -403,7 +455,6 @@ $(document).ready(function(){
             }
 
       }
-
 
       function update_right_counters(right,type){
         if (type === "user"){

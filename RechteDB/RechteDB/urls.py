@@ -53,21 +53,15 @@ router.register(r'Modellierungen', views.ModellierungViewSet, 'Modellierung')
 router.register(r'Direktverbindungen', views.DirektverbindungenViewSet, 'Direktverbindung')
 
 router.register(r'userhatuseridundnamen', views.UserHatTblUserIDundNameViewSet, 'userhatuseridundname')
-#router.register(r'userhatuseridundname_transferierte', views.UserHatTblUserIDundName_TransferiertViewSet, 'userhatuseridundname_transferiert')
-#router.register(r'userhatuseridundname_geloeschte', views.UserHatTblUserIDundName_GeloeschtViewSet, 'userhatuseridundname_geloescht')
-
 router.register(r'userhatrollen', views.TblUserhatrolleViewSet, 'userhatrolle')
-#router.register(r'userhatrollen_transferierte', views.TblUserhatrolle_TransferiertViewSet, 'userhatrolle_transferiert')
-#router.register(r'userhatrollen_geloeschte', views.TblUserhatrolle_GeloeschtViewSet, 'userhatrolle_geloescht')
-
 router.register(r'rollehatafs', views.TblRollehatafViewSet, 'rollehataf')
-#router.register(r'rollehatafs_transferierte', views.TblRollehataf_TransferiertViewSet, 'rollehataf_transferiert')
-#router.register(r'rollehatafs_geloeschte', views.TblRollehataf_GeloeschtViewSet, 'rollehataf_geloescht')
-
 router.register(r'afhatgfs', views.TblAfHatGfViewSet, 'afhatgf')
-#router.register(r'afhatgf_transferierte', views.TblAfHatGf_TransferiertViewSet, 'afhatgf_transferiert')
-#router.register(r'afhatgf_geloeschte', views.TblAfHatGf_GeloeschtViewSet, 'afhatgf_geloescht')
 
+router.register(r'fulluserhatuseridundnamen', views.FullRightsUserHatTblUserIDundNameViewSet, 'userhatuseridundname')
+router.register(r'fullappliedroles', views.FullRightsTblAppliedRolleViewSet, 'fullappliedrole')
+router.register(r'fullappliedafs', views.FullRightsTblAppliedAfsViewSet, 'fullappliedaf')
+router.register(r'fullappliedgfs', views.FullRightsTblAppliedGfsViewSet, 'fullappliedgf')
+router.register(r'fullappliedtfs', views.FullRightsTblAppliedTfsViewSet, 'fullappliedtf')
 
 admin.site.site_header = 'RechteDB - Adminseiten'
 admin.site.site_title = 'RechteDB - Administration'

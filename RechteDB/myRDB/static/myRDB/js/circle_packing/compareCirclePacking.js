@@ -34,30 +34,72 @@ $(document).ready(function(){
 
       //TODO: compare auch auf my_requests!
       function compare_graphs(d, compare_data){
-          if(d.depth===1){
-              for(i in compare_data){
-                  if(compare_data[i].name===d.data.name) return true;
-              }
-          }
-          else if (d.depth === 2){
-              for(i in compare_data){
-                  if(compare_data[i].name===d.parent.data.name){
-                      var level_2 = compare_data[i]['children'];
-                      for(j in level_2){
-                          if(level_2[j].name===d.data.name) return true;
+          if (d.depth === 2){
+              for(var i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.data.model_rolle_id.rollenid){
+                          console.log("Compare_ROLLE:"+level_2[j].model_rolle_id.rollenid+"==="+d.data.model_rolle_id.rollenid);
+                          return true;
                       }
                   }
               }
           }
           else if (d.depth === 3){
-              for(i in compare_data){
-                  if(compare_data[i].name===d.parent.parent.data.name){
-                      var level_2 = compare_data[i]['children'];
-                      for(j in level_2){
-                          if(level_2[j].name===d.parent.data.name){
-                              var level_3 = level_2[j]['children'];
-                              for(k in level_3){
-                                  if(level_3[k].name===d.data.name) return true;
+              for(var i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.parent.data.model_rolle_id.rollenid){
+                          var level_3 = level_2[j]['children'];
+                          for(var k in level_3){
+                              if(level_3[k].model_af_id.id===d.data.model_af_id.id){
+                                  console.log("Compare_AF: "+level_3[k].model_af_id.id+"==="+d.data.model_af_id.id);
+                                  return true;
+                              }
+                          }
+                      }
+                  }
+              }
+          }else if (d.depth === 4){
+              for(var i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.parent.parent.data.model_rolle_id.rollenid){
+                          var level_3 = level_2[j]['children'];
+                          for(var k in level_3){
+                              if(level_3[k].model_af_id.id===d.parent.data.model_af_id.id) {
+                                  var level_4= level_3[k]['children'];
+                                  for (var l in level_4) {
+                                      if (level_4[l].model_gf_id.id === d.data.model_gf_id.id){
+                                         console.log("Compare_GF: "+ level_4[l].model_gf_id.id+"==="+d.data.model_gf_id.id);
+                                         return true;
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }else if (d.depth === 5){
+              for(var i in compare_data){
+                  var level_2 = compare_data[i]['children'];
+                  for(var j in level_2){
+                      if(level_2[j].model_rolle_id.rollenid===d.parent.parent.parent.data.model_rolle_id.rollenid){
+                          var level_3 = level_2[j]['children'];
+                          for(var k in level_3){
+                              if(level_3[k].model_af_id.id===d.parent.parent.data.model_af_id.id) {
+                                  var level_4= level_3[k]['children'];
+                                  for (var l in level_4) {
+                                      if(level_4[l].model_gf_id.id===d.parent.data.model_gf_id.id) {
+                                          var level_5 = level_4[l]['children'];
+                                          for (var m in level_5) {
+                                              if (level_5[m].model_tf_id.id === d.data.model_tf_id.id){
+                                                 console.log("Compare_TF: "+ level_5[m].model_tf_id.id +"==="+ d.data.model_tf_id.id);
+                                                 return true;
+                                              }
+                                          }
+                                      }
+                                  }
                               }
                           }
                       }
@@ -72,11 +114,12 @@ $(document).ready(function(){
           }
           else{
               if(compare_graphs(d,window.jsondata['children'])||compare_graphs(d,window.transferlistdata['children'])){
-                  if(d.depth===1)return "darkgrey";
-                  if(d.depth===2)return "grey";
-                  if(d.depth===3)return "lightgrey";
+                  if(d.depth===1)return "lightgrey";
+                  if(d.depth===2)return "darkgrey";
+                  if(d.depth===3)return "grey";
+                  if(d.depth===4)return "dimgrey";
               }else{
-                  if(d.depth===3){return d.data.color}
+                  if(d.depth===5){return d.data.color}
                   else{return "white"}
               }
           }
@@ -100,11 +143,15 @@ $(document).ready(function(){
                   .style("opacity",9);
               var text;
               if(d.depth === 1){
-                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+                  text = "<b>User:</b> "+d.data.name+"<br/>"
               }else if(d.depth === 2){
-                  text = "<b>GF:</b> "+d.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.parent.data.description
+                  text = "<b>Rolle:</b> "+d.data.name+"<br/>"+"<b>Rollen-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 3){
-                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>GF:</b> "+d.parent.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.parent.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.parent.parent.data.description
+                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 4){
+                  text = "<b>GF:</b> "+d.data.name+"<br/>"+"<b>GF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 5){
+                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>TF-Beschreibung:</b> "+d.data.description
               }
               div .html(text)
                   .style("left",(d3.event.pageX)+"px")
@@ -143,7 +190,7 @@ $(document).ready(function(){
       zoomTo([root.x, root.y, root.r * 2 + margin]);
 
       function zoom(d) {
-          if (d.depth===3) return;
+          if (d.depth===5) return;
         var focus0 = focus; focus = d;
 
         var transition = d3.transition()
@@ -233,11 +280,15 @@ $(document).ready(function(){
                   .style("opacity",9);
               var text;
               if(d.depth === 1){
-                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+                  text = "<b>User:</b> "+d.data.name+"<br/>"
               }else if(d.depth === 2){
-                  text = "<b>GF:</b> "+d.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.parent.data.description
+                  text = "<b>Rolle:</b> "+d.data.name+"<br/>"+"<b>Rollen-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 3){
-                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>GF:</b> "+d.parent.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.parent.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.parent.parent.data.description
+                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 4){
+                  text = "<b>GF:</b> "+d.data.name+"<br/>"+"<b>GF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 5){
+                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>TF-Beschreibung:</b> "+d.data.description
               }
               div .html(text)
                   .style("left",(d3.event.pageX)+"px")
