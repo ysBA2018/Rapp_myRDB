@@ -47,6 +47,7 @@ UserHatTblUserIDundName = modellist.UserHatTblUserIDundName
 TblUserhatrolle = modellist.TblUserhatrolle
 TblRollehataf = modellist.TblRollehataf
 TblAfHatGf = modellist.TblAfHatGF
+TblGfHatTf = modellist.TblGfHatTF
 
 '''
 class ChangeRequests(models.Model):

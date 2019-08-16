@@ -162,11 +162,11 @@ class Orga(admin.ModelAdmin):
 class Plattform(admin.ModelAdmin):
     actions_on_top = True
     actions_on_bottom = True
-    list_display = ('id', 'tf_technische_plattform',)
+    list_display = ('id', 'tf_technische_plattform','color')
     # list_filter = ('tf_technische_plattform',)
     # list_display_links = ('tf_technische_plattform')
-    list_editable = ('tf_technische_plattform',)
-    search_fields = ['tf_technische_plattform', ]
+    list_editable = ('tf_technische_plattform','color')
+    search_fields = ['tf_technische_plattform','color' ]
 # Nette Idee, grottig lahm
 # inlines = [GesamtInline]
 
@@ -418,6 +418,7 @@ class Direktverbindungen(ImportExportModelAdmin):
 admin.site.register(User)
 admin.site.register(UserHatTblUserIDundName)
 admin.site.register(TblAfHatGF)
+admin.site.register(TblGfHatTF)
 admin.site.register(TblAppliedRolle)
 admin.site.register(TblAppliedAf)
 admin.site.register(TblAppliedGf)

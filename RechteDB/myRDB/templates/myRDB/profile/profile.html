@@ -6,6 +6,8 @@
     {% include 'myRDB/profile/profile_head.html' %}
     <script type="text/javascript" >
         var jsondata = {{ jsondata | asjson }};
+    </script>
+    <script type="text/javascript" >
         var legendData = {{ legendData | asjson}};
         var current_site = "{{ current_site }}";
         var scatterData = {{ scatterData | asjson }};

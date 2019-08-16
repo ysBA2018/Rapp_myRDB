@@ -93,8 +93,8 @@ $(document).ready(function(){
                                       if(level_4[l].model_gf_id.id===d.parent.data.model_gf_id.id) {
                                           var level_5 = level_4[l]['children'];
                                           for (var m in level_5) {
-                                              if (level_5[m].model_tf_id.id === d.data.model_tf_id.id){
-                                                 console.log("Compare_TF: "+ level_5[m].model_tf_id.id +"==="+ d.data.model_tf_id.id);
+                                              if (level_5[m].model_tf_id.tf === d.data.model_tf_id.tf){
+                                                 console.log("Compare_TF: "+ level_5[m].model_tf_id.tf +"==="+ d.data.model_tf_id.tf);
                                                  return true;
                                               }
                                           }
@@ -113,11 +113,11 @@ $(document).ready(function(){
               return "white";
           }
           else{
-              if(compare_graphs(d,window.jsondata['children'])||compare_graphs(d,window.transferlistdata['children'])){
-                  if(d.depth===1)return "lightgrey";
+              if(compare_graphs(d,window.jsondata['children'])||compare_graphs(d,window.transferlistdata['children'])){                      if(d.depth===2)return "darkgrey";
                   if(d.depth===2)return "darkgrey";
                   if(d.depth===3)return "grey";
                   if(d.depth===4)return "dimgrey";
+                  if(d.depth===5)return "lightgrey";
               }else{
                   if(d.depth===5){return d.data.color}
                   else{return "white"}

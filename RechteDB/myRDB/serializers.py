@@ -1,3 +1,4 @@
+
 import json
 
 from rest_framework import serializers
@@ -5,6 +6,7 @@ import copy
 # from .models import Orga, Department, Group, ZI_Organisation, TF_Application, TF, GF, AF, Role, User, User_GF, User_AF, \
 # User_TF, ChangeRequests
 from .models import *
+import re
 
 
 class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
@@ -28,40 +30,68 @@ class TblUebersichtAfGfsSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url', 'id', 'name_gf_neu', 'name_af_neu', 'kommentar', 'zielperson', 'af_text', 'gf_text', 'af_langtext',
             'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise', 'geloescht', 'kannweg',
-            'modelliert','tfs')
+            'modelliert', 'tfs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:afgf-detail')
     tfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:gesamt-detail')
+
+    def create(self, validated_data):
+        print("in GFSerializer-create")
+        validated_data = self.initial_data.dict()
+        print(validated_data)
+        return TblUebersichtAfGfs.objects.create(**validated_data)
 
 
 class TblAflisteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAfliste
-        fields = ('url', 'id', 'af_name', 'neu_ab','gfs')
+        fields = ('url', 'id', 'af_name', 'neu_ab', 'gfs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:af-detail')
     gfs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:afgf-detail')
+
+    def create(self, validated_data):
+        print("in AFSerializer-create")
+        af_name = self.initial_data['af_name']
+        neu_ab = self.initial_data['neu_ab']
+        validated_data = {'af_name': af_name, 'neu_ab': neu_ab}
+        print(type(validated_data), validated_data)
+        return TblAfliste.objects.create(**validated_data)
 
 
 class TblRollenSerializer(serializers.ModelSerializer):
     class Meta:
         model = TblRollen
-        fields = ('url', 'rollenid', 'rollenname', 'system', 'rollenbeschreibung', 'datum','afs')
+        fields = ('url', 'rollenid', 'rollenname', 'system', 'rollenbeschreibung', 'datum', 'afs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rolle-detail')
-    afs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:af-detail', lookup_field='pk')
+    afs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:af-detail',
+                                              lookup_field='pk')
+
+    def create(self, validated_data):
+        print("in RoleSerializer-create")
+        rollenname = self.initial_data['rollenname']
+        system = self.initial_data['system']
+        rollenbeschreibung = self.initial_data['rollenbeschreibung']
+        datum = self.initial_data['datum']
+        validated_data = {'rollenname': rollenname, 'system': system, 'rollenbeschreibung': rollenbeschreibung,
+                          'datum': datum}
+        print(type(validated_data), validated_data)
+        return TblRollen.objects.create(**validated_data)
 
 
 class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserHatTblUserIDundName
-        fields = ('url', 'id', 'user_name', 'userid_name_id', 'rollen','delete_list','transfer_list')
+        fields = ('url', 'id', 'user_name', 'userid_name_id', 'rollen', 'delete_list', 'transfer_list')
+
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatuseridundname-detail')
     user_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:user-detail')
     userid_name_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
     rollen = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:appliedrole-detail')
     delete_list = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:appliedrole-detail')
-    transfer_list = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:appliedrole-detail')
+    transfer_list = serializers.HyperlinkedRelatedField(many=True, read_only=True,
+                                                        view_name='myRDBNS:appliedrole-detail')
 
     def update(self, instance, validated_data):
         print("im in the serializer-update-method")
@@ -585,7 +615,8 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                     rolle_found = True
                                     break
                             if not rolle_found:
-                                helper_rolle = TblAppliedRolle.objects.create(model_rolle_id=del_rolle.model_rolle_id,userHatUserID_id=instance)
+                                helper_rolle = TblAppliedRolle.objects.create(model_rolle_id=del_rolle.model_rolle_id,
+                                                                              userHatUserID_id=instance)
                                 helper_rolle.applied_afs.add(del_af.id)
                                 instance.rollen.add(helper_rolle.id)
                                 del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
@@ -629,7 +660,6 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                         instance.delete_list.remove(
                                             TblAppliedRolle.objects.get(id=del_rolle.id))
                                     return instance
-
         elif data['right_type'] == 'gf':
             for del_rolle in instance.delete_list.all():
                 if del_rolle.model_rolle_id.rollenname == data['grandparent']:
@@ -708,7 +738,6 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     instance.delete_list.remove(
                                                         TblAppliedRolle.objects.get(id=del_rolle.id))
                                                 return instance
-
         elif data['right_type'] == 'tf':
             for del_rolle in instance.delete_list.all():
                 if del_rolle.model_rolle_id.rollenname == data['greatgrandparent']:
@@ -753,9 +782,10 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         af_found = True
                                                         break
                                                 if not af_found:
-                                                    helper_af = TblAppliedAf.objects.create(model_af_id=del_af.model_af_id,
-                                                                                            applied_rolle_id=rolle,
-                                                                                            userHatUserID_id=instance)
+                                                    helper_af = TblAppliedAf.objects.create(
+                                                        model_af_id=del_af.model_af_id,
+                                                        applied_rolle_id=rolle,
+                                                        userHatUserID_id=instance)
                                                     helper_gf = TblAppliedGf.objects.create(
                                                         model_gf_id=del_gf.model_gf_id,
                                                         applied_af_id=helper_af,
@@ -792,11 +822,14 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         del_gf.applied_tfs.remove(
                                                             TblAppliedTf.objects.get(id=del_tf.id))
                                                         if not del_gf.applied_tfs.all():
-                                                            del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                            del_af.applied_gfs.remove(
+                                                                TblAppliedGf.objects.get(id=del_gf.id))
                                                         if not del_af.applied_gfs.all():
-                                                            del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                            del_rolle.applied_afs.remove(
+                                                                TblAppliedAf.objects.get(id=del_af.id))
                                                         if not del_rolle.applied_afs.all():
-                                                            instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                            instance.delete_list.remove(
+                                                                TblAppliedRolle.objects.get(id=del_rolle.id))
                                                         return instance
                                                     else:
                                                         tf_found = False
@@ -807,14 +840,18 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         if not tf_found:
                                                             gf.applied_tfs.add(del_tf.id)
                                                         del_gf.applied_tfs.remove(
-                                                                TblAppliedTf.objects.get(id=del_tf.id))
+                                                            TblAppliedTf.objects.get(id=del_tf.id))
                                                         if not del_gf.applied_tfs.all():
-                                                            del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                            del_af.applied_gfs.remove(
+                                                                TblAppliedGf.objects.get(id=del_gf.id))
                                                         if not del_af.applied_gfs.all():
-                                                            del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                            del_rolle.applied_afs.remove(
+                                                                TblAppliedAf.objects.get(id=del_af.id))
                                                         if not del_rolle.applied_afs.all():
-                                                            instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                            instance.delete_list.remove(
+                                                                TblAppliedRolle.objects.get(id=del_rolle.id))
                                                         return instance
+
     def add_to_delete_list(self, instance, data):
         print("in add_to_delete_list")
         if data['right_type'] == 'role':
@@ -869,7 +906,8 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                     rolle_found = True
                                     break
                             if not rolle_found:
-                                helper_rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle.model_rolle_id,userHatUserID_id=instance)
+                                helper_rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle.model_rolle_id,
+                                                                              userHatUserID_id=instance)
                                 helper_rolle.applied_afs.add(applied_af.id)
                                 instance.delete_list.add(helper_rolle.id)
                                 rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
@@ -980,7 +1018,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                             tf_found = True
                                                             break
                                                     if not tf_found:
-                                                            del_gf.applied_tfs.add(applied_tf.id)
+                                                        del_gf.applied_tfs.add(applied_tf.id)
                                     applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
                                     if not applied_af.applied_gfs.all():
                                         rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
@@ -1005,18 +1043,21 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                 helper_rolle = TblAppliedRolle.objects.create(
                                                     model_rolle_id=rolle.model_rolle_id,
                                                     userHatUserID_id=instance)
-                                                helper_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
-                                                                                        applied_rolle_id=helper_rolle,
-                                                                                        userHatUserID_id=instance)
-                                                helper_gf = TblAppliedGf.objects.create(model_gf_id=applied_gf.model_gf_id,
-                                                                                        applied_af_id=helper_af,
-                                                                                        applied_rolle_id=helper_rolle,
-                                                                                        userHatUserID_id=instance)
+                                                helper_af = TblAppliedAf.objects.create(
+                                                    model_af_id=applied_af.model_af_id,
+                                                    applied_rolle_id=helper_rolle,
+                                                    userHatUserID_id=instance)
+                                                helper_gf = TblAppliedGf.objects.create(
+                                                    model_gf_id=applied_gf.model_gf_id,
+                                                    applied_af_id=helper_af,
+                                                    applied_rolle_id=helper_rolle,
+                                                    userHatUserID_id=instance)
                                                 helper_gf.applied_tfs.add(applied_tf.id)
                                                 helper_af.applied_gfs.add(helper_gf.id)
                                                 helper_rolle.applied_afs.add(helper_af.id)
                                                 instance.delete_list.add(helper_rolle.id)
-                                                applied_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=applied_tf.id))
+                                                applied_gf.applied_tfs.remove(
+                                                    TblAppliedTf.objects.get(id=applied_tf.id))
                                                 if not applied_gf.applied_tfs.all():
                                                     applied_af.applied_gfs.remove(
                                                         TblAppliedGf.objects.get(id=applied_gf.id))
@@ -1028,8 +1069,8 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                             else:
                                                 af_found = False
                                                 for del_af in del_rolle.applied_afs.all():
-                                                    if del_af.model_af_id.id==applied_af.model_af_id.id:
-                                                        af_found=True
+                                                    if del_af.model_af_id.id == applied_af.model_af_id.id:
+                                                        af_found = True
                                                         break
                                                 if not af_found:
                                                     helper_af = TblAppliedAf.objects.create(
@@ -1044,7 +1085,8 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     helper_gf.applied_tfs.add(applied_tf.id)
                                                     helper_af.applied_gfs.add(helper_gf.id)
                                                     del_rolle.applied_afs.add(helper_af.id)
-                                                    applied_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=applied_tf.id))
+                                                    applied_gf.applied_tfs.remove(
+                                                        TblAppliedTf.objects.get(id=applied_tf.id))
                                                     if not applied_gf.applied_tfs.all():
                                                         applied_af.applied_gfs.remove(
                                                             TblAppliedGf.objects.get(id=applied_gf.id))
@@ -1071,22 +1113,28 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         applied_gf.applied_tfs.remove(
                                                             TblAppliedTf.objects.get(id=applied_tf.id))
                                                         if not applied_gf.applied_tfs.all():
-                                                            applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                                            applied_af.applied_gfs.remove(
+                                                                TblAppliedGf.objects.get(id=applied_gf.id))
                                                         if not applied_af.applied_gfs.all():
-                                                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                            rolle.applied_afs.remove(
+                                                                TblAppliedAf.objects.get(id=applied_af.id))
                                                         if not rolle.applied_afs.all():
-                                                            instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                            instance.rollen.remove(
+                                                                TblAppliedRolle.objects.get(id=rolle.id))
                                                         return instance
                                                     else:
                                                         del_gf.applied_tfs.add(applied_tf.id)
                                                         applied_gf.applied_tfs.remove(
                                                             TblAppliedTf.objects.get(id=applied_tf.id))
                                                         if not applied_gf.applied_tfs.all():
-                                                            applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                                            applied_af.applied_gfs.remove(
+                                                                TblAppliedGf.objects.get(id=applied_gf.id))
                                                         if not applied_af.applied_gfs.all():
-                                                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                            rolle.applied_afs.remove(
+                                                                TblAppliedAf.objects.get(id=applied_af.id))
                                                         if not rolle.applied_afs.all():
-                                                            instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                            instance.rollen.remove(
+                                                                TblAppliedRolle.objects.get(id=rolle.id))
                                                         return instance
         return instance
 
@@ -1094,46 +1142,50 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
 class TblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblUserIDundName
-        fields = ('url', 'id', 'userid', 'name', 'orga', 'zi_organisation', 'geloescht', 'abteilung', 'gruppe','rollen')
+        fields = (
+        'url', 'id', 'userid', 'name', 'orga', 'zi_organisation', 'geloescht', 'abteilung', 'gruppe', 'rollen')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:useridundname-detail')
     orga = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:orga-detail')
-    rollen = serializers.HyperlinkedRelatedField(read_only=True, many=True,view_name='myRDBNS:rolle-detail')
+    rollen = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:rolle-detail')
 
 
 class TblAppliedTfSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAppliedTf
-        fields = ('url','id','model_tf_id','userHatUserID_id','applied_rolle_id',
-                  'applied_af_id','applied_gf_id')
+        fields = ('url', 'id', 'model_tf_id', 'userHatUserID_id', 'applied_rolle_id',
+                  'applied_af_id', 'applied_gf_id')
 
-    model_tf_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:gesamt-detail')
-    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:userhatuseridundname-detail')
-    applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:appliedrole-detail')
-    applied_af_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:appliedaf-detail')
-    applied_gf_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:appliedgf-detail')
+    model_tf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:gesamt-detail')
+    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,
+                                                           view_name='myRDBNS:userhatuseridundname-detail')
+    applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:appliedrole-detail')
+    applied_af_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:appliedaf-detail')
+    applied_gf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:appliedgf-detail')
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedtf-detail')
 
     def create(self, validated_data):
         print("in appliedTfSerializer-create")
         tf = TblGesamt.objects.get(id=self.initial_data['model_tf_id'])
         applied_gf = TblAppliedGf.objects.get(id=self.initial_data['applied_gf_id'])
-        validated_data = {'model_tf_id':tf,'applied_gf_id':applied_gf,'applied_af_id':applied_gf.applied_af_id,'userHatUserID_id':applied_gf.userHatUserID_id
-            ,'applied_rolle_id':applied_gf.applied_rolle_id}
-        print(type(validated_data),validated_data)
+        validated_data = {'model_tf_id': tf, 'applied_gf_id': applied_gf, 'applied_af_id': applied_gf.applied_af_id,
+                          'userHatUserID_id': applied_gf.userHatUserID_id
+            , 'applied_rolle_id': applied_gf.applied_rolle_id}
+        print(type(validated_data), validated_data)
         return TblAppliedTf.objects.create(**validated_data)
 
 
 class TblAppliedGfSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAppliedGf
-        fields = ('url','id','model_gf_id','userHatUserID_id','applied_rolle_id',
-                  'applied_af_id','applied_tfs')
+        fields = ('url', 'id', 'model_gf_id', 'userHatUserID_id', 'applied_rolle_id',
+                  'applied_af_id', 'applied_tfs')
 
-    model_gf_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:afgf-detail')
-    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:userhatuseridundname-detail')
-    applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:appliedrole-detail')
-    applied_af_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:appliedaf-detail')
+    model_gf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
+    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,
+                                                           view_name='myRDBNS:userhatuseridundname-detail')
+    applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:appliedrole-detail')
+    applied_af_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:appliedaf-detail')
     applied_tfs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:appliedtf-detail')
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedgf-detail')
 
@@ -1141,21 +1193,23 @@ class TblAppliedGfSerializer(serializers.HyperlinkedModelSerializer):
         print("in appliedGfSerializer-create")
         gf = TblUebersichtAfGfs.objects.get(id=self.initial_data['model_gf_id'])
         applied_af = TblAppliedAf.objects.get(id=self.initial_data['applied_af_id'])
-        validated_data = {'model_gf_id':gf,'applied_af_id':applied_af,'userHatUserID_id':applied_af.userHatUserID_id
-            ,'applied_rolle_id':applied_af.applied_rolle_id}
-        print(type(validated_data),validated_data)
+        validated_data = {'model_gf_id': gf, 'applied_af_id': applied_af,
+                          'userHatUserID_id': applied_af.userHatUserID_id
+            , 'applied_rolle_id': applied_af.applied_rolle_id}
+        print(type(validated_data), validated_data)
         return TblAppliedGf.objects.create(**validated_data)
 
 
 class TblAppliedAfSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAppliedAf
-        fields = ('url','id','model_af_id','userHatUserID_id','applied_rolle_id',
+        fields = ('url', 'id', 'model_af_id', 'userHatUserID_id', 'applied_rolle_id',
                   'applied_gfs')
 
-    model_af_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:af-detail')
-    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:userhatuseridundname-detail')
-    applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:appliedrole-detail')
+    model_af_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:af-detail')
+    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,
+                                                           view_name='myRDBNS:userhatuseridundname-detail')
+    applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:appliedrole-detail')
     applied_gfs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:appliedgf-detail')
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedaf-detail')
 
@@ -1163,34 +1217,36 @@ class TblAppliedAfSerializer(serializers.HyperlinkedModelSerializer):
         print("in appliedAfSerializer-create")
         af = TblAfliste.objects.get(id=self.initial_data['model_af_id'])
         applied_rolle = TblAppliedRolle.objects.get(id=self.initial_data['applied_role_id'])
-        validated_data = {'model_af_id':af,'applied_rolle_id':applied_rolle,'userHatUserID_id':applied_rolle.userHatUserID_id}
-        print(type(validated_data),validated_data)
+        validated_data = {'model_af_id': af, 'applied_rolle_id': applied_rolle,
+                          'userHatUserID_id': applied_rolle.userHatUserID_id}
+        print(type(validated_data), validated_data)
         return TblAppliedAf.objects.create(**validated_data)
 
 
 class TblAppliedRolleSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAppliedRolle
-        fields = ('url','id','model_rolle_id','userHatUserID_id','applied_afs')
+        fields = ('url', 'id', 'model_rolle_id', 'userHatUserID_id', 'applied_afs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedrole-detail')
-    model_rolle_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:rolle-detail')
-    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:userhatuseridundname-detail')
+    model_rolle_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail')
+    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,
+                                                           view_name='myRDBNS:userhatuseridundname-detail')
     applied_afs = serializers.HyperlinkedRelatedField(read_only=True, many=True, view_name='myRDBNS:appliedaf-detail')
 
     def create(self, validated_data):
         print("in appliedRoleSerializer-create")
         rolle = TblRollen.objects.get(rollenid=self.initial_data['model_rolle_id'])
         userhatuid = UserHatTblUserIDundName.objects.get(id=self.initial_data['userHatUserID_id'])
-        validated_data = {'model_rolle_id':rolle,'userHatUserID_id':userhatuid}
-        print(type(validated_data),validated_data)
+        validated_data = {'model_rolle_id': rolle, 'userHatUserID_id': userhatuid}
+        print(type(validated_data), validated_data)
         return TblAppliedRolle.objects.create(**validated_data)
 
 
 class FullRightsTblAppliedTfSerializer(TblAppliedTfSerializer):
     class Meta:
         model = TblAppliedTf
-        fields = ('url','id','model_tf_id')#,'userHatUserID_id','applied_rolle_id','applied_af_id','applied_gf_id'
+        fields = ('url', 'id', 'model_tf_id')  # ,'userHatUserID_id','applied_rolle_id','applied_af_id','applied_gf_id'
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedtf-detail')
     model_tf_id = TblGesamtSerializer()
@@ -1205,7 +1261,7 @@ class FullRightsTblAppliedTfSerializer(TblAppliedTfSerializer):
 class FullRightsTblAppliedGfSerializer(TblAppliedGfSerializer):
     class Meta:
         model = TblAppliedGf
-        fields = ('url','id','model_gf_id','applied_tfs')#,'userHatUserID_id','applied_rolle_id','applied_af_id'
+        fields = ('url', 'id', 'model_gf_id', 'applied_tfs')  # ,'userHatUserID_id','applied_rolle_id','applied_af_id'
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedgf-detail')
     model_gf_id = TblUebersichtAfGfsSerializer()
@@ -1220,7 +1276,7 @@ class FullRightsTblAppliedGfSerializer(TblAppliedGfSerializer):
 class FullRightsTblAppliedAfSerializer(TblAppliedAfSerializer):
     class Meta:
         model = TblAppliedAf
-        fields = ('url','id','model_af_id','applied_gfs')#,'userHatUserID_id','applied_rolle_id'
+        fields = ('url', 'id', 'model_af_id', 'applied_gfs')  # ,'userHatUserID_id','applied_rolle_id'
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedaf-detail')
     model_af_id = TblAflisteSerializer()
@@ -1234,7 +1290,7 @@ class FullRightsTblAppliedAfSerializer(TblAppliedAfSerializer):
 class FullRightsTblAppliedRolleSerializer(TblAppliedRolleSerializer):
     class Meta:
         model = TblAppliedRolle
-        fields = ('url', 'id', 'model_rolle_id','applied_afs')#, 'userHatUserID_id',
+        fields = ('url', 'id', 'model_rolle_id', 'applied_afs')  # , 'userHatUserID_id',
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedrole-detail')
     model_rolle_id = TblRollenSerializer()
@@ -1248,7 +1304,7 @@ class FullRightsTblAppliedRolleSerializer(TblAppliedRolleSerializer):
 class FullRightsUserHatTblUserIDundNameSerializer(UserHatTblUserIDundNameSerializer):
     class Meta:
         model = UserHatTblUserIDundName
-        fields = ('url', 'id', 'user_name', 'userid_name_id', 'rollen','delete_list','transfer_list')
+        fields = ('url', 'id', 'user_name', 'userid_name_id', 'rollen', 'delete_list', 'transfer_list')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatuseridundname-detail')
     user_name = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:user-detail')
@@ -1261,24 +1317,35 @@ class FullRightsUserHatTblUserIDundNameSerializer(UserHatTblUserIDundNameSeriali
 class TblAfHatGfSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblAfHatGf
-        fields = ('url', 'id', 'rolleHatAf_id', 'gf_id')
+        fields = ('url', 'id', 'af_id', 'gf_id')
 
-    rolleHatAf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rollehataf-detail')
-    gf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:tbluebersichtafgfs-detail')
-    url = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afhatgf-detail', lookup_field='pk')
+    af_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:af-detail')
+    gf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
+    url = serializers.HyperlinkedIdentityField(read_only=True, view_name='myRDBNS:afhatgf-detail')
+
+
+
+
+class TblGfHatTfSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblGfHatTf
+        fields = ('url', 'id', 'af_id', 'gf_id')
+
+    af_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:af-detail')
+    gf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
+    url = serializers.HyperlinkedIdentityField(read_only=True, view_name='myRDBNS:afhatgf-detail')
 
 
 class TblRollehatafSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblRollehataf
         fields = (
-        'url', 'rollenmappingid', 'rollenid', 'rollenname', 'af', 'mussfeld', 'bemerkung', 'einsatz', 'userHatRolle_id', 'gfs')
+            'url', 'rollenmappingid', 'rollenid', 'rollenname', 'af', 'mussfeld', 'bemerkung', 'einsatz')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:rollehataf-detail')
-    rollenid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail', lookup_field='rollenid')
-    userHatRolle_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:tbluserhatrolle-detail')
+    rollenid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail',
+                                                   lookup_field='rollenid')
     af = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:af-detail')
-    gfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:afgf-detail')
 
 
 class TblOrgaSerializer(serializers.HyperlinkedModelSerializer):
@@ -1293,15 +1360,13 @@ class TblUserhatrolleSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblUserhatrolle
         fields = (
-            'url', 'userundrollenid','uid', 'userid', 'rollenname','rollenid', 'schwerpunkt_vertretung', 'bemerkung', 'letzte_aenderung',
-            'userHatUserID_id', 'afs', 'on_transfer_list', 'on_delete_list')
+            'url', 'userundrollenid', 'uid', 'userid', 'rollenname', 'rollenid', 'schwerpunkt_vertretung', 'bemerkung',
+            'letzte_aenderung')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:userhatrolle-detail')
     uid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
-    rollenid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail',lookup_field='rollenname')
-    # userid = TblUserIDundNameSerializer()
-    userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:userhattbluseridundname-detail')
-    afs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:af-detail')
+    rollenid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail',
+                                                   lookup_field='rollenname')
 
 
 class TblPlattformSerializer(serializers.HyperlinkedModelSerializer):
@@ -1460,7 +1525,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ('url', 'id', 'password', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name',
-                  'email', 'is_staff', 'is_active', 'date_joined', 'userid_name', 'deleted','last_rights_update')
+                  'email', 'is_staff', 'is_active', 'date_joined', 'userid_name', 'deleted', 'last_rights_update')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:user-detail')
     userid_name = serializers.HyperlinkedRelatedField(many=True, read_only=True,

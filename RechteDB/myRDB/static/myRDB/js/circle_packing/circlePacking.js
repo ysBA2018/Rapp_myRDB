@@ -98,7 +98,7 @@ $(document).ready(function(){
                                       if(level_4[l].model_gf_id.id===d.parent.data.model_gf_id.id){
                                           var level_5 = level_4[l]['children'];
                                           for(var m in level_5) {
-                                              if (level_5[m].model_tf_id.id === d.data.model_tf_id.id){
+                                              if (level_5[m].model_tf_id.tf === d.data.model_tf_id.tf){
                                                  return true;
                                                  console.log("TF: "+ level_5[m].model_tf_id.tf +"==="+ d.data.model_tf_id.tf);
                                                  console.log("TF: "+ level_5[m].model_tf_id.id +"==="+ d.data.model_tf_id.id);

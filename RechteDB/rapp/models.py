@@ -159,7 +159,7 @@ class TblUebersichtAfGfs(models.Model):
     geloescht = models.IntegerField(db_column='geloescht', blank=True, null=True, db_index=True)
     kannweg = models.IntegerField(blank=True, null=True)
     modelliert = models.DateTimeField(blank=True, null=True)
-    tfs = models.ManyToManyField(to=TblGesamt,related_name='model_gf_hat_tfs',default=None)
+    tfs = models.ManyToManyField(to=TblGesamt,through='TblGfHatTF',related_name='model_gf_hat_tfs',default=None)
 
     class Meta:
         managed = True
@@ -174,6 +174,13 @@ class TblUebersichtAfGfs(models.Model):
 
     geloescht.boolean = True
     kannweg.boolean = True
+
+
+class TblGfHatTF(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
+    tf_id = models.ForeignKey('TblGesamt', db_column='tf_id', on_delete=models.CASCADE,default=None)
+
 
 
 # Dies ist nur eine Hilfstabelle.
@@ -651,7 +658,7 @@ class TblPlattform(models.Model):
     tf_technische_plattform = models.CharField(db_column='tf_technische_plattform', unique=True, max_length=32,
                                                verbose_name='Plattform',
                                                db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    color = models.CharField(default="0", max_length=25)
+    color = models.CharField(default="0", max_length=25, null=True)
 
     class Meta:
         managed = True
