@@ -414,9 +414,11 @@ class Direktverbindungen(ImportExportModelAdmin):
     resource_class = DirektverbindungenExporterModel
     sortable_by = ['entitlement', 'plattform', 'gf', 'af']
 
+@admin.register(UserHatTblUserIDundName)
+class UserHatTblUserIDundNameAdmin(admin.ModelAdmin):
+    list_display = ('user_name','userid_name_id')
 
 admin.site.register(User)
-admin.site.register(UserHatTblUserIDundName)
 admin.site.register(TblAfHatGF)
 admin.site.register(TblGfHatTF)
 admin.site.register(TblAppliedRolle)

@@ -2,16 +2,17 @@
 {% block content %}
     {% load asjson %}
     <script type="text/javascript">
+        var current_host = "{{ current_host }}";
+        var legendData = {{ legendData | asjson}};
         var compare_jsondata = {{ compareUser_graph_data | asjson }};
         var jsondata = {{ jsondata | asjson }};
         var current_site = "{{ current_site }}";
-        var compare_user = "{{ compareUser.identity }}";
+        var compare_user = "{{ compareUser.username }}";
         var user = "{{ identity_param }}";
+    </script>
+    <script type="text/javascript">
         var user_table_data = "{{ table_data }}";
-        var transferlistdata = {{ transferlist | asjson }};
-        var trashlistdata = {{ deletelist | asjson }};
         var compare_user_table_data = "{{ compareUser_table_data }}";
-        var transfer_list_table_data = "{{ transfer_list_table_data }}";
     </script>
 <div class="row top-buffer">
     <div class="col-6" id="user_card">

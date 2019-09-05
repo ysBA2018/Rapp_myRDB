@@ -297,6 +297,7 @@ class Search_All(generic.ListView):
         # url = 'http://' + self.request.get_host() + '/searchlistings/'
         url = docker_container_ip + '/searchlistings/'
         headers = get_headers(self.request)
+        self.extra_context['orgas'] = populate_orga_choice_field(headers, 'orgas', self.request)
         lis = ['zi_organisations', 'orgas', 'tf_applications', 'departments', 'roles', 'groups']
         for e in lis:
             self.extra_context[e] = populate_choice_fields(headers, e, self.request)
@@ -380,13 +381,14 @@ class Users(generic.ListView):
     extra_context = {}
 
     def get_queryset(self):
-        logged_in_user_token = self.request.user.auth_token
-        # url = 'http://' + self.request.get_host() + '/userlistings/'
-        url = docker_container_ip + '/userlistings/'
-        headers = {'Authorization': 'Token ' + logged_in_user_token.key}
-        lis = ['zi_organisations', 'orgas', 'departments', 'roles', 'groups']
+        headers = get_headers(self.request)
+        self.extra_context['orgas'] = populate_orga_choice_field(headers, 'orgas', self.request)
+        #TODO: self.extra_context['roles'] = populate_role_choice_field(headers, 'roles', self.request)
+        lis = ['zi_organisation', 'abteilung', 'gruppe']
         for e in lis:
-            self.extra_context[e] = populate_choice_fields(headers, e, self.request)
+            collection_title = e+'s'
+            self.extra_context[collection_title] = populate_choice_fields(headers, e, self.request)
+        url = docker_container_ip + '/api/useridundnamen/'
         params, changed = build_url_params(self.request, self.extra_context)
         if 'entries_per_page' in self.request.GET:
             self.paginate_by = self.request.GET['entries_per_page']
@@ -425,13 +427,13 @@ class Users(generic.ListView):
         return response.data['users']
 
 
-def populate_choice_fields(headers, field, request):
+def populate_orga_choice_field(headers, field, request):
     '''
         method to populate selectboxes with data from REST-API
         used by search and users
     '''
     # url = 'http://' + request.get_host() + '/' + field + '/'
-    url = docker_container_ip + '/' + field + '/'
+    url = docker_container_ip + '/api/' + field + '/'
     json_data = get_by_url(url, get_headers(request))
     if type(json_data) == list:
         results = {field: json_data}
@@ -470,17 +472,17 @@ def build_url_params(request, extra_context):
         else:
             changed = True
         extra_context["zi_organisation"] = zi_organisation
-    if 'department' in request.GET:
+    if 'abteilung' in request.GET:
         department = '----'
-        if not request.GET['department'] == '----':
-            department = request.GET['department']
-            params = params + "&department=" + department
-        if extra_context.keys().__contains__("department"):
-            if department != extra_context["department"]:
+        if not request.GET['abteilung'] == '----':
+            department = request.GET['abteilung']
+            params = params + "&abteilung=" + department
+        if extra_context.keys().__contains__("abteilung"):
+            if department != extra_context["abteilung"]:
                 changed = True
         else:
             changed = True
-        extra_context["department"] = department
+        extra_context["abteilung"] = department
     if 'orga' in request.GET:
         orga = '----'
         if not request.GET['orga'] == '----':
@@ -525,17 +527,17 @@ def build_url_params(request, extra_context):
         else:
             changed = True
         extra_context["role"] = role
-    if 'group' in request.GET:
+    if 'gruppe' in request.GET:
         group = '----'
-        if not request.GET['group'] == '----':
-            group = request.GET['group']
-            params = params + "&group=" + group
-        if extra_context.keys().__contains__("group"):
-            if group != extra_context["group"]:
+        if not request.GET['gruppe'] == '----':
+            group = request.GET['gruppe']
+            params = params + "&gruppe=" + group
+        if extra_context.keys().__contains__("gruppe"):
+            if group != extra_context["gruppe"]:
                 changed = True
         else:
             changed = True
-        extra_context["group"] = group
+        extra_context["gruppe"] = group
     if 'af_name' in request.GET:
         af_name = ''
         if not request.GET['af_name'] == '':
@@ -591,6 +593,8 @@ class Compare(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        self.extra_context['current_host'] = docker_container_ip
+
         try:
             if 'user_search' in self.request.GET.keys():
                 compareUserIdentity = self.request.GET['user_search']
@@ -601,14 +605,31 @@ class Compare(generic.ListView):
 
             headers = get_headers(self.request)
 
+            legend_data_dict = self.request.session.get('legend_data_dict')
+            legend_data = self.request.session.get('legend_data')
+            if (not legend_data_dict or not legend_data) and not 'legendData' in self.extra_context:
+                legend_data = get_tf_applications(headers, self.request)
+                sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+                self.extra_context['legendData'] = sorted_legend_data
+                legend_data_dict = {x['url']: x for x in legend_data}
+                self.request.session['legend_data_dict'] = legend_data_dict
+                self.request.session['legend_data'] = legend_data
+            elif (legend_data_dict and legend_data) and not 'legendData' in self.extra_context:
+                sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+                self.extra_context['legendData'] = sorted_legend_data
+
+            cached_af_descriptions = self.request.session.get('cached_af_descriptions')
+            if not cached_af_descriptions:
+                cached_af_descriptions = dict()
+
             user = get_user_by_name(compareUserIdentity, headers, self.request)[0]
 
             user_json_data = get_user_by_key(user['id'], headers=headers, request=self.request)
 
             compare_user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user_json_data)
 
-            graph_data, scatterData, counts = prepareJSONdata(user, compare_user_info, True, headers, self.request)
-
+            graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user, compare_user_info, True, headers, self.request, legend_data_dict, cached_af_descriptions)
+            self.request.session['cached_af_descriptions'] = cached_af_descriptions
             # compUserRoles = user_json_data['roles']
             # compUserAfs = user_json_data['children']
 
@@ -652,9 +673,20 @@ class Compare(generic.ListView):
             user_json_data = get_user_by_key(user['id'], headers, self.request)
             user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user_json_data)
             # roles = user_json_data['roles']
+
+            legend_data_dict = self.request.session.get('legend_data_dict')
+            if not legend_data_dict:
+                legend_data = get_tf_applications(headers, self.request)
+                legend_data_dict = {x['url']: x for x in legend_data}
+                self.request.session['legend_data_dict'] = legend_data_dict
+
+            cached_af_descriptions = self.request.session.get('cached_af_descriptions')
+            if not cached_af_descriptions:
+                cached_af_descriptions = dict()
+
             try:
-                graph_data, scatterData, counts = prepareJSONdata(user_json_data, user_info, False, headers,
-                                                                  self.request)
+                graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user_json_data, user_info, False, headers,
+                                                                  self.request, legend_data_dict, cached_af_descriptions)
                 self.extra_context['jsondata'] = graph_data
                 # afs = user_json_data['children']
 
@@ -674,8 +706,8 @@ class Compare(generic.ListView):
             except IOError:
                 print("Error at compar - creating user_graph")
             try:
-                transfer_graph_data, transfer_list_with_category, transfer_rights_count = prepareTransferJSONdata(
-                    user_info, self.request, headers)
+                transfer_graph_data, transfer_list_with_category, transfer_rights_count, cached_af_descriptions = prepareTransferJSONdata(
+                    user_info, self.request, headers, legend_data_dict, cached_af_descriptions)
                 self.extra_context['transfer_list_count'] = transfer_rights_count
 
                 self.extra_context['transferlist'] = transfer_graph_data
@@ -686,14 +718,16 @@ class Compare(generic.ListView):
 
             # delete_list = user_json_data['delete_list']
             try:
-                delete_graph_data, delete_list_with_category, delete_rights_count = prepareDeleteJSONdata(
-                    user_info, self.request, headers)
+                delete_graph_data, delete_list_with_category, delete_rights_count, cached_af_descriptions = prepareDeleteJSONdata(
+                    user_info, self.request, headers, legend_data_dict, cached_af_descriptions)
                 # delete_list_table_data, delete_list_count = prepareTrashTableData(delete_list)
                 # self.extra_context['delete_list_table_data'] = delete_list_table_data
                 self.extra_context['delete_list_count'] = delete_rights_count
                 self.extra_context['deletelist'] = delete_graph_data
             except IOError:
                 print("Error at compar - creating delete_graph")
+
+            self.request.session['cached_af_descriptions'] = cached_af_descriptions
 
             return []  # data
         except IOError:
@@ -975,11 +1009,42 @@ class Profile(generic.ListView):
 
         headers = get_headers(self.request)
 
-        legend_data = get_tf_applications(headers, self.request)
+        legend_data_dict = self.request.session.get('legend_data_dict')
+        legend_data = self.request.session.get('legend_data')
+        if (not legend_data_dict or not legend_data) and not 'legendData' in self.extra_context:
+            legend_data = get_tf_applications(headers, self.request)
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+            legend_data_dict = {x['url']: x for x in legend_data}
+            self.request.session['legend_data_dict'] = legend_data_dict
+            self.request.session['legend_data'] = legend_data
+        elif (legend_data_dict and legend_data) and not 'legendData' in self.extra_context:
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
 
-        sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
-        self.extra_context['legendData'] = sorted_legend_data
-        user_pk = user.pk
+        cached_af_descriptions = self.request.session.get('cached_af_descriptions')
+        if not cached_af_descriptions:
+            cached_af_descriptions = dict()
+
+        try:
+            self.extra_context['no_profile'] = None
+            user_pk = user.pk
+        except UnboundLocalError:
+            #TODO: Noch auf USER - muss auf TblUserIdundNamen umgestelt werden
+            userid_und_name = get_useridundnamen_by_userid(user_id, headers)[0]
+            user_hat_user_id_und_name = get_user_userid_name_combination(headers,None,userid_und_name['id'],self.request)
+            if user_hat_user_id_und_name:
+                user_hat_user_id_und_name= user_hat_user_id_und_name[0]
+                user_json = get_by_url(user_hat_user_id_und_name['user_name'], headers)
+                user_pk = user_json['id']
+                user = User.objects.get(id=user_pk)
+            else:
+                self.extra_context.clear()
+                self.extra_context['no_profile'] = "Diese NutzerID-Name-Kombination wurde noch keinem Nutzer zugewiesen.\n" \
+                                                   "Bitte erzeugen Sie für "+user_id+" per Admin ein Nutzerprofil\n" \
+                                                    "oder weisen Sie diese einem Nutzer zu!"
+                return
+
         user_json_data = get_user_by_key(user_pk, headers, self.request)
         user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user_json_data)
 
@@ -988,28 +1053,33 @@ class Profile(generic.ListView):
         last_rights_update = user.last_rights_update
 
         if last_rights_update is None or last_import_datetime > last_rights_update.replace(tzinfo=None):
-            # TODO: Rechte die noch keiner rolle zugewiesen sind zu Rolle(Keine Rolle) hinzufügen und zur darstellung hinzufügen
-            update_personal_right_models(user_info[0], headers, self.request)
+            for ui in user_info:
+                update_personal_right_models(ui, headers, self.request)
 
             last_rights_update = datetime.datetime.now()
             patch_user_last_rights_update(user_pk,last_rights_update,headers)
             user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user_json_data)
 
-        graph_data, scatterData, counts = prepareJSONdata(user_id, user_info, False, headers, self.request)
+        graph_data, scatterData, counts, cached_af_descriptions= prepareJSONdata(user_id, user_info, False, headers, self.request, legend_data_dict, cached_af_descriptions)
         self.extra_context['jsondata'] = graph_data
 
         self.extra_context['scatterData'] = scatterData
 
-        transfer_graph_data, transfer_list_with_category, transfer_rights_count = prepareTransferJSONdata(user_info,
+        transfer_graph_data, transfer_list_with_category, transfer_rights_count, cached_af_descriptions = prepareTransferJSONdata(user_info,
                                                                                                           self.request,
-                                                                                                          headers)
+                                                                                                          headers,
+                                                                                                          legend_data_dict,
+                                                                                                            cached_af_descriptions)
         self.extra_context['transferlist'] = transfer_graph_data
         # transfer_list_table_data, transfer_list_count = prepareTransferTabledata(transfer_list)
         # self.extra_context['transfer_list_table_data'] = transfer_list_table_data
         self.extra_context['transfer_list_count'] = transfer_rights_count
 
-        delete_graph_data, delete_list_with_category, delete_rights_count = prepareDeleteJSONdata(user_info,
-                                                                                                  self.request, headers)
+        delete_graph_data, delete_list_with_category, delete_rights_count, cached_af_descriptions = prepareDeleteJSONdata(user_info,
+                                                                                                  self.request, headers,
+                                                                                                  legend_data_dict,
+                                                                                                    cached_af_descriptions)
+        self.request.session['cached_af_descriptions'] = cached_af_descriptions
         # delete_list, delete_list_with_category = [],[]
         self.extra_context['deletelist'] = delete_graph_data
         # delete_list_table_data, delete_list_count = prepareTrashTableData(delete_list)
@@ -1256,6 +1326,7 @@ class RightApplication(generic.ListView):
         self.extra_context['current_site'] = "right_application"
         self.extra_context['compare_user'] = self.request.session.get('user_search')
         user_identity = self.request.session.get('user_identity')
+        legend_data_dict = self.request.session.get('legend_data_dict')
         self.extra_context['requesting_user'] = user_identity
         # setViewMode(self.request, self.extra_context)
         headers = get_headers(self.request)
@@ -1264,9 +1335,9 @@ class RightApplication(generic.ListView):
         roles = user_json_data['roles']
 
         user_json_data, scatterData = prepareJSONdata(user_json_data['identity'], user_json_data, False, headers,
-                                                      self.request)
+                                                      self.request, legend_data_dict)
 
-        transfer_list, transfer_list_with_category = prepareTransferJSONdata(user_json_data['transfer_list'])
+        transfer_list, transfer_list_with_category, single_rights_count, cached_af_descriptions = prepareTransferJSONdata(user_json_data['transfer_list'],)
         model_transfer_list = get_model_list(transfer_list_with_category, headers, self.request)
         # transfer_list_table_data, transfer_list_count = prepareTransferTabledata(transfer_list)
         # self.extra_context['transfer_list_table_data'] = transfer_list_table_data
@@ -1477,6 +1548,17 @@ def setViewMode(request, extra_context):
         extra_context['view_mode'] = request.GET['view_mode']
     else:
         extra_context['view_mode'] = 'Graphische Ansicht'
+
+
+def populate_choice_fields(headers, e, request):
+    url = docker_container_ip + '/api/useridundnamen/?field='+e
+    json_data = get_by_url(url, headers)
+    if type(json_data) == list:
+        results = {e: json_data}
+    if type(json_data) == dict:
+        results = {e: json_data['results']}
+    response = Response(results)
+    return response.data[e]
 
 
 def prepareTrashTableData(afs):
@@ -1750,6 +1832,18 @@ def get_user_by_name(xvnumber, headers, request):
     '''
     # url = 'http://' + request.get_host() + '/users/%s' % pk
     url = docker_container_ip + '/api/users/?xvnumber=%s' % xvnumber
+    res = requests.get(url, headers=headers)
+    json = res.json()
+    if 'results' in json:
+        json = json['results']
+    elif 'detail' in json:
+        print(json['detail'])
+        raise ConnectionError(json['detail'])
+    return json
+
+
+def get_useridundnamen_by_userid(user_id, headers):
+    url = docker_container_ip + '/api/useridundnamen/?xvnumber=%s' % user_id
     res = requests.get(url, headers=headers)
     json = res.json()
     if 'results' in json:
@@ -2269,103 +2363,177 @@ def presort_rollen(user_data, headers):
 
 
 def get_user_info_dict_for_all_applied_userids(headers, request, user_json_data):
-    right_hierarchie = []
-    user_id_name_data = []
     user_info = []
     for user_url in user_json_data['userid_name']:
         userid_name_data = get_by_url(user_url, headers)
         user_userid_combination = get_full_user_userid_name_combination(headers, user_json_data['id'],
-                                                                        userid_name_data['id'], request)
-        right_hierarchie.append(user_userid_combination[0])
-        user_id_name_data.append(userid_name_data)
-        user_info.append({'user_data': userid_name_data, 'rights_data': right_hierarchie})
+                                                                        userid_name_data['id'], request)[0]
+        user_info.append({'user_data': userid_name_data, 'rights_data': user_userid_combination})
     return user_info
 
 
 def update_personal_right_models(user_info, headers, request):
     print(user_info)
     user_data = user_info['user_data']
-    rights_data = user_info['rights_data'][0]
+    rights_data = user_info['rights_data']
     user_tfs = get_tf_aus_gesamt_by_user_name(user_data['id'], headers)
+
+    cached_roles = dict(); cached_afs = dict() ;cached_gfs = dict(); cached_tfs = dict()
+
+    cached_applied_roles = dict(); cached_applied_afs = dict(); cached_applied_gfs = dict();cached_applied_tfs = dict()
+
+    cached_gf_hat_tf = dict(); cached_af_hat_gf = dict(); cached_rolle_hat_af = dict(); cached_user_hat_rolle = dict()
+
+    roles_changed = True
     for tf in user_tfs:
-        model_af = get_af_by_name(tf['enthalten_in_af'], headers, request)
-        if not model_af:
-            res = create_af(tf['enthalten_in_af'], datetime.datetime.now(), headers)
-            model_af = json.loads(res.text)
+
+        af_name = tf['enthalten_in_af']
+        if not af_name in cached_afs:
+            model_af = get_af_by_name(af_name, headers, request)
+            if not model_af:
+                res = create_af(af_name, datetime.datetime.now(), headers)
+                model_af = json.loads(res.text)
+            else:
+                model_af = model_af[0]
+            cached_afs[af_name] = model_af
         else:
-            model_af = model_af[0]
-        model_gf = get_gf_by_name_and_af_name(tf['gf'], tf['enthalten_in_af'], headers, request)
-        if not model_gf:
-            data = {'name_gf_neu': tf['gf'], 'name_af_neu': tf['enthalten_in_af'], 'kommentar': 'Kein Kommentar',
-                    'zielperson': 'Keine Zielperson', 'af_text': 'Keine af_text', 'gf_text': 'Keine gf_text',
-                    'af_langtext': 'Keine af_langtext', 'af_ausschlussgruppen': 'Keine af_ausschlussgruppen',
-                    'af_einschlussgruppen': 'Keine af_einschlussgruppen',
-                    'af_sonstige_vergabehinweise': 'Keine af_sonstige_vergabehinweise', 'geloescht': 0, 'kannweg': 0,
-                    'modelliert': datetime.datetime.now()}
-            res = create_gf(data, headers)
-            model_gf = json.loads(res.text)
+            model_af = cached_afs.get(af_name)
+
+        gf_name = tf['gf']
+        if not gf_name in cached_gfs:
+            model_gf = get_gf_by_name_and_af_name(gf_name, af_name, headers, request)
+            if not model_gf:
+                data = {'name_gf_neu': gf_name, 'name_af_neu': af_name, 'kommentar': 'Kein Kommentar',
+                        'zielperson': 'Keine Zielperson', 'af_text': 'Keine af_text', 'gf_text': 'Keine gf_text',
+                        'af_langtext': 'Keine af_langtext', 'af_ausschlussgruppen': 'Keine af_ausschlussgruppen',
+                        'af_einschlussgruppen': 'Keine af_einschlussgruppen',
+                        'af_sonstige_vergabehinweise': 'Keine af_sonstige_vergabehinweise', 'geloescht': 0, 'kannweg': 0,
+                        'modelliert': datetime.datetime.now()}
+                res = create_gf(data, headers)
+                model_gf = json.loads(res.text)
+            else:
+                model_gf = model_gf[0]
+            cached_gfs[gf_name] = model_gf
         else:
-            model_gf = model_gf[0]
-        gf_hat_tf = get_gf_hat_tf_by_ids(model_gf['id'], tf['id'], headers)
+            model_gf = cached_gfs.get(gf_name)
+
+        model_gf_id = model_gf['id']
+        model_tf_id = tf['id']
+        gf_hat_tf_key = "{}_{}".format(model_gf_id,model_tf_id)
+        if not gf_hat_tf_key in cached_gf_hat_tf:
+            gf_hat_tf = get_gf_hat_tf_by_ids(model_gf['id'], tf['id'], headers)
+            cached_gf_hat_tf[gf_hat_tf_key] = gf_hat_tf
+        else:
+            gf_hat_tf = cached_gf_hat_tf.get(gf_hat_tf_key)
         if not gf_hat_tf:
             patch_gf_tfs(model_gf['id'], tf['id'], headers)
-        af_hat_gf = get_af_hat_gf_by_ids(model_af['id'], model_gf['id'], headers)
+
+        model_af_id = model_af['id']
+        af_hat_gf_key = "{}_{}".format(model_af_id,model_gf_id)
+        if not af_hat_gf_key in cached_af_hat_gf:
+            af_hat_gf = get_af_hat_gf_by_ids(model_af['id'], model_gf['id'], headers)
+            cached_af_hat_gf[af_hat_gf_key] = af_hat_gf
+        else:
+            af_hat_gf = cached_af_hat_gf.get(af_hat_gf_key)
         if not af_hat_gf:
             patch_af_gfs(model_af['id'], model_gf['id'], headers)
 
-        user_rollen = get_user_roles(headers, user_data['userid'], request)
+        if roles_changed:
+            user_rollen = get_user_roles(headers, user_data['userid'], request)
 
         found = False
         for user_role in user_rollen:
-            rolle_hat_af = get_rolle_hat_af_by_ids(user_role['rollenname'], model_af['id'], headers)
+            rollenname = user_role['rollenname']
+            rolle_hat_af_key = "{}_{}".format(rollenname,model_af_id)
+            if not rolle_hat_af_key in cached_rolle_hat_af:
+                rolle_hat_af = get_rolle_hat_af_by_ids(rollenname, model_af_id, headers)
+                cached_rolle_hat_af[rolle_hat_af_key] = rolle_hat_af
+            else:
+                rolle_hat_af = cached_rolle_hat_af.get(rolle_hat_af_key)
             if rolle_hat_af:
                 found = True
                 break
+
         if not found:
-            keine_rolle = get_rolle_by_rollenname('Keine Rolle', headers, request)
-            if not keine_rolle:
-                res = create_rolle('Keine Rolle', 'Kein System', 'Keine Rollenbeschreibung', datetime.datetime.now(),
-                                   headers)
-                user_role = json.loads(res.text)
+            if not 'Keine Rolle' in cached_roles:
+                keine_rolle = get_rolle_by_rollenname('Keine Rolle', headers, request)
+                if not keine_rolle:
+                    res = create_rolle('Keine Rolle', 'Kein System', 'Keine Rollenbeschreibung',
+                                       datetime.datetime.now(),
+                                       headers)
+                    user_role = json.loads(res.text)
+                    cached_roles['Keine Rolle'] = user_role
+                else:
+                    user_role = keine_rolle[0]
+                    cached_roles['Keine Rolle'] = user_role
+                roles_changed = True
             else:
-                user_role = keine_rolle[0]
+                user_role = cached_roles.get('Keine Rolle')
+                roles_changed = False
         else:
-            user_role = get_rolle_by_rollenname(user_role['rollenname'],headers, request)[0]
+            if not rollenname in cached_roles:
+                user_role = get_rolle_by_rollenname(rollenname,headers, request)[0]
+                cached_roles[rollenname] = user_role
+                roles_changed = True
+            else:
+                user_role = cached_roles.get(rollenname)
+                roles_changed = False
 
-        applied_rolle = get_AppliedRolle_by_rollenid(user_role['rollenid'], rights_data['id'], headers)
-        if not applied_rolle:
-            res = create_applied_rolle(user_role, rights_data, headers)
-            applied_rolle = json.loads(res.text)
-            patch_userhatuseridundnamen_rollen(rights_data['id'],applied_rolle['id'],headers)
+        rollenid = user_role['rollenid']
+        user_hat_userid_id = rights_data['id']
+        if not rollenid in cached_applied_roles:
+            applied_rolle = get_AppliedRolle_by_rollenid(rollenid, user_hat_userid_id, headers)
+            if not applied_rolle:
+                res = create_applied_rolle(user_role, rights_data, headers)
+                applied_rolle = json.loads(res.text)
+                patch_userhatuseridundnamen_rollen(user_hat_userid_id,applied_rolle['id'],headers)
+            else:
+                applied_rolle = applied_rolle[0]
+            cached_applied_roles[rollenid] = applied_rolle
         else:
-            applied_rolle = applied_rolle[0]
+            applied_rolle = cached_applied_roles.get(rollenid)
 
-        applied_af = get_AppliedAf_by_af_id(model_af['id'], rights_data['id'], applied_rolle['id'], headers)
-        if not applied_af:
-            res = create_applied_af(model_af, applied_rolle, headers)
-            applied_af = json.loads(res.text)
-            patch_applied_rolle_applied_afs(applied_rolle['id'],applied_af['id'],headers)
+        if not model_af_id in cached_applied_afs:
+            applied_af = get_AppliedAf_by_af_id(model_af_id, user_hat_userid_id, applied_rolle['id'], headers)
+            if not applied_af:
+                res = create_applied_af(model_af, applied_rolle, headers)
+                applied_af = json.loads(res.text)
+                patch_applied_rolle_applied_afs(applied_rolle['id'],applied_af['id'],headers)
+            else:
+                applied_af = applied_af[0]
+            cached_applied_afs[model_af_id] = applied_af
         else:
-            applied_af = applied_af[0]
+            applied_af = cached_applied_afs.get(model_af_id)
 
-        applied_gf = get_AppliedGf_by_gf_id(model_gf['id'], rights_data['id'], applied_rolle['id'], applied_af['id'], headers)
-        if not applied_gf:
-            res = create_applied_gf(model_gf, applied_af, headers)
-            applied_gf = json.loads(res.text)
-            patch_applied_af_applied_gfs(applied_af['id'],applied_gf['id'],headers)
+        if not model_gf_id in cached_applied_gfs:
+            applied_gf = get_AppliedGf_by_gf_id(model_gf_id, user_hat_userid_id, applied_rolle['id'], applied_af['id'], headers)
+            if not applied_gf:
+                res = create_applied_gf(model_gf, applied_af, headers)
+                applied_gf = json.loads(res.text)
+                patch_applied_af_applied_gfs(applied_af['id'],applied_gf['id'],headers)
+            else:
+                applied_gf = applied_gf[0]
+            cached_applied_gfs[model_gf_id] = applied_gf
         else:
-            applied_gf = applied_gf[0]
+            applied_gf = cached_applied_gfs.get(model_gf_id)
 
-        applied_tf = get_AppliedTf_by_tf_id(tf['id'], rights_data['id'], applied_rolle['id'], applied_af['id'], applied_gf['id'], headers)
-        if not applied_tf:
-            res = create_applied_tf(tf, applied_gf, headers)
-            applied_tf = json.loads(res.text)
-            patch_applied_gf_applied_tfs(applied_gf['id'],applied_tf['id'],headers)
+        if not model_tf_id in cached_applied_tfs:
+            applied_tf = get_AppliedTf_by_tf_id(model_tf_id, user_hat_userid_id, applied_rolle['id'], applied_af['id'], applied_gf['id'], headers)
+            if not applied_tf:
+                res = create_applied_tf(tf, applied_gf, headers)
+                applied_tf = json.loads(res.text)
+                patch_applied_gf_applied_tfs(applied_gf['id'],applied_tf['id'],headers)
+            else:
+                applied_tf = applied_tf[0]
+            cached_applied_tfs[model_tf_id] = applied_tf
+        else:
+            applied_tf = cached_applied_tfs.get(model_tf_id)
+
 
     print(len(user_tfs), user_tfs)
 
 
-def prepareJSONdata(identity, user_info, compareUser, headers, request):
+def prepareJSONdata(identity, user_info, compareUser, headers, request, legend_data, cached_af_descriptions):
     '''
     prepares Data for display as circlePacking and scatterplot
     :param identity:
@@ -2380,7 +2548,6 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
     user_detail_data = []
     graph_data = dict()
     graph_data['children'] = []
-    old_plattform = None
     counts = {'user': 0, 'roles': 0, 'afs': 0, 'gfs': 0, 'tfs': 0, }
 
     for u in user_info:
@@ -2389,9 +2556,9 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
         user['children'] = []
         counts['user'] += 1
         user_userid_combination = u['rights_data'].copy()
-        user['user_userid_combi_id'] = user_userid_combination[0]['id']
+        user['user_userid_combi_id'] = user_userid_combination['id']
         graph_data['children'].append(user)
-        for rolle in user_userid_combination[0]['rollen']:
+        for rolle in user_userid_combination['rollen']:
             # rolle = get_by_url(rolle, headers)
             if rolle['applied_afs']:
                 rolle_details = rolle['model_rolle_id']
@@ -2411,6 +2578,7 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
                         af['name'] = af_details['af_name']
                         af['children'] = []
                         rolle['children'].append(af)
+                        counts['afs'] += 1
 
                         gf_old = None
                         for gf in af['applied_gfs']:
@@ -2433,9 +2601,7 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
                                     tf['size'] = 3000
                                     gf['children'].append(tf)
                                     counts['tfs'] += 1
-                                    if tf_details['plattform'] != old_plattform:
-                                        plattform = get_by_url(tf_details['plattform'], headers)
-                                        old_plattform = tf_details['plattform']
+                                    plattform = legend_data.get(tf_details['plattform'])
                                     hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
                                     tf['color'] = hslColor
                                     af_applied = None
@@ -2451,9 +2617,7 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
                                          "role": rolle['name'],
                                          "user": user['name'], "plattform": plattform["tf_technische_plattform"],
                                          "af_applied": af_applied, "color": hslColor})
-                                    if af['name'] != af_old:
-                                        counts['afs'] += 1
-
+                                    if not af['name'] in cached_af_descriptions:
                                         af_description_helper = get_af_description_from_Tblrechteneuvonimport(
                                             user['name'],
                                             af['name'],
@@ -2464,7 +2628,9 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
                                             af['description'] = "Keine Beschreibung vorhanden!"
                                         else:
                                             af['description'] = af_description_helper[0]['af_beschreibung']
-                                        af_old = af['name']
+                                        cached_af_descriptions[af['name']] = af_description_helper
+                                    else:
+                                        af_description_helper = cached_af_descriptions.get(af['name'])
                                     if gf['name'] != gf_old:
                                         if not tf_details['gf_beschreibung']:
                                             gf['description'] = "Keine Beschreibung vorhanden!"
@@ -2473,8 +2639,10 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
                                         gf_old = gf['name']
                             if gf in af['children'] and not gf['children']:
                                 af['children'].remove(gf)
+                                counts['gfs'] -= 1
                     if af in rolle['children'] and not af['children']:
                         rolle['children'].remove(af)
+                        counts['afs'] -= 1
                 if not rolle['children']:
                     counts['roles'] -= 1
     if not compareUser:
@@ -2483,10 +2651,10 @@ def prepareJSONdata(identity, user_info, compareUser, headers, request):
         for e in scatterData:
             e["index"] = i
             i += 1
-    return graph_data, scatterData, counts
+    return graph_data, scatterData, counts, cached_af_descriptions
 
 
-def prepareDeleteJSONdata(user_info, request, headers):
+def prepareDeleteJSONdata(user_info, request, headers, legend_data, cached_af_descriptions):
     '''
     prepare delete_list for display as circlepacking
     :param delete_list:
@@ -2495,15 +2663,14 @@ def prepareDeleteJSONdata(user_info, request, headers):
     delete_graph_data = {"children": []}
     delete_list_with_category = []
     single_rights_count = 0
-    old_plattform = None
     for u in user_info:
         user = u['user_data'].copy()
         user['name'] = user['userid']
         user['children'] = []
         user_userid_combination = u['rights_data'].copy()
-        user['user_userid_combi_id'] = user_userid_combination[0]['id']
+        user['user_userid_combi_id'] = user_userid_combination['id']
         delete_graph_data['children'].append(user)
-        for rolle in user_userid_combination[0]['delete_list']:
+        for rolle in user_userid_combination['delete_list']:
             # rolle = get_by_url(rolle, headers)
             rolle_details = rolle['model_rolle_id']
             # rolle_details = get_by_url(rolle['model_rolle_id'], headers)
@@ -2539,9 +2706,7 @@ def prepareDeleteJSONdata(user_info, request, headers):
                                 tf['size'] = 3000
                                 gf['children'].append(tf)
                                 single_rights_count += 1
-                                if tf_details['plattform'] != old_plattform:
-                                    plattform = get_by_url(tf_details['plattform'], headers)
-                                    old_plattform = tf_details['plattform']
+                                plattform = legend_data.get(tf_details['plattform'])
                                 hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
                                 tf['color'] = hslColor
                                 af_applied = None
@@ -2552,95 +2717,7 @@ def prepareDeleteJSONdata(user_info, request, headers):
                                     af_applied = ""
                                 else:
                                     af_applied = tf_details['datum']
-                                if af['name'] != af_old:
-
-                                    af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
-                                                                                                          af['af_name'],
-                                                                                                          gf['name'],
-                                                                                                          tf['name'],
-                                                                                                          headers)
-                                    if not af_description_helper:
-                                        af['description'] = "Keine Beschreibung vorhanden!"
-                                    else:
-                                        af['description'] = af_description_helper[0]['af_beschreibung']
-                                    af_old = af['name']
-                                if gf['name'] != gf_old:
-                                    if not tf_details['gf_beschreibung']:
-                                        gf['description'] = "Keine Beschreibung vorhanden!"
-                                    else:
-                                        gf['description'] = tf_details['gf_beschreibung']
-                                    gf_old = gf['name']
-
-    return delete_graph_data, delete_list_with_category, single_rights_count
-
-
-def prepareTransferJSONdata(user_info, request, headers):
-    '''
-    method to prepare transferlist-data for display as circlepacking
-    :param transfer_json_data:
-    :return:
-    '''
-    transfer_graph_data = {"children": []}
-    transfer_list_with_category = []
-    single_rights_count = 0
-    old_plattform = None
-    for u in user_info:
-        user = u['user_data'].copy()
-        user['name'] = user['userid']
-        user['children'] = []
-        user_userid_combination = u['rights_data'].copy()
-        user['user_userid_combi_id'] = user_userid_combination[0]['id']
-        transfer_graph_data['children'].append(user)
-        for rolle in user_userid_combination[0]['transfer_list']:
-            # rolle = get_by_url(rolle, headers)
-            rolle_details = rolle['model_rolle_id']
-            # rolle_details = get_by_url(rolle['model_rolle_id'], headers)
-            rolle['name'] = rolle_details['rollenname']
-            rolle['description'] = rolle_details['rollenbeschreibung']
-            rolle['children'] = []
-            user['children'].append(rolle)
-            af_old = None
-            for af in rolle['applied_afs']:
-                # af = get_by_url(af, headers)
-                if af['applied_gfs']:
-                    af_details = af['model_af_id']
-                    # af_details = get_by_url(af['model_af_id'], headers)
-                    af['name'] = af_details['af_name']
-                    af['children'] = []
-                    rolle['children'].append(af)
-
-                    gf_old = None
-                    for gf in af['applied_gfs']:
-                        # gf = get_by_url(gf, headers)
-                        if gf['applied_tfs']:
-                            gf_details = gf['model_gf_id']
-                            # gf_details = get_by_url(gf['model_gf_id'], headers)
-                            gf['name'] = gf_details['name_gf_neu']
-                            gf['children'] = []
-                            af['children'].append(gf)
-
-                            for tf in gf['applied_tfs']:
-                                # tf = get_by_url(tf, headers)
-                                tf_details = tf['model_tf_id']
-                                # tf_details = get_by_url(tf['model_tf_id'], headers)
-                                tf['name'] = tf_details['tf']
-                                tf['size'] = 3000
-                                gf['children'].append(tf)
-                                single_rights_count += 1
-                                if tf_details['plattform'] != old_plattform:
-                                    plattform = get_by_url(tf_details['plattform'], headers)
-                                    old_plattform = tf_details['plattform']
-                                hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
-                                tf['color'] = hslColor
-                                af_applied = None
-                                tf['description'] = tf_details['tf_beschreibung']
-                                if tf['description'] is None:
-                                    tf['description'] = "Keine Beschreibung vorhanden!"
-                                if tf_details['datum'] is None:
-                                    af_applied = ""
-                                else:
-                                    af_applied = tf_details['datum']
-                                if af['name'] != af_old:
+                                if not af['name'] in cached_af_descriptions:
                                     af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
                                                                                                           af['name'],
                                                                                                           gf['name'],
@@ -2650,7 +2727,9 @@ def prepareTransferJSONdata(user_info, request, headers):
                                         af['description'] = "Keine Beschreibung vorhanden!"
                                     else:
                                         af['description'] = af_description_helper[0]['af_beschreibung']
-                                    af_old = af['name']
+                                    cached_af_descriptions[af['name']] = af_description_helper
+                                else:
+                                    af_description_helper = cached_af_descriptions.get(af['name'])
                                 if gf['name'] != gf_old:
                                     if not tf_details['gf_beschreibung']:
                                         gf['description'] = "Keine Beschreibung vorhanden!"
@@ -2658,7 +2737,92 @@ def prepareTransferJSONdata(user_info, request, headers):
                                         gf['description'] = tf_details['gf_beschreibung']
                                     gf_old = gf['name']
 
-    return transfer_graph_data, transfer_list_with_category, single_rights_count
+    return delete_graph_data, delete_list_with_category, single_rights_count, cached_af_descriptions
+
+
+def prepareTransferJSONdata(user_info, request, headers, legend_data, cached_af_descriptions):
+    '''
+    method to prepare transferlist-data for display as circlepacking
+    :param transfer_json_data:
+    :return:
+    '''
+    transfer_graph_data = {"children": []}
+    transfer_list_with_category = []
+    single_rights_count = 0
+    for u in user_info:
+        user = u['user_data'].copy()
+        user['name'] = user['userid']
+        user['children'] = []
+        user_userid_combination = u['rights_data'].copy()
+        user['user_userid_combi_id'] = user_userid_combination['id']
+        transfer_graph_data['children'].append(user)
+        for rolle in user_userid_combination['transfer_list']:
+            # rolle = get_by_url(rolle, headers)
+            rolle_details = rolle['model_rolle_id']
+            # rolle_details = get_by_url(rolle['model_rolle_id'], headers)
+            rolle['name'] = rolle_details['rollenname']
+            rolle['description'] = rolle_details['rollenbeschreibung']
+            rolle['children'] = []
+            user['children'].append(rolle)
+            for af in rolle['applied_afs']:
+                # af = get_by_url(af, headers)
+                if af['applied_gfs']:
+                    af_details = af['model_af_id']
+                    # af_details = get_by_url(af['model_af_id'], headers)
+                    af['name'] = af_details['af_name']
+                    af['children'] = []
+                    rolle['children'].append(af)
+
+                    gf_old = None
+                    for gf in af['applied_gfs']:
+                        # gf = get_by_url(gf, headers)
+                        if gf['applied_tfs']:
+                            gf_details = gf['model_gf_id']
+                            # gf_details = get_by_url(gf['model_gf_id'], headers)
+                            gf['name'] = gf_details['name_gf_neu']
+                            gf['children'] = []
+                            af['children'].append(gf)
+
+                            for tf in gf['applied_tfs']:
+                                # tf = get_by_url(tf, headers)
+                                tf_details = tf['model_tf_id']
+                                # tf_details = get_by_url(tf['model_tf_id'], headers)
+                                tf['name'] = tf_details['tf']
+                                tf['size'] = 3000
+                                gf['children'].append(tf)
+                                single_rights_count += 1
+                                plattform = legend_data.get(tf_details['plattform'])
+                                hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                                tf['color'] = hslColor
+                                af_applied = None
+                                tf['description'] = tf_details['tf_beschreibung']
+                                if tf['description'] is None:
+                                    tf['description'] = "Keine Beschreibung vorhanden!"
+                                if tf_details['datum'] is None:
+                                    af_applied = ""
+                                else:
+                                    af_applied = tf_details['datum']
+                                if not af['name'] in cached_af_descriptions:
+                                    af_description_helper = get_af_description_from_Tblrechteneuvonimport(user['name'],
+                                                                                                          af['name'],
+                                                                                                          gf['name'],
+                                                                                                          tf['name'],
+                                                                                                          headers)
+                                    if not af_description_helper:
+                                        af['description'] = "Keine Beschreibung vorhanden!"
+                                    else:
+                                        af['description'] = af_description_helper[0]['af_beschreibung']
+                                    cached_af_descriptions[af['name']] = af_description_helper
+                                else:
+                                    af_description_helper = cached_af_descriptions.get(af['name'])
+                                if gf['name'] != gf_old:
+                                    if not tf_details['gf_beschreibung']:
+                                        gf['description'] = "Keine Beschreibung vorhanden!"
+                                    else:
+                                        gf['description'] = tf_details['gf_beschreibung']
+                                    gf_old = gf['name']
+
+    return transfer_graph_data, transfer_list_with_category, single_rights_count, cached_af_descriptions
 
 
 class TblRollenViewSet(viewsets.ModelViewSet):
@@ -2735,6 +2899,7 @@ class TblUebersichtAfGfsViewSet(viewsets.ModelViewSet):
 class TblOrgaViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = TblOrgaSerializer
+    pagination_class = None
 
     def get_queryset(self):
         return TblOrga.objects.all()
@@ -2743,8 +2908,48 @@ class TblOrgaViewSet(viewsets.ModelViewSet):
 class TblUserIDundNameViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = TblUserIDundNameSerializer
+    pagination_class = None
 
     def get_queryset(self):
+        if 'field' in self.request.GET:
+            field = self.request.GET['field']
+            data = TblUserIDundName.objects.order_by(field).values_list(field,flat=True).distinct()
+            qs_all=[]
+            for d in data:
+                if field == 'zi_organisation':
+                    qs = TblUserIDundName.objects.filter(zi_organisation=d)
+                elif field == 'abteilung':
+                    qs = TblUserIDundName.objects.filter(abteilung=d)
+                elif field == 'gruppe':
+                    qs = TblUserIDundName.objects.filter(gruppe=d)
+                qs_list = list(qs)
+                qs_all.append(qs_list[0])
+            return qs_all
+        elif 'search_what' in self.request.GET:
+            search_what = self.request.GET["search_what"]
+            user_search = self.request.GET["userSearch"]
+            if search_what == "identity":
+                users = TblUserIDundName.objects.filter(userid__istartswith=user_search).order_by('name')
+            elif search_what == "name":
+                users = TblUserIDundName.objects.filter(name__istartswith=user_search).order_by('name')
+            if 'orga' in self.request.GET:
+                orga = self.request.GET['orga']
+                users = users.filter(orga__team=orga)
+            if 'zi_organisation' in self.request.GET:
+                zi_organisation = self.request.GET['zi_organisation']
+                users = users.filter(zi_organisation=zi_organisation)
+            if 'abteilung' in self.request.GET:
+                abteilung = self.request.GET['abteilung']
+                users = users.filter(abteilung=abteilung)
+            if 'gruppe' in self.request.GET:
+                gruppe = self.request.GET['gruppe']
+                users = users.filter(gruppe=gruppe)
+            return users
+        elif 'xvnumber' in self.request.GET:
+            xvnumber = self.request.GET['xvnumber']
+            user_id_und_name = TblUserIDundName.objects.filter(userid=xvnumber)
+            return user_id_und_name
+
         return TblUserIDundName.objects.all()
 
     def patch(self, request, *args, **kwargs):
@@ -2979,8 +3184,13 @@ class UserHatTblUserIDundNameViewSet(viewsets.ModelViewSet):
         if 'user_pk' in self.request.GET and 'userid_name_pk' in self.request.GET:
             user_pk = self.request.GET['user_pk']
             userid_name_pk = self.request.GET['userid_name_pk']
-            filtered = UserHatTblUserIDundName.objects.filter(user_name=user_pk) \
-                .filter(userid_name_id=userid_name_pk)
+            if user_pk == 'None':
+                filtered = UserHatTblUserIDundName.objects.filter(userid_name_id=userid_name_pk)
+            elif userid_name_pk == 'None':
+                filtered = UserHatTblUserIDundName.objects.filter(user_name=user_pk)
+            else:
+                filtered = UserHatTblUserIDundName.objects.filter(user_name=user_pk) \
+                    .filter(userid_name_id=userid_name_pk)
             return filtered
         return UserHatTblUserIDundName.objects.all()
 

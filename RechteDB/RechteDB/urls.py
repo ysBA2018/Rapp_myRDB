@@ -58,7 +58,7 @@ router.register(r'rollehatafs', views.TblRollehatafViewSet, 'rollehataf')
 router.register(r'afhatgfs', views.TblAfHatGfViewSet, 'afhatgf')
 router.register(r'gfhattfs', views.TblGfHatTfViewSet, 'gfhattf')
 
-router.register(r'fulluserhatuseridundnamen', views.FullRightsUserHatTblUserIDundNameViewSet, 'userhatuseridundname')
+router.register(r'fulluserhatuseridundnamen', views.FullRightsUserHatTblUserIDundNameViewSet, 'fulluserhatuseridundname')
 router.register(r'fullappliedroles', views.FullRightsTblAppliedRolleViewSet, 'fullappliedrole')
 router.register(r'fullappliedafs', views.FullRightsTblAppliedAfsViewSet, 'fullappliedaf')
 router.register(r'fullappliedgfs', views.FullRightsTblAppliedGfsViewSet, 'fullappliedgf')

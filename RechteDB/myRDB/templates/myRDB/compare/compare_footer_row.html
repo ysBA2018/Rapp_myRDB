@@ -7,23 +7,17 @@
             {% include 'myRDB/trashTableTemplate.html' %}
         {% endif %}
     </div>
-    <div class="col-6">
-        <div class="card">
-            {# Hier die Übertragenen-liste realisieren #}
-            {% if view_mode == "Graphische Ansicht" %}
-                {% include 'myRDB/transferTemplate.html' %}
-            {% else %}
-                {% include 'myRDB/transferTableTemplate.html' %}
-            {% endif %}
-        </div>
-    </div>
     <div class="col">
+        {# Hier die Übertragenen-liste realisieren #}
+        {% if view_mode == "Graphische Ansicht" %}
+            {% include 'myRDB/transferTemplate.html' %}
+        {% else %}
+            {% include 'myRDB/transferTableTemplate.html' %}
+        {% endif %}
+    </div>
+    <div class="col-6">
         <div class="row-fluid">
-            <div class="card">
-                <div class="card-body">
-                    {# Hier die legende realisieren #}
-                </div>
-            </div>
+            {% include 'myRDB/profile/profileLegendTemplate.html' %}
         </div>
         <div class="row-fluid top-buffer">
             <div class="card">

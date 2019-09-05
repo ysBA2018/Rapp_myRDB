@@ -8,9 +8,11 @@
         {# Hier die Transfer-Drop-Fläche realisieren #}
         <script type="text/javascript" >
             var transferlistdata = {{ transferlist | asjson }};
-            var transfer_table_data = {{ transfer_list_table_data | safe }};
             var transfer_table_count = {{ transfer_list_count }};
             var updateTransfer;
+        </script>
+        <script type="text/javascript" >
+            var transfer_table_data = {{ transfer_list_table_data | safe }};
         </script>
         <svg class="transfer" id="transferSVG" width="180" height="180"></svg>
         <script type="text/javascript" src="{% static 'myRDB/js/circle_packing/transferCirclePacking.js' %}"></script>

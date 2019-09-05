@@ -33,17 +33,19 @@ $(document).ready(function(){
           .style("opacity",0);
 
       function get_opacity(d) {
-          if(d.depth ===0) return 0.5;
-          if(d.depth ===1) return 0.7;
-          if(d.depth ===2) return 0.8;
-          if(d.depth ===3) return 0.9;
+          if(d.depth ===0) return 0.4;
+          if(d.depth ===1) return 0.5;
+          if(d.depth ===2) return 0.6;
+          if(d.depth ===3) return 0.7;
+          if(d.depth ===4) return 0.8;
+          if(d.depth ===5) return 0.9;
       }
       function get_color(d) {
           if(d.depth===0){
               return "white";
           }
           else{
-              if(d.depth===3){return d.data.color}
+              if(d.depth===5){return d.data.color}
               else{return "white"}
           }
       }
@@ -64,14 +66,18 @@ $(document).ready(function(){
           .on("mouseover",function (d) {
               div.transition()
                   .duration(200)
-                  .style("opacity",9)
+                  .style("opacity",9);
               var text;
               if(d.depth === 1){
-                  text = "<b>AF:</b> "+d.data.name
+                  text = "<b>User:</b> "+d.data.name+"<br/>"
               }else if(d.depth === 2){
-                  text = "<b>GF:</b> "+d.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.data.name
+                  text = "<b>Rolle:</b> "+d.data.name+"<br/>"+"<b>Rollen-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 3){
-                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>GF:</b> "+d.parent.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.parent.data.name
+                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 4){
+                  text = "<b>GF:</b> "+d.data.name+"<br/>"+"<b>GF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 5){
+                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>TF-Beschreibung:</b> "+d.data.description
               }
               div .html(text)
                   .style("left",(d3.event.pageX)+"px")
@@ -82,10 +88,6 @@ $(document).ready(function(){
                   .duration(500)
                   .style("opacity",0)
           });
-
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
 
       //var text = g.selectAll("text")
       //  .data(nodes)
@@ -197,14 +199,18 @@ $(document).ready(function(){
           .on("mouseover",function (d) {
               div.transition()
                   .duration(200)
-                  .style("opacity",9)
+                  .style("opacity",9);
               var text;
               if(d.depth === 1){
-                  text = "<b>AF:</b> "+d.data.name
+                  text = "<b>User:</b> "+d.data.name+"<br/>"
               }else if(d.depth === 2){
-                  text = "<b>GF:</b> "+d.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.data.name
+                  text = "<b>Rolle:</b> "+d.data.name+"<br/>"+"<b>Rollen-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 3){
-                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>GF:</b> "+d.parent.data.name+"<br/>"+ "<b>AF:</b> "+d.parent.parent.data.name
+                  text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 4){
+                  text = "<b>GF:</b> "+d.data.name+"<br/>"+"<b>GF-Beschreibung:</b> "+d.data.description
+              }else if(d.depth === 5){
+                  text = "<b>TF:</b> "+d.data.name+"<br/>"+"<b>TF-Beschreibung:</b> "+d.data.description
               }
               div .html(text)
                   .style("left",(d3.event.pageX)+"px")
@@ -215,11 +221,11 @@ $(document).ready(function(){
                   .duration(500)
                   .style("opacity",0)
           });
-
+      /*
       leaves = d3.selectAll("circle").filter(function(d){
         return d.children === null;
       });
-
+        */
       //var text = g.selectAll("text")
       //  .data(nodes)
       //  .enter().append("text")
@@ -288,12 +294,14 @@ $(document).ready(function(){
     }
     function confirm_restore(d,i) {
           d3.event.preventDefault();
-          bootbox.confirm("Berechtigung:\n\n"+d.data.name+"\n\nvon Transferliste entfernen?\n\n", function (result) {
-                console.log('This was logged in the callback: ' + result);
-                if(result===true){
-                    restorefunction(d,i)
-                }
-            });
+          if(d.depth!==1){
+              bootbox.confirm("Berechtigung:\n\n"+d.data.name+"\n\nvon Transferliste entfernen?\n\n", function (result) {
+                    console.log('This was logged in the callback: ' + result);
+                    if(result===true){
+                        restorefunction(d,i)
+                    }
+                });
+          }
       }
 
     function restorefunction(d,i){
@@ -323,25 +331,47 @@ $(document).ready(function(){
                     }
                 }
             });
-            var right_type="",right_parent = "",right_grandparent = "";
-            if(d.depth===1){
-                right_type="af";
-            }
-            else if(d.depth===2){
-                right_type="gf";
+            var right_type = "", right_parent = "", right_grandparent = "", right_greatgrandparent = "",
+            right_greatgreatgrandparent = "", user_userid_combi_id = "";
+            if (d.depth === 1) right_type = "user";
+            else if (d.depth === 2) {
+                right_type = "role";
                 right_parent = d.parent.data.name;
-            }
-            else if(d.depth === 3){
-                right_type="tf";
-                right_grandparent = d.parent.parent.data.name;
-                right_parent = d.parent.data.name;
-            }
+                user_userid_combi_id = d.parent.data.user_userid_combi_id;
 
-            var data = {"X-CSRFToken":getCookie("csrftoken"),"X_METHODOVERRIDE":'PATCH',"user":window.user,"action_type":"restore_transfer","right_type":right_type,"right_name":d.data.name,"parent":right_parent,"grandparent":right_grandparent};
+            } else if (d.depth === 3) {
+                right_type = "af";
+                right_parent = d.parent.data.name;
+                right_grandparent = d.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.data.user_userid_combi_id;
+
+            } else if (d.depth === 4) {
+                right_type = "gf";
+                right_parent = d.parent.data.name;
+                right_grandparent = d.parent.parent.data.name;
+                right_greatgrandparent = d.parent.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.parent.data.user_userid_combi_id;
+
+            } else if (d.depth === 5) {
+                right_type = "tf";
+                right_parent = d.parent.data.name;
+                right_grandparent = d.parent.parent.data.name;
+                right_greatgrandparent = d.parent.parent.parent.data.name;
+                right_greatgreatgrandparent = d.parent.parent.parent.parent.data.name;
+                user_userid_combi_id = d.parent.parent.parent.parent.data.user_userid_combi_id;
+
+            }
+            var data = {"X-CSRFToken":getCookie("csrftoken"),"X_METHODOVERRIDE":'PATCH',"user":window.user,
+                "action_type":"restore_transfer","right_type":right_type,"right_name":d.data.name,"parent":right_parent,
+                "grandparent":right_grandparent, "greatgrandparent": right_greatgrandparent,
+                "greatgreatgrandparent": right_greatgreatgrandparent,
+            };
             var successful=false;
+            var comparing_user_userid_combi_id = window.jsondata['children'][0]['user_userid_combi_id'];
+
             $.ajax({type:'POST',
                     data:data,
-                    url:'http://127.0.0.1:8000/users/'+window.user+'/',
+                    url:window.current_host + '/api/userhatuseridundnamen/' + comparing_user_userid_combi_id + '/',
                     async:false,
                     success: function(res){console.log(res);
                         successful=true},
@@ -374,6 +404,14 @@ $(document).ready(function(){
 
       }
       function update_right_counters(right,type){
+        if (type === "role"){
+            for (j in right['children']){
+                for(k in right['children'][j]['children']){
+                    window.transfer_table_count-=right['children'][j]['children'][k]['children'].length;
+                }
+            }
+            document.getElementById('graph_transfer_badge').innerHTML = window.transfer_table_count;
+        }
         if (type === "af"){
             for (j in right['children']){
                 window.transfer_table_count-=right['children'][j]['children'].length;
@@ -392,46 +430,100 @@ $(document).ready(function(){
 
       //-------> TODO: an ein level für Rollen denken sobald rollen eingefügt
       function update_rights(transfer,level,d){
-        if (d.depth===1){
-            for (transfer_item in transfer) {
-                if (transfer[transfer_item]['name'] === d.data.name) {
-                    console.log(transfer_item + "," + d.data.name);
-                    update_right_counters(transfer[transfer_item],level);
-                    transfer.splice(transfer_item, 1);
-                    console.log("transfer");
-                    console.log(transfer);
-                    return;
-                }
-            }
-        }
         if (d.depth===2){
             for (transfer_item in transfer) {
-                if (transfer[transfer_item]['name'] === d.parent.data.name) {
-                    var lev_2 = transfer[transfer_item]['children'];
-                    for(j in lev_2){
-                        if (lev_2[j]['name']===d.data.name){
-                            console.log(j + "," + d.data.name);
-                            update_right_counters(lev_2[j],level);
-                            lev_2.splice(j, 1);
-                            return;
-                        }
+                var lev_2 = transfer[transfer_item]['children'];
+                for(j in lev_2){
+                    if (lev_2[j]['name']===d.data.name){
+                        console.log(j + "," + d.data.name);
+                        update_right_counters(lev_2[j],level);
+                        lev_2.splice(j, 1);
+                        return;
                     }
                 }
             }
         }
         if (d.depth===3){
             for (transfer_item in transfer) {
-                if (transfer[transfer_item]['name'] === d.parent.parent.data.name) {
-                    var lev_2 = transfer[transfer_item]['children'];
-                    for(j in lev_2){
-                        if (lev_2[j]['name']===d.parent.data.name){
-                            var lev_3 = lev_2[j]['children'];
-                            for(k in lev_3) {
-                                if (lev_3[k]['name'] === d.data.name) {
-                                    console.log(k + "," + d.data.name);
-                                    update_right_counters(lev_3[k], level);
-                                    lev_3.splice(k, 1);
-                                    return;
+                var lev_2 = transfer[transfer_item]['children'];
+                for(j in lev_2){
+                    if (lev_2[j]['name']===d.parent.data.name){
+                        var lev_3 = lev_2[j]['children'];
+                        for(k in lev_3) {
+                            if (lev_3[k]['name'] === d.data.name) {
+                                console.log(k + "," + d.data.name);
+                                update_right_counters(lev_3[k], level);
+                                lev_3.splice(k, 1);
+                                if(lev_3.length===0){
+                                    lev_2.splice(j,1)
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        if (d.depth===4){
+            for (transfer_item in transfer) {
+                var lev_2 = transfer[transfer_item]['children'];
+                for(j in lev_2){
+                    if (lev_2[j]['name']===d.parent.parent.data.name){
+                        var lev_3 = lev_2[j]['children'];
+                        for(k in lev_3) {
+                            if (lev_3[k]['name'] === d.parent.data.name) {
+                                var lev_4 = lev_3[k]['children'];
+                                for(l in lev_4) {
+                                    if (lev_4[l]['name'] === d.data.name) {
+                                        console.log(l + "," + d.data.name);
+                                        update_right_counters(lev_4[l], level);
+                                        lev_4.splice(l, 1);
+                                        if(lev_4.length===0){
+                                            lev_3.splice(k,1)
+                                        }
+                                        if(lev_3.length===0){
+                                            lev_2.splice(j,1)
+                                        }
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (d.depth===5){
+            for (transfer_item in transfer) {
+                var lev_2 = transfer[transfer_item]['children'];
+                for(j in lev_2){
+                    if (lev_2[j]['name']===d.parent.parent.parent.data.name){
+                        var lev_3 = lev_2[j]['children'];
+                        for(k in lev_3) {
+                            if (lev_3[k]['name'] === d.parent.parent.data.name) {
+                                var lev_4 = lev_3[k]['children'];
+                                for(l in lev_4) {
+                                    if (lev_4[l]['name'] === d.parent.data.name) {
+                                        var lev_5 = lev_4[l]['children'];
+                                        for(m in lev_5) {
+                                            if (lev_5[m]['name'] === d.data.name) {
+                                                console.log(m + "," + d.data.name);
+                                                update_right_counters(lev_5[m], level);
+                                                lev_5.splice(m, 1);
+                                                if(lev_5.length===0){
+                                                    lev_4.splice(l,1)
+                                                }
+                                                if(lev_4.length===0){
+                                                    lev_3.splice(k,1)
+                                                }
+                                                if(lev_3.length===0){
+                                                    lev_2.splice(j,1)
+                                                }
+                                                return;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

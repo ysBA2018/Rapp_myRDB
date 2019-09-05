@@ -1,6 +1,5 @@
-
 import json
-
+from copy import deepcopy
 from rest_framework import serializers
 import copy
 # from .models import Orga, Department, Group, ZI_Organisation, TF_Application, TF, GF, AF, Role, User, User_GF, User_AF, \
@@ -447,117 +446,460 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
 
     def add_to_transfer_list(self, instance, data):
         print("in add_to_transfer_lst")
-        '''
-        compareUser = User.objects.get(identity=data['compare_user'])
-        if data['right_type'] == "af":
-            for af in compareUser.user_afs:
-                if af.af_name == data['right_name']:
-                    cpy_af = self.copy_user_right(af, data['right_type'])
-                    cpy_af.transfer = True
-                    instance.transfer_list.append(cpy_af)
-                    break
-        # TODO: ab hier noch nicht durchgetestet
-        elif data['right_type'] == "gf":
-            for af in compareUser.user_afs:
-                if af.af_name == data['parent']:
-                    for gf in af.gfs:
-                        if gf.gf_name == data['right_name']:
-                            added = False
-                            cpy_gf = self.copy_user_right(gf, data['right_type'])
-                            cpy_gf.transfer = True
-                            for ele in instance.transfer_list:
-                                if ele.af_name == data['parent']:
-                                    ele.gfs.append(cpy_gf)
-                                    added = True
-                                    break
-                            if not added:
-                                cpy_af = User_AF(af_name=af.af_name, model_af_pk=af.model_af_pk, gfs=[])
-                                cpy_af.gfs.append(cpy_gf)
-                                instance.transfer_list.append(cpy_af)
+        upper_compare_user_name = data['compare_user'].upper()
+        compareUser = TblUserIDundName.objects.get(userid=upper_compare_user_name)
+        compareUserRights = UserHatTblUserIDundName.objects.get(userid_name_id=compareUser.id)
+        if data['right_type'] == 'role':
+            for rolle in compareUserRights.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['right_name']:
+                    rolle_found = False
+                    for trans_rolle in instance.transfer_list.all():
+                        if rolle.model_rolle_id.rollenid == trans_rolle.model_rolle_id.rollenid:
+                            rolle_found = True
                             break
+                    if not rolle_found:
+                        '''TODO: FIX LÖSCHEN VON NESTED-MODELS bei remove von Transferliste
+                                |--> CLONE von Model erzeugen mit anderen ID'S auf allen Hierarchieebenen'''
+                        cpy_rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle.model_rolle_id,
+                                                                   userHatUserID_id=instance)
+                        for af in rolle.applied_afs.all():
+                            cpy_af = TblAppliedAf.objects.create(model_af_id=af.model_af_id,
+                                                                 applied_rolle_id=cpy_rolle,
+                                                                 userHatUserID_id=instance)
+                            for gf in af.applied_gfs.all():
+                                cpy_gf = TblAppliedGf.objects.create(model_gf_id=gf.model_gf_id,
+                                                                     applied_rolle_id=cpy_rolle,
+                                                                     applied_af_id=cpy_af,
+                                                                     userHatUserID_id=instance)
+                                for tf in gf.applied_tfs.all():
+                                    cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                         applied_rolle_id=cpy_rolle,
+                                                                         applied_af_id=cpy_af,
+                                                                         applied_gf_id=cpy_gf,
+                                                                         userHatUserID_id=instance)
+                                    cpy_gf.applied_tfs.add(cpy_tf.id)
+                                cpy_af.applied_gfs.add(cpy_gf.id)
+                            cpy_rolle.applied_afs.add(cpy_af.id)
+                        instance.transfer_list.add(cpy_rolle.id)
+                        return instance
                     else:
-                        continue
-                    break
-        elif data['right_type'] == "tf":
-            for af in compareUser.user_afs:
-                if af.af_name == data['grandparent']:
-                    for gf in af.gfs:
-                        if gf.gf_name == data['parent']:
-                            for tf in gf.tfs:
-                                if tf.tf_name == data['right_name']:
-                                    cpy_tf = self.copy_user_right(tf, data['right_type'])
-                                    cpy_tf.transfer = True
-                                    added = False
-                                    for ele in instance.transfer_list:
-                                        if ele.af_name == data['grandparent']:
-                                            for user_gf in ele.gfs:
-                                                if user_gf.gf_name == data['parent']:
-                                                    user_gf.tfs.append(cpy_tf)
-                                                    added = True
-                                                    break
-                                            else:
-                                                continue
-                                            break
-                                    if not added:
-                                        cpy_af = User_AF(af_name=af.af_name, model_af_pk=af.model_af_pk, gfs=[])
-                                        cpy_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.model_gf_pk, tfs=[])
-                                        cpy_gf.tfs.append(cpy_tf)
-                                        cpy_af.gfs.append(cpy_gf)
-                                        instance.transfer_list.append(cpy_af)
+                        for applied_af in rolle.applied_afs.all():
+                            af_found = False
+                            for trans_af in trans_rolle.applied_afs.all():
+                                if applied_af.model_af_id.id == trans_af.model_af_id.id:
+                                    af_found = True
                                     break
+                            if not af_found:
+                                cpy_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
+                                                                     applied_rolle_id=trans_rolle,
+                                                                     userHatUserID_id=instance)
+                                for gf in applied_af.applied_gfs.all():
+                                    cpy_gf = TblAppliedGf.objects.create(model_gf_id=gf.model_gf_id,
+                                                                         applied_rolle_id=trans_rolle,
+                                                                         applied_af_id=cpy_af,
+                                                                         userHatUserID_id=instance)
+                                    for tf in gf.applied_tfs.all():
+                                        cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                             applied_rolle_id=trans_rolle,
+                                                                             applied_af_id=cpy_af,
+                                                                             applied_gf_id=cpy_gf,
+                                                                             userHatUserID_id=instance)
+                                        cpy_gf.applied_tfs.add(cpy_tf.id)
+                                    cpy_af.applied_gfs.add(cpy_gf.id)
+                                trans_rolle.applied_afs.add(cpy_af.id)
                             else:
-                                continue
-                            break
-                    else:
-                        continue
-                    break
-                    '''
+                                for applied_gf in applied_af.applied_gfs.all():
+                                    gf_found = False
+                                    for trans_gf in trans_af.applied_gfs.all():
+                                        if applied_gf.model_gf_id.id == trans_gf.model_gf_id.id:
+                                            gf_found = True
+                                            break
+                                    if not gf_found:
+                                        cpy_gf = TblAppliedGf.objects.create(model_gf_id=applied_gf.model_gf_id,
+                                                                             applied_rolle_id=trans_rolle,
+                                                                             applied_af_id=trans_af,
+                                                                             userHatUserID_id=instance)
+                                        for tf in applied_gf.applied_tfs.all():
+                                            cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                                 applied_rolle_id=trans_rolle,
+                                                                                 applied_af_id=trans_af,
+                                                                                 applied_gf_id=cpy_gf,
+                                                                                 userHatUserID_id=instance)
+                                            cpy_gf.applied_tfs.add(cpy_tf.id)
+                                        trans_af.applied_gfs.add(cpy_gf.id)
+                                    else:
+                                        for applied_tf in applied_gf.applied_tfs.all():
+                                            tf_found = False
+                                            for trans_tf in trans_gf.applied_tfs.all():
+                                                if applied_tf.model_tf_id.id == trans_tf.motrans_tf_id.id:
+                                                    tf_found = True
+                                                    break
+                                            if not tf_found:
+                                                cpy_tf = TblAppliedTf.objects.create(model_tf_id=applied_tf.model_tf_id,
+                                                                                     applied_rolle_id=trans_rolle,
+                                                                                     applied_af_id=trans_af,
+                                                                                     applied_gf_id=trans_gf,
+                                                                                     userHatUserID_id=instance)
+                                                trans_gf.applied_tfs.add(cpy_tf.id)
+                    return instance
+        elif data['right_type'] == 'af':
+            for rolle in compareUserRights.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['parent']:
+                    for applied_af in rolle.applied_afs.all():
+                        if applied_af.model_af_id.af_name == data['right_name']:
+                            rolle_found = False
+                            for trans_rolle in instance.transfer_list.all():
+                                if rolle.model_rolle_id.rollenid == trans_rolle.model_rolle_id.rollenid:
+                                    rolle_found = True
+                                    break
+                            if not rolle_found:
+                                cpy_rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle.model_rolle_id,
+                                                                           userHatUserID_id=instance)
+                                cpy_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
+                                                                     applied_rolle_id=cpy_rolle,
+                                                                     userHatUserID_id=instance)
+                                for gf in applied_af.applied_gfs.all():
+                                    cpy_gf = TblAppliedGf.objects.create(model_gf_id=gf.model_gf_id,
+                                                                         applied_rolle_id=cpy_rolle,
+                                                                         applied_af_id=cpy_af,
+                                                                         userHatUserID_id=instance)
+                                    for tf in gf.applied_tfs.all():
+                                        cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                             applied_rolle_id=cpy_rolle,
+                                                                             applied_af_id=cpy_af,
+                                                                             applied_gf_id=cpy_gf,
+                                                                             userHatUserID_id=instance)
+                                        cpy_gf.applied_tfs.add(cpy_tf.id)
+                                    cpy_af.applied_gfs.add(cpy_gf.id)
+                                cpy_rolle.applied_afs.add(cpy_af.id)
+                                instance.transfer_list.add(cpy_rolle.id)
+                                return instance
+                            else:
+                                af_found = False
+                                for trans_af in trans_rolle.applied_afs.all():
+                                    if applied_af.model_af_id.id == trans_af.model_af_id.id:
+                                        af_found = True
+                                        break
+                                if not af_found:
+                                    cpy_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
+                                                                         applied_rolle_id=trans_rolle,
+                                                                         userHatUserID_id=instance)
+                                    for gf in applied_af.applied_gfs.all():
+                                        cpy_gf = TblAppliedGf.objects.create(model_gf_id=gf.model_gf_id,
+                                                                             applied_rolle_id=trans_rolle,
+                                                                             applied_af_id=cpy_af,
+                                                                             userHatUserID_id=instance)
+                                        for tf in gf.applied_tfs.all():
+                                            cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                                 applied_rolle_id=trans_rolle,
+                                                                                 applied_af_id=cpy_af,
+                                                                                 applied_gf_id=cpy_gf,
+                                                                                 userHatUserID_id=instance)
+                                            cpy_gf.applied_tfs.add(cpy_tf.id)
+                                        cpy_af.applied_gfs.add(cpy_gf.id)
+                                    trans_rolle.applied_afs.add(cpy_af.id)
+                                    return instance
+                                else:
+                                    for applied_gf in applied_af.applied_gfs.all():
+                                        gf_found = False
+                                        for trans_gf in trans_af.applied_gfs.all():
+                                            if applied_gf.model_gf_id.id == trans_gf.model_gf_id.id:
+                                                gf_found = True
+                                                break
+                                        if not gf_found:
+                                            cpy_gf = TblAppliedGf.objects.create(model_gf_id=applied_gf.model_gf_id,
+                                                                                 applied_rolle_id=trans_rolle,
+                                                                                 applied_af_id=trans_af,
+                                                                                 userHatUserID_id=instance)
+                                            for tf in applied_gf.applied_tfs.all():
+                                                cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                                     applied_rolle_id=trans_rolle,
+                                                                                     applied_af_id=trans_af,
+                                                                                     applied_gf_id=cpy_gf,
+                                                                                     userHatUserID_id=instance)
+                                                cpy_gf.applied_tfs.add(cpy_tf.id)
+                                            trans_af.applied_gfs.add(cpy_gf.id)
+                                        else:
+                                            for applied_tf in applied_gf.applied_tfs.all():
+                                                tf_found = False
+                                                for trans_tf in trans_gf.applied_tfs.all():
+                                                    if applied_tf.model_tf_id.id == trans_tf.model_tf_id.id:
+                                                        tf_found = True
+                                                        break
+                                                if not tf_found:
+                                                    cpy_tf = TblAppliedTf.objects.create(
+                                                        model_tf_id=applied_tf.model_tf_id,
+                                                        applied_rolle_id=trans_rolle,
+                                                        applied_af_id=trans_af,
+                                                        applied_gf_id=trans_gf,
+                                                        userHatUserID_id=instance)
+                                                    trans_gf.applied_tfs.add(cpy_tf.id)
+                            return instance
+        elif data['right_type'] == 'gf':
+            for rolle in compareUserRights.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['grandparent']:
+                    for applied_af in rolle.applied_afs.all():
+                        if applied_af.model_af_id.af_name == data['parent']:
+                            for applied_gf in applied_af.applied_gfs.all():
+                                if applied_gf.model_gf_id.name_gf_neu == data['right_name']:
+                                    rolle_found = False
+                                    for trans_rolle in instance.transfer_list.all():
+                                        if rolle.model_rolle_id.rollenid == trans_rolle.model_rolle_id.rollenid:
+                                            rolle_found = True
+                                            break
+                                    if not rolle_found:
+                                        cpy_rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle.model_rolle_id,
+                                                                                   userHatUserID_id=instance)
+
+                                        cpy_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
+                                                                             applied_rolle_id=cpy_rolle,
+                                                                             userHatUserID_id=instance)
+
+                                        cpy_gf = TblAppliedGf.objects.create(model_gf_id=applied_gf.model_gf_id,
+                                                                             applied_rolle_id=cpy_rolle,
+                                                                             applied_af_id=cpy_af,
+                                                                             userHatUserID_id=instance)
+                                        for tf in applied_gf.applied_tfs.all():
+                                            cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                                 applied_rolle_id=cpy_rolle,
+                                                                                 applied_af_id=cpy_af,
+                                                                                 applied_gf_id=cpy_gf,
+                                                                                 userHatUserID_id=instance)
+                                            cpy_gf.applied_tfs.add(cpy_tf.id)
+                                        cpy_af.applied_gfs.add(cpy_gf.id)
+                                        cpy_rolle.applied_afs.add(cpy_af.id)
+                                        instance.transfer_list.add(cpy_rolle.id)
+                                        return instance
+                                    else:
+                                        af_found = False
+                                        for trans_af in trans_rolle.applied_afs.all():
+                                            if applied_af.model_af_id.id == trans_af.model_af_id.id:
+                                                af_found = True
+                                                break
+                                        if not af_found:
+                                            cpy_af = TblAppliedAf.objects.create(model_af_id=applied_af.model_af_id,
+                                                                                 applied_rolle_id=trans_rolle,
+                                                                                 userHatUserID_id=instance)
+
+                                            cpy_gf = TblAppliedGf.objects.create(model_gf_id=applied_gf.model_gf_id,
+                                                                                 applied_rolle_id=trans_rolle,
+                                                                                 applied_af_id=cpy_af,
+                                                                                 userHatUserID_id=instance)
+                                            for tf in applied_gf.applied_tfs.all():
+                                                cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                                     applied_rolle_id=trans_rolle,
+                                                                                     applied_af_id=cpy_af,
+                                                                                     applied_gf_id=cpy_gf,
+                                                                                     userHatUserID_id=instance)
+                                                cpy_gf.applied_tfs.add(cpy_tf.id)
+                                            cpy_af.applied_gfs.add(cpy_gf.id)
+                                            trans_rolle.applied_afs.add(cpy_af.id)
+                                            return instance
+                                        else:
+                                            gf_found = False
+                                            for trans_gf in trans_af.applied_gfs.all():
+                                                if applied_gf.model_gf_id.id == trans_gf.model_gf_id.id:
+                                                    gf_found = True
+                                                    break
+                                            if not gf_found:
+                                                cpy_gf = TblAppliedGf.objects.create(model_gf_id=applied_gf.model_gf_id,
+                                                                                     applied_rolle_id=trans_rolle,
+                                                                                     applied_af_id=trans_af,
+                                                                                     userHatUserID_id=instance)
+                                                for tf in applied_gf.applied_tfs.all():
+                                                    cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf.model_tf_id,
+                                                                                         applied_rolle_id=trans_rolle,
+                                                                                         applied_af_id=trans_af,
+                                                                                         applied_gf_id=cpy_gf,
+                                                                                         userHatUserID_id=instance)
+                                                    cpy_gf.applied_tfs.add(cpy_tf.id)
+                                                trans_af.applied_gfs.add(cpy_gf.id)
+                                                return instance
+                                            else:
+                                                for applied_tf in applied_gf.applied_tfs.all():
+                                                    tf_found = False
+                                                    for trans_tf in trans_gf.applied_tfs.all():
+                                                        if applied_tf.model_tf_id.id == trans_tf.model_tf_id.id:
+                                                            tf_found = True
+                                                            break
+                                                    if not tf_found:
+                                                        cpy_tf = TblAppliedTf.objects.create(
+                                                            model_tf_id=applied_tf.model_tf_id,
+                                                            applied_rolle_id=trans_rolle,
+                                                            applied_af_id=trans_af,
+                                                            applied_gf_id=trans_gf,
+                                                            userHatUserID_id=instance)
+                                                        trans_gf.applied_tfs.add(cpy_tf.id)
+        elif data['right_type'] == 'tf':
+            for rolle in compareUserRights.rollen.all():
+                if rolle.model_rolle_id.rollenname == data['greatgrandparent']:
+                    for applied_af in rolle.applied_afs.all():
+                        if applied_af.model_af_id.af_name == data['grandparent']:
+                            for applied_gf in applied_af.applied_gfs.all():
+                                if applied_gf.model_gf_id.name_gf_neu == data['parent']:
+                                    for applied_tf in applied_gf.applied_tfs.all():
+                                        if applied_tf.model_tf_id.tf == data['right_name']:
+                                            rolle_found = False
+                                            for trans_rolle in instance.transfer_list.all():
+                                                if rolle.model_rolle_id.rollenid == trans_rolle.model_rolle_id.rollenid:
+                                                    rolle_found = True
+                                                    break
+                                            if not rolle_found:
+                                                cpy_rolle = TblAppliedRolle.objects.create(
+                                                    model_rolle_id=rolle.model_rolle_id,
+                                                    userHatUserID_id=instance)
+                                                cpy_af = TblAppliedAf.objects.create(
+                                                    model_af_id=applied_af.model_af_id,
+                                                    applied_rolle_id=cpy_rolle,
+                                                    userHatUserID_id=instance)
+                                                cpy_gf = TblAppliedGf.objects.create(
+                                                    model_gf_id=applied_gf.model_gf_id,
+                                                    applied_af_id=cpy_af,
+                                                    applied_rolle_id=cpy_rolle,
+                                                    userHatUserID_id=instance)
+                                                cpy_tf = TblAppliedTf.objects.create(
+                                                    model_tf_id=applied_tf.model_tf_id,
+                                                    applied_gf_id=cpy_gf,
+                                                    applied_af_id=cpy_af,
+                                                    applied_rolle_id=cpy_rolle,
+                                                    userHatUserID_id=instance)
+                                                cpy_gf.applied_tfs.add(cpy_tf.id)
+                                                cpy_af.applied_gfs.add(cpy_gf.id)
+                                                cpy_rolle.applied_afs.add(cpy_af.id)
+                                                instance.transfer_list.add(cpy_rolle.id)
+                                                return instance
+                                            else:
+                                                af_found = False
+                                                for trans_af in trans_rolle.applied_afs.all():
+                                                    if trans_af.model_af_id.id == applied_af.model_af_id.id:
+                                                        af_found = True
+                                                        break
+                                                if not af_found:
+                                                    cpy_af = TblAppliedAf.objects.create(
+                                                        model_af_id=applied_af.model_af_id,
+                                                        applied_rolle_id=trans_rolle,
+                                                        userHatUserID_id=instance)
+                                                    cpy_gf = TblAppliedGf.objects.create(
+                                                        model_gf_id=applied_gf.model_gf_id,
+                                                        applied_af_id=cpy_af,
+                                                        applied_rolle_id=trans_rolle,
+                                                        userHatUserID_id=instance)
+                                                    cpy_tf = TblAppliedTf.objects.create(
+                                                        model_tf_id=applied_tf.model_tf_id,
+                                                        applied_gf_id=cpy_gf,
+                                                        applied_af_id=cpy_af,
+                                                        applied_rolle_id=trans_rolle,
+                                                        userHatUserID_id=instance)
+                                                    cpy_gf.applied_tfs.add(cpy_tf.id)
+                                                    cpy_af.applied_gfs.add(cpy_gf.id)
+                                                    trans_rolle.applied_afs.add(cpy_af.id)
+                                                    return instance
+                                                else:
+                                                    gf_found = False
+                                                    for trans_gf in trans_af.applied_gfs.all():
+                                                        if trans_gf.model_gf_id.id == applied_gf.model_gf_id.id:
+                                                            gf_found = True
+                                                            break
+                                                    if not gf_found:
+                                                        cpy_gf = TblAppliedGf.objects.create(
+                                                            model_gf_id=applied_gf.model_gf_id,
+                                                            applied_af_id=trans_af,
+                                                            applied_rolle_id=trans_rolle,
+                                                            userHatUserID_id=instance)
+                                                        cpy_tf = TblAppliedTf.objects.create(
+                                                            model_tf_id=applied_tf.model_tf_id,
+                                                            applied_gf_id=cpy_gf,
+                                                            applied_af_id=trans_af,
+                                                            applied_rolle_id=trans_rolle,
+                                                            userHatUserID_id=instance)
+                                                        cpy_gf.applied_tfs.add(cpy_tf.id)
+                                                        trans_af.applied_gfs.add(cpy_gf.id)
+                                                        return instance
+                                                    else:
+                                                        cpy_tf = TblAppliedTf.objects.create(
+                                                            model_tf_id=applied_tf.model_tf_id,
+                                                            applied_gf_id=trans_gf,
+                                                            applied_af_id=trans_af,
+                                                            applied_rolle_id=trans_rolle,
+                                                            userHatUserID_id=instance)
+                                                        trans_gf.applied_tfs.add(cpy_tf.id)
+                                                        return instance
         return instance
 
     def remove_from_transfer_list(self, instance, data):
         print("in remove from transfer_list")
-        if data['right_type'] == "af":
-            index = 0
-            for right in instance.transfer_list:
-                if right.af_name == data['right_name']:
-                    instance.transfer_list.pop(index)
-                    break
-                index += 1
-        elif data['right_type'] == "gf":
-            af_index = 0
-            for right in instance.transfer_list:
-                if right.af_name == data['parent']:
-                    index = 0
-                    for gf in right.gfs:
-                        if gf.gf_name == data['right_name']:
-                            right.gfs.pop(index)
-                            break
-                        index += 1
-                    if not right.gfs:
-                        instance.transfer_list.pop(af_index)
-                af_index += 1
-        elif data['right_type'] == "tf":
-            af_index = 0
-            for right in instance.transfer_list:
-                if right.af_name == data['grandparent']:
-                    gf_index = 0
-                    for gf in right.gfs:
-                        if gf.gf_name == data['parent']:
-                            index = 0
-                            for tf in gf.tfs:
-                                if tf.tf_name == data['right_name']:
-                                    gf.tfs.pop(index)
-                                    break
-                                index += 1
-                            if not gf.tfs:
-                                right.gfs.pop(gf_index)
-                                break
-                        gf_index += 1
-                    if not right.gfs:
-                        instance.transfer_list.pop(af_index)
-                        break
-                af_index += 1
-
+        if data['right_type'] == 'role':
+            for trans_rolle in instance.transfer_list.all():
+                if trans_rolle.model_rolle_id.rollenname == data['right_name']:
+                    for trans_af in trans_rolle.applied_afs.all():
+                        for trans_gf in trans_af.applied_gfs.all():
+                            for trans_tf in trans_gf.applied_tfs.all():
+                                trans_gf.applied_tfs.remove(trans_tf)
+                                trans_tf.delete()
+                            trans_af.applied_gfs.remove(trans_gf)
+                            trans_gf.delete()
+                        trans_rolle.applied_afs.remove(trans_af)
+                        trans_af.delete()
+                    instance.transfer_list.remove(trans_rolle)
+                    trans_rolle.delete()
+                    return instance
+        elif data['right_type'] == 'af':
+            for trans_rolle in instance.transfer_list.all():
+                if trans_rolle.model_rolle_id.rollenname == data['parent']:
+                    for trans_af in trans_rolle.applied_afs.all():
+                        if trans_af.model_af_id.af_name == data['right_name']:
+                            for trans_gf in trans_af.applied_gfs.all():
+                                for trans_tf in trans_gf.applied_tfs.all():
+                                    trans_gf.applied_tfs.remove(trans_tf)
+                                    trans_tf.delete()
+                                trans_af.applied_gfs.remove(trans_gf)
+                                trans_gf.delete()
+                            trans_rolle.applied_afs.remove(trans_af)
+                            trans_af.delete()
+                            if not trans_rolle.applied_afs.all():
+                                instance.transfer_list.remove(trans_rolle)
+                                trans_rolle.delete()
+                            return instance
+        elif data['right_type'] == 'gf':
+            for trans_rolle in instance.transfer_list.all():
+                if trans_rolle.model_rolle_id.rollenname == data['grandparent']:
+                    for trans_af in trans_rolle.applied_afs.all():
+                        if trans_af.model_af_id.af_name == data['parent']:
+                            for trans_gf in trans_af.applied_gfs.all():
+                                if trans_gf.model_gf_id.name_gf_neu == data['right_name']:
+                                    for trans_tf in trans_gf.applied_tfs.all():
+                                        trans_gf.applied_tfs.remove(trans_tf)
+                                        trans_tf.delete()
+                                    trans_af.applied_gfs.remove(trans_gf)
+                                    trans_gf.delete()
+                                    if not trans_af.applied_gfs.all():
+                                        trans_rolle.applied_afs.remove(trans_af)
+                                        trans_af.delete()
+                                    if not trans_rolle.applied_afs.all():
+                                        instance.transfer_list.remove(trans_rolle)
+                                        trans_rolle.delete()
+                                    return instance
+        elif data['right_type'] == 'tf':
+            for trans_rolle in instance.transfer_list.all():
+                if trans_rolle.model_rolle_id.rollenname == data['greatgrandparent']:
+                    for trans_af in trans_rolle.applied_afs.all():
+                        if trans_af.model_af_id.af_name == data['grandparent']:
+                            for trans_gf in trans_af.applied_gfs.all():
+                                if trans_gf.model_gf_id.name_gf_neu == data['parent']:
+                                    for trans_tf in trans_gf.applied_tfs.all():
+                                        if trans_tf.model_tf_id.tf == data['right_name']:
+                                            trans_gf.applied_tfs.remove(trans_tf)
+                                            trans_tf.delete()
+                                            if not trans_gf.applied_tfs.all():
+                                                trans_af.applied_gfs.remove(trans_gf)
+                                                trans_gf.delete()
+                                            if not trans_af.applied_gfs.all():
+                                                trans_rolle.applied_afs.remove(trans_af)
+                                                trans_af.delete()
+                                            if not trans_rolle.applied_afs.all():
+                                                instance.transfer_list.remove(trans_rolle)
+                                                trans_rolle.delete()
+                                            return instance
         return instance
 
     def remove_from_delete_list(self, instance, data):
@@ -572,7 +914,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             break
                     if not rolle_found:
                         instance.rollen.add(del_rolle.id)
-                        instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                        instance.delete_list.remove(del_rolle)
                         return instance
                     else:
                         for del_af in del_rolle.applied_afs.all():
@@ -601,7 +943,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     break
                                             if not tf_found:
                                                 gf.applied_tfs.add(del_tf.id)
-                        instance.delete_list.remove(TblAppliedRolle.objects.get(id=del_rolle.id))
+                        instance.delete_list.remove(del_rolle)
                         return instance
 
         elif data['right_type'] == 'af':
@@ -619,10 +961,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                                               userHatUserID_id=instance)
                                 helper_rolle.applied_afs.add(del_af.id)
                                 instance.rollen.add(helper_rolle.id)
-                                del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                del_rolle.applied_afs.remove(del_af)
                                 if not del_rolle.applied_afs.all():
-                                    instance.delete_list.remove(
-                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                    instance.delete_list.remove(del_rolle)
                                 return instance
                             else:
                                 af_found = False
@@ -632,10 +973,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                         break
                                 if not af_found:
                                     rolle.applied_afs.add(del_af.id)
-                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                    del_rolle.applied_afs.remove(del_af)
                                     if not del_rolle.applied_afs.all():
-                                        instance.delete_list.remove(
-                                            TblAppliedRolle.objects.get(id=del_rolle.id))
+                                        instance.delete_list.remove(del_rolle)
                                     return instance
                                 else:
                                     for del_gf in del_af.applied_gfs.all():
@@ -655,10 +995,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         break
                                                 if not tf_found:
                                                     gf.applied_tfs.add(del_tf.id)
-                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                    del_rolle.applied_afs.remove(del_af)
                                     if not del_rolle.applied_afs.all():
-                                        instance.delete_list.remove(
-                                            TblAppliedRolle.objects.get(id=del_rolle.id))
+                                        instance.delete_list.remove(del_rolle)
                                     return instance
         elif data['right_type'] == 'gf':
             for del_rolle in instance.delete_list.all():
@@ -681,12 +1020,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                         helper_af.applied_gfs.add(del_gf.id)
                                         helper_rolle.applied_afs.add(helper_af.id)
                                         instance.rollen.add(helper_rolle.id)
-                                        del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                        del_af.applied_gfs.remove(del_gf)
                                         if not del_af.applied_gfs.all():
-                                            del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                            del_rolle.applied_afs.remove(del_af)
                                         if not del_rolle.applied_afs.all():
-                                            instance.delete_list.remove(
-                                                TblAppliedRolle.objects.get(id=del_rolle.id))
+                                            instance.delete_list.remove(del_rolle)
                                         return instance
                                     else:
                                         af_found = False
@@ -700,12 +1038,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                                                     userHatUserID_id=instance)
                                             helper_af.applied_gfs.add(del_gf.id)
                                             rolle.applied_afs.add(helper_af.id)
-                                            del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                            del_af.applied_gfs.remove(del_gf)
                                             if not del_af.applied_gfs.all():
-                                                del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                del_rolle.applied_afs.remove(del_af)
                                             if not del_rolle.applied_afs.all():
-                                                instance.delete_list.remove(
-                                                    TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                instance.delete_list.remove(del_rolle)
                                             return instance
                                         else:
                                             gf_found = False
@@ -715,12 +1052,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     break
                                             if not gf_found:
                                                 af.applied_gfs.add(del_gf.id)
-                                                del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                del_af.applied_gfs.remove(del_gf)
                                                 if not del_af.applied_gfs.all():
-                                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                    del_rolle.applied_afs.remove(del_af)
                                                 if not del_rolle.applied_afs.all():
-                                                    instance.delete_list.remove(
-                                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                    instance.delete_list.remove(del_rolle)
                                                 return instance
                                             else:
                                                 for del_tf in del_gf.applied_tfs.all():
@@ -731,12 +1067,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                             break
                                                     if not tf_found:
                                                         gf.applied_tfs.add(del_tf.id)
-                                                del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                del_af.applied_gfs.remove(del_gf)
                                                 if not del_af.applied_gfs.all():
-                                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                    del_rolle.applied_afs.remove(del_af)
                                                 if not del_rolle.applied_afs.all():
-                                                    instance.delete_list.remove(
-                                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                    instance.delete_list.remove(del_rolle)
                                                 return instance
         elif data['right_type'] == 'tf':
             for del_rolle in instance.delete_list.all():
@@ -766,14 +1101,13 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                 helper_af.applied_gfs.add(helper_gf.id)
                                                 helper_rolle.applied_afs.add(helper_af.id)
                                                 instance.rollen.add(helper_rolle.id)
-                                                del_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=del_tf.id))
+                                                del_gf.applied_tfs.remove(del_tf)
                                                 if not del_gf.applied_tfs.all():
-                                                    del_af.applied_gfs.remove(TblAppliedGf.objects.get(id=del_gf.id))
+                                                    del_af.applied_gfs.remove(del_gf)
                                                 if not del_af.applied_gfs.all():
-                                                    del_rolle.applied_afs.remove(TblAppliedAf.objects.get(id=del_af.id))
+                                                    del_rolle.applied_afs.remove(del_af)
                                                 if not del_rolle.applied_afs.all():
-                                                    instance.delete_list.remove(
-                                                        TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                    instance.delete_list.remove(del_rolle)
                                                 return instance
                                             else:
                                                 af_found = False
@@ -794,16 +1128,13 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     helper_gf.applied_tfs.add(del_tf.id)
                                                     helper_af.applied_gfs.add(helper_gf.id)
                                                     rolle.applied_afs.add(helper_af.id)
-                                                    del_gf.applied_tfs.remove(TblAppliedTf.objects.get(id=del_tf.id))
+                                                    del_gf.applied_tfs.remove(del_tf)
                                                     if not del_gf.applied_tfs.all():
-                                                        del_af.applied_gfs.remove(
-                                                            TblAppliedGf.objects.get(id=del_gf.id))
+                                                        del_af.applied_gfs.remove(del_gf)
                                                     if not del_af.applied_gfs.all():
-                                                        del_rolle.applied_afs.remove(
-                                                            TblAppliedAf.objects.get(id=del_af.id))
+                                                        del_rolle.applied_afs.remove(del_af)
                                                     if not del_rolle.applied_afs.all():
-                                                        instance.delete_list.remove(
-                                                            TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                        instance.delete_list.remove(del_rolle)
                                                     return instance
                                                 else:
                                                     gf_found = False
@@ -819,17 +1150,13 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                             userHatUserID_id=instance)
                                                         helper_gf.applied_tfs.add(del_tf.id)
                                                         af.applied_gfs.add(helper_gf.id)
-                                                        del_gf.applied_tfs.remove(
-                                                            TblAppliedTf.objects.get(id=del_tf.id))
+                                                        del_gf.applied_tfs.remove(del_tf)
                                                         if not del_gf.applied_tfs.all():
-                                                            del_af.applied_gfs.remove(
-                                                                TblAppliedGf.objects.get(id=del_gf.id))
+                                                            del_af.applied_gfs.remove(del_gf)
                                                         if not del_af.applied_gfs.all():
-                                                            del_rolle.applied_afs.remove(
-                                                                TblAppliedAf.objects.get(id=del_af.id))
+                                                            del_rolle.applied_afs.remove(del_af)
                                                         if not del_rolle.applied_afs.all():
-                                                            instance.delete_list.remove(
-                                                                TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                            instance.delete_list.remove(del_rolle)
                                                         return instance
                                                     else:
                                                         tf_found = False
@@ -839,17 +1166,13 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                                 break
                                                         if not tf_found:
                                                             gf.applied_tfs.add(del_tf.id)
-                                                        del_gf.applied_tfs.remove(
-                                                            TblAppliedTf.objects.get(id=del_tf.id))
+                                                        del_gf.applied_tfs.remove(del_tf)
                                                         if not del_gf.applied_tfs.all():
-                                                            del_af.applied_gfs.remove(
-                                                                TblAppliedGf.objects.get(id=del_gf.id))
+                                                            del_af.applied_gfs.remove(del_gf)
                                                         if not del_af.applied_gfs.all():
-                                                            del_rolle.applied_afs.remove(
-                                                                TblAppliedAf.objects.get(id=del_af.id))
+                                                            del_rolle.applied_afs.remove(del_af)
                                                         if not del_rolle.applied_afs.all():
-                                                            instance.delete_list.remove(
-                                                                TblAppliedRolle.objects.get(id=del_rolle.id))
+                                                            instance.delete_list.remove(del_rolle)
                                                         return instance
 
     def add_to_delete_list(self, instance, data):
@@ -864,7 +1187,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             break
                     if not rolle_found:
                         instance.delete_list.add(rolle.id)
-                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                        instance.rollen.remove(rolle)
                         return instance
                     else:
                         for applied_af in rolle.applied_afs.all():
@@ -893,7 +1216,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     break
                                             if not tf_found:
                                                 del_gf.applied_tfs.add(applied_tf.id)
-                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                    instance.rollen.remove(rolle)
                     return instance
         elif data['right_type'] == 'af':
             for rolle in instance.rollen.all():
@@ -910,9 +1233,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                                               userHatUserID_id=instance)
                                 helper_rolle.applied_afs.add(applied_af.id)
                                 instance.delete_list.add(helper_rolle.id)
-                                rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                rolle.applied_afs.remove(applied_af)
                                 if not rolle.applied_afs.all():
-                                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                    instance.rollen.remove(rolle)
                                 return instance
                             else:
                                 af_found = False
@@ -922,9 +1245,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                         break
                                 if not af_found:
                                     del_rolle.applied_afs.add(applied_af.id)
-                                    rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                    rolle.applied_afs.remove(applied_af)
                                     if not rolle.applied_afs.all():
-                                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                        instance.rollen.remove(rolle)
                                     return instance
                                 else:
                                     for applied_gf in applied_af.applied_gfs.all():
@@ -944,9 +1267,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         break
                                                 if not tf_found:
                                                     del_gf.applied_tfs.add(applied_tf.id)
-                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                            rolle.applied_afs.remove(applied_af)
                             if not rolle.applied_afs.all():
-                                instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                instance.rollen.remove(rolle)
                             return instance
         elif data['right_type'] == 'gf':
             for rolle in instance.rollen.all():
@@ -970,11 +1293,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                         helper_af.applied_gfs.add(applied_gf.id)
                                         helper_rolle.applied_afs.add(helper_af.id)
                                         instance.delete_list.add(helper_rolle.id)
-                                        applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                        applied_af.applied_gfs.remove(applied_gf)
                                         if not applied_af.applied_gfs.all():
-                                            rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                            rolle.applied_afs.remove(applied_af)
                                         if not rolle.applied_afs.all():
-                                            instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                            instance.rollen.remove(rolle)
                                         return instance
                                     else:
                                         af_found = False
@@ -989,11 +1312,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                 userHatUserID_id=instance)
                                             helper_af.applied_gfs.add(applied_gf.id)
                                             del_rolle.applied_afs.add(helper_af.id)
-                                            applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                            applied_af.applied_gfs.remove(applied_gf)
                                             if not applied_af.applied_gfs.all():
-                                                rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                rolle.applied_afs.remove(applied_af)
                                             if not rolle.applied_afs.all():
-                                                instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                instance.rollen.remove(rolle)
                                             return instance
                                         else:
                                             gf_found = False
@@ -1003,12 +1326,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     break
                                             if not gf_found:
                                                 del_af.applied_gfs.add(applied_gf.id)
-                                                applied_af.applied_gfs.remove(
-                                                    TblAppliedGf.objects.get(id=applied_gf.id))
+                                                applied_af.applied_gfs.remove(applied_gf)
                                                 if not applied_af.applied_gfs.all():
-                                                    rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                    rolle.applied_afs.remove(applied_af)
                                                 if not rolle.applied_afs.all():
-                                                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                    instance.rollen.remove(rolle)
                                                 return instance
                                             else:
                                                 for applied_tf in applied_gf.applied_tfs.all():
@@ -1019,11 +1341,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                             break
                                                     if not tf_found:
                                                         del_gf.applied_tfs.add(applied_tf.id)
-                                    applied_af.applied_gfs.remove(TblAppliedGf.objects.get(id=applied_gf.id))
+                                    applied_af.applied_gfs.remove(applied_gf)
                                     if not applied_af.applied_gfs.all():
-                                        rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                        rolle.applied_afs.remove(applied_af)
                                     if not rolle.applied_afs.all():
-                                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                        instance.rollen.remove(rolle)
                                     return instance
         elif data['right_type'] == 'tf':
             for rolle in instance.rollen.all():
@@ -1056,15 +1378,13 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                 helper_af.applied_gfs.add(helper_gf.id)
                                                 helper_rolle.applied_afs.add(helper_af.id)
                                                 instance.delete_list.add(helper_rolle.id)
-                                                applied_gf.applied_tfs.remove(
-                                                    TblAppliedTf.objects.get(id=applied_tf.id))
+                                                applied_gf.applied_tfs.remove(applied_tf)
                                                 if not applied_gf.applied_tfs.all():
-                                                    applied_af.applied_gfs.remove(
-                                                        TblAppliedGf.objects.get(id=applied_gf.id))
+                                                    applied_af.applied_gfs.remove(applied_gf)
                                                 if not applied_af.applied_gfs.all():
-                                                    rolle.applied_afs.remove(TblAppliedAf.objects.get(id=applied_af.id))
+                                                    rolle.applied_afs.remove(applied_af)
                                                 if not rolle.applied_afs.all():
-                                                    instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                    instance.rollen.remove(rolle)
                                                 return instance
                                             else:
                                                 af_found = False
@@ -1085,16 +1405,13 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     helper_gf.applied_tfs.add(applied_tf.id)
                                                     helper_af.applied_gfs.add(helper_gf.id)
                                                     del_rolle.applied_afs.add(helper_af.id)
-                                                    applied_gf.applied_tfs.remove(
-                                                        TblAppliedTf.objects.get(id=applied_tf.id))
+                                                    applied_gf.applied_tfs.remove(applied_tf)
                                                     if not applied_gf.applied_tfs.all():
-                                                        applied_af.applied_gfs.remove(
-                                                            TblAppliedGf.objects.get(id=applied_gf.id))
+                                                        applied_af.applied_gfs.remove(applied_gf)
                                                     if not applied_af.applied_gfs.all():
-                                                        rolle.applied_afs.remove(
-                                                            TblAppliedAf.objects.get(id=applied_af.id))
+                                                        rolle.applied_afs.remove(applied_af)
                                                     if not rolle.applied_afs.all():
-                                                        instance.rollen.remove(TblAppliedRolle.objects.get(id=rolle.id))
+                                                        instance.rollen.remove(rolle)
                                                     return instance
                                                 else:
                                                     gf_found = False
@@ -1110,31 +1427,23 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                             userHatUserID_id=instance)
                                                         helper_gf.applied_tfs.add(applied_tf.id)
                                                         del_af.applied_gfs.add(helper_gf.id)
-                                                        applied_gf.applied_tfs.remove(
-                                                            TblAppliedTf.objects.get(id=applied_tf.id))
+                                                        applied_gf.applied_tfs.remove(applied_tf)
                                                         if not applied_gf.applied_tfs.all():
-                                                            applied_af.applied_gfs.remove(
-                                                                TblAppliedGf.objects.get(id=applied_gf.id))
+                                                            applied_af.applied_gfs.remove(applied_gf)
                                                         if not applied_af.applied_gfs.all():
-                                                            rolle.applied_afs.remove(
-                                                                TblAppliedAf.objects.get(id=applied_af.id))
+                                                            rolle.applied_afs.remove(applied_af)
                                                         if not rolle.applied_afs.all():
-                                                            instance.rollen.remove(
-                                                                TblAppliedRolle.objects.get(id=rolle.id))
+                                                            instance.rollen.remove(rolle)
                                                         return instance
                                                     else:
                                                         del_gf.applied_tfs.add(applied_tf.id)
-                                                        applied_gf.applied_tfs.remove(
-                                                            TblAppliedTf.objects.get(id=applied_tf.id))
+                                                        applied_gf.applied_tfs.remove(applied_tf)
                                                         if not applied_gf.applied_tfs.all():
-                                                            applied_af.applied_gfs.remove(
-                                                                TblAppliedGf.objects.get(id=applied_gf.id))
+                                                            applied_af.applied_gfs.remove(applied_gf)
                                                         if not applied_af.applied_gfs.all():
-                                                            rolle.applied_afs.remove(
-                                                                TblAppliedAf.objects.get(id=applied_af.id))
+                                                            rolle.applied_afs.remove(applied_af)
                                                         if not rolle.applied_afs.all():
-                                                            instance.rollen.remove(
-                                                                TblAppliedRolle.objects.get(id=rolle.id))
+                                                            instance.rollen.remove(rolle)
                                                         return instance
         return instance
 
@@ -1143,7 +1452,7 @@ class TblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblUserIDundName
         fields = (
-        'url', 'id', 'userid', 'name', 'orga', 'zi_organisation', 'geloescht', 'abteilung', 'gruppe', 'rollen')
+            'url', 'id', 'userid', 'name', 'orga', 'zi_organisation', 'geloescht', 'abteilung', 'gruppe', 'rollen')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:useridundname-detail')
     orga = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:orga-detail')
@@ -1322,8 +1631,6 @@ class TblAfHatGfSerializer(serializers.HyperlinkedModelSerializer):
     af_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:af-detail')
     gf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:afgf-detail')
     url = serializers.HyperlinkedIdentityField(read_only=True, view_name='myRDBNS:afhatgf-detail')
-
-
 
 
 class TblGfHatTfSerializer(serializers.HyperlinkedModelSerializer):

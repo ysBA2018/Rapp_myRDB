@@ -8,10 +8,14 @@
                          alt="Profile Picture">
                 </div>
                 <div class="col-9">
-                    <h5 class="card-title">{{ user_identity }}</h5>
-                    <p class="card-text">{{ user_name }}</p>
-                    <p class="card-text">{{ user_first_name }}</p>
-                    <p class="card-text">{{ user_department }}</p>
+                    {% if not no_profile %}
+                        <h5 class="card-title">{{ user_identity }}</h5>
+                        <p class="card-text">{{ user_name }}</p>
+                        <p class="card-text">{{ user_first_name }}</p>
+                        <p class="card-text">{{ user_department }}</p>
+                    {% else %}
+                        <h4 class="card-title text-center"><b>{{ no_profile | linebreaks}}</b></h4>
+                    {% endif %}
                 </div>
             </div>
         </div>

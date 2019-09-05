@@ -20,11 +20,6 @@
                             {% else %}
                                 <option value="name">Name</option>
                             {%  endif %}
-                            {% if search_what == "first_name" %}
-                                <option value="first_name" selected>Vorname</option>
-                            {% else %}
-                                <option value="first_name">Vorname</option>
-                            {% endif %}
                         </select>
                     </div>
                     <div class="col">
@@ -42,27 +37,27 @@
                 <select class="form-control" name="zi_organisation" id="zi_organisation">
                     <option>----</option>
                     {% for e in zi_organisations %}
-                        {% if e.team == zi_organisation %}
-                            <option selected>{{ e.zi_organisation_name }}</option>
+                        {% if e.zi_organisation == zi_organisation %}
+                            <option selected>{{ e.zi_organisation }}</option>
                         {% else %}
-                            <option>{{ e.zi_organisation_name }}</option>
+                            <option>{{ e.zi_organisation }}</option>
                         {% endif %}
                     {% endfor %}
                 </select>
             </div>
         </div>
         {% endif %}
-        {% if departments %}
+        {% if abteilungs %}
         <div class="col-6 col-sm-4 col-md col-lg col-xl">
             <div class="form-group">
                 <label for="department">Abteilung:</label>
-                <select class="form-control" name="department" id="department">
+                <select class="form-control" name="abteilung" id="department">
                     <option>----</option>
-                    {% for e in departments %}
-                        {% if e.team == department %}
-                            <option selected>{{ e.department_name }}</option>
+                    {% for e in abteilungs %}
+                        {% if e.abteilung == abteilung %}
+                            <option selected>{{ e.abteilung }}</option>
                         {% else %}
-                            <option>{{ e.department_name }}</option>
+                            <option>{{ e.abteilung }}</option>
                         {% endif %}
                     {% endfor %}
                 </select>
@@ -87,17 +82,17 @@
             </div>
         </div>
         {% endif %}
-        {% if groups %}
+        {% if gruppes %}
         <div class="col-6 col-sm-4 col-md col-lg col-xl">
             <div class="form-group">
-                <label for="role">Rolle:</label>
-                <select class="form-control" name="role" id="role">
+                <label for="group">Gruppe:</label>
+                <select class="form-control" name="gruppe" id="group">
                     <option>----</option>
-                    {% for e in groups %}
-                        {% if e.team == group %}
-                            <option selected>{{ e.group_name }}</option>
+                    {% for e in gruppes %}
+                        {% if e.gruppe == gruppe %}
+                            <option selected>{{ e.gruppe }}</option>
                         {% else %}
-                            <option>{{ e.group_name }}</option>
+                            <option>{{ e.gruppe }}</option>
                         {% endif %}
                     {% endfor %}
                 </select>
@@ -147,10 +142,10 @@
     <li>
         <div class="row">
             <div class="col-4 col-sm-2 col-md-2 col-lg-1 col-xl-1">
-                <a href="{% url 'myRDB:profile' %}?identity={{ user.identity }}" class="badge badge-info"> {{ user.identity }}</a>
+                <a href="{% url 'myRDB:profile' %}?identity={{ user.userid }}" class="badge badge-info"> {{ user.userid }}</a>
             </div>
             <div class="col-6">
-                <p>{{ user.name }}, {{ user.first_name }} </p>
+                <p>{{ user.name }}</p>
             </div>
         </div>
     </li>
