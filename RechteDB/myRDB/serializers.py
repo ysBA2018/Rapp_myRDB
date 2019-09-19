@@ -79,6 +79,36 @@ class TblRollenSerializer(serializers.ModelSerializer):
         return TblRollen.objects.create(**validated_data)
 
 
+class FullTblUebersichtAFGfsSerializer(TblUebersichtAfGfsSerializer):
+    class Meta:
+        model = TblUebersichtAfGfs
+        fields = (
+            'url', 'id', 'name_gf_neu', 'name_af_neu', 'kommentar', 'zielperson', 'af_text', 'gf_text', 'af_langtext',
+            'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise', 'geloescht', 'kannweg',
+            'modelliert', 'tfs')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:fullafgf-detail')
+    tfs = TblGesamtSerializer(many=True)
+
+
+class FullTblAflisteSerializer(TblAflisteSerializer):
+    class Meta:
+        model = TblAfliste
+        fields = ('url', 'id', 'af_name', 'neu_ab', 'gfs')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:fullaf-detail')
+    gfs = FullTblUebersichtAFGfsSerializer(many=True)
+
+
+class FullTblRollenSerializer(TblRollenSerializer):
+    class Meta:
+        model = TblRollen
+        fields = ('url', 'rollenid', 'rollenname', 'system', 'rollenbeschreibung', 'datum', 'afs')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:fullrolle-detail')
+    afs = FullTblAflisteSerializer(many=True)
+
+
 class ChangeRequestsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ChangeRequests

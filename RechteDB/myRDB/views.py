@@ -831,128 +831,85 @@ class ProfileRightsAnalysis(generic.ListView):
             if self.extra_context['level'] == "ROLLE":
                 rollen = sorted(user['children'], key=lambda k: k['name'])
                 for rolle in rollen:
-                    through = False
-                    model_rollen = iter(
-                        sorted([get_by_url(x, get_headers(self.request)) for x in user['rollen']],
-                               key=lambda k: k['rollenname']))
-                    while not through:
-                        try:
-                            current_model = next(model_rollen)
-                        except StopIteration:
-                            print('model_rolle stop iteration')
-                            through = True
-                        if rolle['name'] == current_model['rollenname']:
-                            stats = {}
-                            stats['right_name'] = current_model['rollenname']
-                            stats['description'] = current_model['rollenbeschreibung']
-                            stats['model_af_count'], stats['model_gf_count'], stats[
-                                'model_tf_count'] = self.prepareModelJSONdata(current_model, True, False, False,
-                                                                              headers, legend_data_dict, None)
-                            equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
-                                rolle,
-                                current_model,
-                                equalRights,
-                                unequalRights,
-                                equalModelRights,
-                                unequalModelRights,
-                                True,
-                                False,
-                                False,
-                                stats,
-                                unequalRightsStats,
-                                equalRightsStats)
-                            through = True
-                            break
+                    full_model_rolle_id_url = rolle['model_rolle_id']['url'].replace('rolle','fullrolle')
+                    current_model = get_by_url(full_model_rolle_id_url,headers)
+                    stats = {}
+                    stats['right_name'] = current_model['rollenname']
+                    stats['description'] = current_model['rollenbeschreibung']
+                    stats['model_af_count'], stats['model_gf_count'], stats[
+                        'model_tf_count'] = self.prepareModelJSONdata(current_model, True, False, False,
+                                                                      headers, legend_data_dict, None)
+                    equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
+                        rolle,
+                        current_model,
+                        equalRights,
+                        unequalRights,
+                        equalModelRights,
+                        unequalModelRights,
+                        True,
+                        False,
+                        False,
+                        stats,
+                        unequalRightsStats,
+                        equalRightsStats)
+
             elif self.extra_context['level'] == "AF":
                 rollen = sorted(user['children'], key=lambda k: k['name'])
-                model_rollen = sorted([get_by_url(x, get_headers(self.request)) for x in user['rollen']],
-                           key=lambda k: k['rollenname'])
-                model_afs_list = []
-                for model_rolle in model_rollen:
-                    model_afs_list += [get_by_url(x, get_headers(self.request)) for x in model_rolle['afs']]
-
                 for rolle in rollen:
                     afs = sorted(rolle['children'], key=lambda k: k['name'])
                     for af in afs:
-                        model_afs = iter(sorted(model_afs_list,
-                                                key=lambda k: k['af_name']))
-                        through = False
-                        while not through:
-                            try:
-                                current_model = next(model_afs)
-                            except StopIteration:
-                                print('model_af stop iteration')
-                                through = True
-                            if af['name'] == current_model['af_name']:
-                                stats = {}
-                                stats['right_name'] = current_model['af_name']
-                                stats['model_af_count'], stats['model_gf_count'], stats[
-                                    'model_tf_count'] = self.prepareModelJSONdata(current_model, False, True, False,
-                                                                                  headers, legend_data_dict, cached_af_descriptions)
-                                stats['description'] = current_model['af_beschreibung']
+                        full_model_af_id_url = af['model_af_id']['url'].replace('af', 'fullaf')
+                        current_model = get_by_url(full_model_af_id_url, headers)
+                        stats = {}
+                        stats['right_name'] = current_model['af_name']
+                        stats['model_af_count'], stats['model_gf_count'], stats[
+                            'model_tf_count'] = self.prepareModelJSONdata(current_model, False, True, False,
+                                                                          headers, legend_data_dict, cached_af_descriptions)
+                        stats['description'] = current_model['af_beschreibung']
 
-                                equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
-                                    af,
-                                    current_model,
-                                    equalRights,
-                                    unequalRights,
-                                    equalModelRights,
-                                    unequalModelRights,
-                                    False,
-                                    True,
-                                    False,
-                                    stats,
-                                    unequalRightsStats,
-                                    equalRightsStats)
-                                through = True
-                                break
+                        equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
+                            af,
+                            current_model,
+                            equalRights,
+                            unequalRights,
+                            equalModelRights,
+                            unequalModelRights,
+                            False,
+                            True,
+                            False,
+                            stats,
+                            unequalRightsStats,
+                            equalRightsStats)
+
             elif self.extra_context['level'] == "GF":
                 rollen = sorted(user['children'], key=lambda k: k['name'])
-                model_rollen = sorted([get_by_url(x, get_headers(self.request)) for x in user['rollen']],
-                           key=lambda k: k['rollenname'])
-                model_afs_list = []
-                for model_rolle in model_rollen:
-                    model_afs_list += [get_by_url(x, get_headers(self.request)) for x in model_rolle['afs']]
-                model_gfs_list = []
-                for model_af in model_afs_list:
-                    model_gfs_list += [get_by_url(x, get_headers(self.request)) for x in model_af['gfs']]
                 for rolle in rollen:
                     afs = sorted(rolle['children'], key=lambda k: k['name'])
                     for af in afs:
                         gfs = sorted(af['children'], key=lambda k: k['name'])
                         for gf in gfs:
-                            model_gfs = iter(sorted(model_gfs_list,
-                                                    key=lambda k: k['name_gf_neu']))
-                            through = False
-                            while not through:
-                                try:
-                                    current_model = next(model_gfs)
-                                except StopIteration:
-                                    print('model_gf stop iteration')
-                                    through = True
-                                if gf['name'] == current_model['name_gf_neu']:
-                                    stats = {}
-                                    stats['right_name'] = current_model['name_gf_neu']
-                                    stats['model_af_count'], stats['model_gf_count'], stats[
-                                        'model_tf_count'] = self.prepareModelJSONdata(current_model, False, False, True,
-                                                                                      headers, legend_data_dict, None)
-                                    stats['description'] = current_model['gf_beschreibung']
+                            full_model_gf_id_url = gf['model_gf_id']['url'].replace('afgfs', 'fullafgfs')
+                            current_model = get_by_url(full_model_gf_id_url, headers)
+                            stats = {}
+                            stats['right_name'] = current_model['name_gf_neu']
+                            stats['model_af_count'], stats['model_gf_count'], stats[
+                                'model_tf_count'] = self.prepareModelJSONdata(current_model, False, False, True,
+                                                                              headers, legend_data_dict, None)
+                            stats['description'] = current_model['gf_beschreibung']
 
-                                    equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
-                                        gf,
-                                        current_model,
-                                        equalRights,
-                                        unequalRights,
-                                        equalModelRights,
-                                        unequalModelRights,
-                                        False,
-                                        False,
-                                        True,
-                                        stats,
-                                        unequalRightsStats,
-                                        equalRightsStats)
-                                    through = True
-                                    break
+                            equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
+                                gf,
+                                current_model,
+                                equalRights,
+                                unequalRights,
+                                equalModelRights,
+                                unequalModelRights,
+                                False,
+                                False,
+                                True,
+                                stats,
+                                unequalRightsStats,
+                                equalRightsStats)
         return equalModelRights, equalRights, equalRightsStats, unequalModelRights, unequalRights, unequalRightsStats
 
     def compareRightToModel(self, userRight, compareModel, equalRights, unequalRights, equalModelRights,
@@ -987,6 +944,8 @@ class ProfileRightsAnalysis(generic.ListView):
                     except StopIteration:
                         print('Model_AF stop iteration')
                         through = True
+                        return equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats
+
 
                 gf_count += len(af['children'])
 
@@ -1092,62 +1051,55 @@ class ProfileRightsAnalysis(generic.ListView):
         if is_rolle:
             af_old = None
             json_data["name"] = json_data.pop('rollenname')
-            json_data["children"] = []
-            for model_af in json_data['afs']:
-                model_af = get_by_url(model_af, headers)
+            json_data["children"] = json_data['afs']
+            for model_af in json_data['children']:
                 model_af["name"] = model_af['af_name']
-                model_af["children"] = []
-                json_data['children'].append(model_af)
-                for model_gf in model_af['gfs']:
-                    model_gf = get_by_url(model_gf, headers)
+                model_af["children"] = model_af['gfs']
+                for model_gf in model_af['children']:
                     model_gf["name"] = model_gf['name_gf_neu']
-                    model_gf["children"] = []
-                    model_af['children'].append(model_gf)
-                    if model_gf['tfs']:
+                    model_gf["children"] = model_gf['tfs']
+                    if model_gf['children']:
                         if model_af != af_old:
                             model_af_count += 1
                             af_old = model_af
                         model_gf_count += 1
-                        model_tf_count += len(model_gf['tfs'])
+                        model_tf_count += len(model_gf['children'])
 
-                    for model_tf in model_gf['tfs']:
-                        model_tf = get_by_url(model_tf, headers)
+                    for model_tf in model_gf['children']:
                         model_tf["name"] = model_tf['tf']
                         plattform = legend_data.get(model_tf['plattform'])
                         hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
                         model_tf['color'] = hslColor
                         model_tf["size"] = 2000
-                        model_gf['children'].append(model_tf)
         elif is_af:
             json_data["name"] = json_data['af_name']
-            json_data['af_beschreibung'] = cached_af_descriptions.get(json_data['af_name'])
-            json_data["children"] = []
-            for model_gf in json_data['gfs']:
-                model_gf = get_by_url(model_gf, headers)
+            af_beschreibung = cached_af_descriptions.get(json_data['af_name'])
+            if af_beschreibung:
+                json_data['af_beschreibung'] = af_beschreibung[0]['af_beschreibung']
+            else:
+                json_data['af_beschreibung'] = "Keine Beschreibung vorhanden!"
+            json_data["children"] = json_data['gfs']
+            for model_gf in json_data['children']:
                 model_gf["name"] = model_gf['name_gf_neu']
-                model_gf["children"] = []
-                json_data['children'].append(model_gf)
+                model_gf["children"] = model_gf['tfs']
                 if model_gf['tfs']:
                     model_gf_count += 1
-                    model_tf_count += len(model_gf['tfs'])
+                    model_tf_count += len(model_gf['children'])
 
-                for model_tf in model_gf['tfs']:
-                    model_tf = get_by_url(model_tf, headers)
+                for model_tf in model_gf['children']:
                     model_tf["name"] = model_tf['tf']
                     plattform = legend_data.get(model_tf['plattform'])
                     hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
                     model_tf['color'] = hslColor
                     model_tf["size"] = 2000
-                    model_gf['children'].append(model_tf)
         elif is_gf:
             json_data["name"] = json_data['name_gf_neu']
             json_data['gf_beschreibung'] = None
-            json_data["children"] = []
+            json_data["children"] = json_data['tfs']
             if json_data['tfs']:
-                model_tf_count += len(json_data['tfs'])
+                model_tf_count += len(json_data['children'])
 
-            for model_tf in json_data['tfs']:
-                model_tf = get_by_url(model_tf, headers)
+            for model_tf in json_data['children']:
                 model_tf["name"] = model_tf['tf']
                 if not json_data['gf_beschreibung']:
                     json_data['gf_beschreibung'] = model_tf['gf_beschreibung']
@@ -1155,7 +1107,6 @@ class ProfileRightsAnalysis(generic.ListView):
                 hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
                 model_tf['color'] = hslColor
                 model_tf["size"] = 2000
-                json_data['children'].append(model_tf)
         return model_af_count, model_gf_count, model_tf_count
 
 
@@ -3450,7 +3401,7 @@ class TblrechteneuvonimportViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if 'userid_name' in self.request.GET and 'af_name' in self.request.GET and 'gf_name' in self.request.GET \
                 and 'tf_name' in self.request.GET:
-            userid_name = self.request.GET['userid_name']
+            userid_name = self.request.GET['userid_name'].lower()
             af_name = self.request.GET['af_name'].replace('%23', '#')
             gf_name = self.request.GET['gf_name'].replace('%23', '#')
             tf_name = self.request.GET['tf_name'].replace('%23', '#')
@@ -3799,6 +3750,19 @@ class FullRightsTblAppliedTfsViewSet(TblAppliedTfsViewSet):
     serializer_class = FullRightsTblAppliedTfSerializer
 
 
+class FullTblRollenViewSet(TblRollenViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FullTblRollenSerializer
+
+
+class FullTblAflisteViewSet(TblAflisteViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FullTblAflisteSerializer
+
+
+class FullTblUebersichtAfGfsViewSet(TblUebersichtAfGfsViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FullTblUebersichtAFGfsSerializer
 '''
 class UserModelRightsViewSet(viewsets.ModelViewSet):
 

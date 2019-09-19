@@ -66,6 +66,10 @@ router.register(r'fullappliedafs', views.FullRightsTblAppliedAfsViewSet, 'fullap
 router.register(r'fullappliedgfs', views.FullRightsTblAppliedGfsViewSet, 'fullappliedgf')
 router.register(r'fullappliedtfs', views.FullRightsTblAppliedTfsViewSet, 'fullappliedtf')
 
+router.register(r'fullrollen', views.FullTblRollenViewSet, 'fullrolle')
+router.register(r'fullafs', views.FullTblAflisteViewSet, 'fullaf')
+router.register(r'fullafgfs', views.FullTblUebersichtAfGfsViewSet, 'fullafgf')
+
 router.register(r'changerequests', views.ChangeRequestsViewSet, 'changerequests')
 
 
