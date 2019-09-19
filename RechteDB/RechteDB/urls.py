@@ -19,10 +19,12 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls import include
 from rest_framework import routers
-from myRDB import views
+
+import myRDB.views as views
 from . import settings
 
 router = routers.DefaultRouter()
+
 
 router.register(r'users', views.UsersViewSet, 'user')
 router.register(r'useridundnamen', views.TblUserIDundNameViewSet, 'useridundname')
@@ -63,6 +65,9 @@ router.register(r'fullappliedroles', views.FullRightsTblAppliedRolleViewSet, 'fu
 router.register(r'fullappliedafs', views.FullRightsTblAppliedAfsViewSet, 'fullappliedaf')
 router.register(r'fullappliedgfs', views.FullRightsTblAppliedGfsViewSet, 'fullappliedgf')
 router.register(r'fullappliedtfs', views.FullRightsTblAppliedTfsViewSet, 'fullappliedtf')
+
+router.register(r'changerequests', views.ChangeRequestsViewSet, 'changerequests')
+
 
 admin.site.site_header = 'RechteDB - Adminseiten'
 admin.site.site_title = 'RechteDB - Administration'

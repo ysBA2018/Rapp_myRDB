@@ -37,7 +37,7 @@ function change_request_state_to_declined(formElement, current_card_id, current_
         var response_data;
         $.ajax({type:'POST',
                 data:data,
-                url:'http://127.0.0.1:8000/changerequests/'+inputs[2]['value']+"/",
+                url:window.current_host+'/api/changerequests/'+inputs[2]['value']+"/",
                 async:false,
                 success: function(res){console.log(res);
                     response_data = res;
@@ -49,7 +49,7 @@ function change_request_state_to_declined(formElement, current_card_id, current_
             successful=false;
             $.ajax({type:'POST',
                     data:data,
-                    url:'http://127.0.0.1:8000/users/'+response_data['requesting_user']+"/",
+                    url:response_data['requesting_user_hat_userid_name_combination'],
                     async:false,
                     success: function(res){console.log(res);
                         response_data = res;

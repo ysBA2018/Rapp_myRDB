@@ -5,6 +5,7 @@
 {% load getdictitem %}
 {% block content %}
     <script type="text/javascript" >
+        var current_host = "{{ current_host }}";
         var iDeletionUser = 0;
         var iApplicationUser = 0;
     </script>
@@ -68,5 +69,10 @@
                 </div>
             </div>
         {% endif %}
+    </div>
+    <div class="container top-buffer">
+        <div class="row">
+            {% include 'myRDB/profile/profileLegendTemplate.html' %}
+        </div>
     </div>
 {% endblock %}

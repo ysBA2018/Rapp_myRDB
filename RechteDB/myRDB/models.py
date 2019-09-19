@@ -49,6 +49,8 @@ TblRollehataf = modellist.TblRollehataf
 TblAfHatGf = modellist.TblAfHatGF
 TblGfHatTf = modellist.TblGfHatTF
 
+ChangeRequests = modellist.ChangeRequests
+
 '''
 class ChangeRequests(models.Model):
     requesting_user = models.CharField(max_length=7)

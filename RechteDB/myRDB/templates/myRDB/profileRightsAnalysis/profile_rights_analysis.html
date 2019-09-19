@@ -27,10 +27,16 @@
                         {% csrf_token %}
                         <select class="form-control" id="level-switch" name="level" onchange="form.submit()">
                             {# <option>Rolle</option> #}
-                            {% if level == "AF" %}
+                            {% if level == "ROLLE" %}
+                                <option selected>ROLLE</option>
+                                <option>AF</option>
+                                <option>GF</option>
+                            {% elif level == "AF" %}
+                                <option>ROLLE</option>
                                 <option selected>AF</option>
                                 <option>GF</option>
                             {% elif level == "GF" %}
+                                <option>ROLLE</option>
                                 <option>AF</option>
                                 <option selected>GF</option>
                             {% endif %}
@@ -56,13 +62,13 @@
         <div class="card-footer">
             <div class="row">
                 <div class="col">
-                    <h5 class="text-center">{{ user_first_name }}'s {% if level == "Rolle" %}Rollen{% elif level == "AF" %}AF{% elif level == "GF" %}GF{% elif level == "TF" %}TF{% endif %}</h5>
+                    <h5 class="text-center">{{ user_first_name }}'s {% if level == "ROLLE" %}Rollen{% elif level == "AF" %}AF{% elif level == "GF" %}GF{% elif level == "TF" %}TF{% endif %}</h5>
                 </div>
                 <div class="col-6">
                     <p class="text-center">Verschiebe Berechtigung aus Modell zur Person um diese der Beantragungsliste hinzuzufügen</p>
                 </div>
                 <div class="col">
-                    <h5 class="text-center">Modell-{% if level == "Rolle" %}Rollen{% elif level == "AF" %}AF{% elif level == "GF" %}GF{% elif level == "TF" %}TF{% endif %}</h5>
+                    <h5 class="text-center">Modell-{% if level == "ROLLE" %}Rollen{% elif level == "AF" %}AF{% elif level == "GF" %}GF{% elif level == "TF" %}TF{% endif %}</h5>
                 </div>
             </div>
         </div>

@@ -7,6 +7,8 @@
     <script type="text/javascript" src="{% static 'myRDB/js/actions/remove_card.js' %}"></script>
     <script type="text/javascript" src="{% static 'myRDB/js/actions/remove_card_and_reverse_action.js' %}"></script>
     <script type="text/javascript" >
+        var current_host = "{{ current_host }}";
+        var requesting_user_userid_combination_pk = "{{ requesting_user_userid_combination_pk }}";
         var accepted_apply = {{ accepted_list.apply | asjson}};
         var accepted_delete = {{ accepted_list.delete | asjson}};
         var declined_apply = {{ declined_list.apply | asjson}};
@@ -197,4 +199,9 @@
             </div>
         </div>
     {% endif %}
+    <div class="container top-buffer">
+        <div class="row">
+            {% include 'myRDB/profile/profileLegendTemplate.html' %}
+        </div>
+    </div>
 {% endblock %}

@@ -3,13 +3,13 @@
 {% block content %}
 <div class="container-fluid">
     {% include 'myRDB/profile/profile_head.html' %}
-    <div class="card">
+    <div class="card top-buffer">
         <div class="card-body">
             <div class="row">
                 <div class="col-2">
                     <form action="{% url 'myRDB:compare' %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-light btn-outline-secondary "><--</button>
+                        <button type="submit" class="btn btn-light btn-outline-secondary ">Abbrechen</button>
                     </form>
                 </div>
             </div>
@@ -20,7 +20,7 @@
     <input type="hidden" name="requesting_user" value="{{ requesting_user }}">
     <input type="hidden" name="compare_user" value="{{ compare_user }}">
         <div id="accordion">
-            <div class="card">
+            <div class="card top-buffer">
                 <div class="card-header" id="rightApplicationHeading">
                     <h5 class="mb-0">
                         <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#rightApplication" aria-expanded="true" aria-controls="rightApplication">
@@ -93,6 +93,10 @@
         </div>
         {% include 'myRDB/rightApplication/right_application_footer_row.html' %}
     </form>
+    <script type="text/javascript">
+        var current_host = "{{ current_host }}";
+        var requesting_user_userid_combination_pk = "{{ requesting_user_userid_combination_pk }}";
+    </script>
     <script type="text/javascript" src="{% static 'myRDB/js/actions/submit_apply_changes.js' %}"></script>
 </div>
 

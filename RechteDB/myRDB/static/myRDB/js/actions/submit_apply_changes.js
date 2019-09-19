@@ -55,7 +55,7 @@ function make_changerequest(repacked_objects,requesting_user,csrf_middleware_tok
         var response_data;
         $.ajax({type:'POST',
                 data:data,
-                url:'http://127.0.0.1:8000/changerequests/',
+                url:window.current_host+'/api/changerequests/',
                 async:false,
                 success: function(res){console.log(res);
                     response_data = res;
@@ -67,7 +67,7 @@ function make_changerequest(repacked_objects,requesting_user,csrf_middleware_tok
             successful=false;
             $.ajax({type:'POST',
                     data:data,
-                    url:'http://127.0.0.1:8000/users/'+requesting_user['value']+'/',
+                    url:window.current_host+'/api/userhatuseridundnamen/'+window.requesting_user_userid_combination_pk+'/',
                     async:false,
                     success: function(res){console.log(res);
                         successful=true},
@@ -78,7 +78,7 @@ function make_changerequest(repacked_objects,requesting_user,csrf_middleware_tok
                 successful=false;
                 $.ajax({type:'POST',
                         data:data,
-                        url:'http://127.0.0.1:8000/users/'+requesting_user['value']+'/',
+                        url:window.current_host+'/api/userhatuseridundnamen/'+window.requesting_user_userid_combination_pk+'/',
                         async:false,
                         success: function(res){console.log(res);
                             successful=true},

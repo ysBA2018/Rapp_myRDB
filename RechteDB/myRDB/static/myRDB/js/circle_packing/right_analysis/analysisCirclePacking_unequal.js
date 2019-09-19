@@ -67,6 +67,26 @@ $(document).ready(function(){
                   }
               }
           }
+          else if (d.depth === 4){
+              for(i in compare_data){
+                  if(compare_data[i].name===d.parent.parent.parent.data.name){
+                      var level_2 = compare_data[i]['children'];
+                      for(j in level_2){
+                          if(level_2[j].name===d.parent.parent.data.name){
+                              var level_3 = level_2[j]['children'];
+                              for(k in level_3){
+                                  if(level_3[k].name===d.parent.data.name){
+                                      var level_4 = level_3[k]['children'];
+                                      for(l in level_4){
+                                           if(level_4[l].name===d.data.name) return true;
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
           return false;
       }
       function get_color(d) {
@@ -75,7 +95,7 @@ $(document).ready(function(){
           }
           else{
               var exists_in_compare_graph = compare_graphs(d);
-              if(window.level === "Role"){
+              if(window.level === "Role"||window.level === "ROLLE"){
                   if(exists_in_compare_graph){
                       if(d.depth===1)return "darkgrey";
                       if(d.depth===2)return "grey";
@@ -106,7 +126,7 @@ $(document).ready(function(){
       }
       function get_tooltip_text(d) {
           var text;
-          if (window.level === "Role") {
+          if (window.level === "Role"||window.level === "ROLLE") {
               if(d.depth === 1){
                   text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 2){
@@ -182,7 +202,7 @@ $(document).ready(function(){
       zoomTo([root.x, root.y, root.r * 2 + margin]);
 
       function zoom(d) {
-          if (d.depth===3) return;
+          if (!d.hasOwnProperty('children')) return;
         var focus0 = focus; focus = d;
 
         var transition = d3.transition()

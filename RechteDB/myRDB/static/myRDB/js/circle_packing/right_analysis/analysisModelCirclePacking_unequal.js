@@ -37,7 +37,7 @@ $(document).ready(function(){
 
       //TODO: compare auch auf my_requests!
       function compare_graphs(d, compare_data, transferbool){
-          if(transferbool){
+          /*if(transferbool){
               if(window.level==='AF'){
                   if (d.depth === 1){
                       for(i in compare_data){
@@ -65,31 +65,50 @@ $(document).ready(function(){
                       }
                   }
               }
-          }else{
-              if(d.depth===1){
-                  for(i in compare_data){
-                      if(compare_data[i].name===d.data.name) return true;
+          }else{*/
+          if(d.depth===1){
+              for(i in compare_data){
+                  if(compare_data[i].name===d.data.name) return true;
+              }
+          }
+          else if (d.depth === 2){
+              for(i in compare_data){
+                  if(compare_data[i].name===d.parent.data.name){
+                      var level_2 = compare_data[i]['children'];
+                      for(j in level_2){
+                          if(level_2[j].name===d.data.name) return true;
+                      }
                   }
               }
-              else if (d.depth === 2){
-                  for(i in compare_data){
-                      if(compare_data[i].name===d.parent.data.name){
-                          var level_2 = compare_data[i]['children'];
-                          for(j in level_2){
-                              if(level_2[j].name===d.data.name) return true;
+          }
+          else if (d.depth === 3){
+              for(i in compare_data){
+                  if(compare_data[i].name===d.parent.parent.data.name){
+                      var level_2 = compare_data[i]['children'];
+                      for(j in level_2){
+                          if(level_2[j].name===d.parent.data.name){
+                              var level_3 = level_2[j]['children'];
+                              for(k in level_3){
+                                  if(level_3[k].name===d.data.name) return true;
+                              }
                           }
                       }
                   }
               }
-              else if (d.depth === 3){
-                  for(i in compare_data){
-                      if(compare_data[i].name===d.parent.parent.data.name){
-                          var level_2 = compare_data[i]['children'];
-                          for(j in level_2){
-                              if(level_2[j].name===d.parent.data.name){
-                                  var level_3 = level_2[j]['children'];
-                                  for(k in level_3){
-                                      if(level_3[k].name===d.data.name) return true;
+          }
+          else if (d.depth === 4){
+              for(i in compare_data){
+                  if(compare_data[i].name===d.parent.parent.parent.data.name){
+                      var level_2 = compare_data[i]['children'];
+                      for(j in level_2){
+                          if(level_2[j].name===d.parent.parent.data.name){
+                              var level_3 = level_2[j]['children'];
+                              for(k in level_3){
+                                  if(level_3[k].name===d.parent.data.name){
+                                      var level_4 = level_3[k]['children'];
+                                      for(l in level_4){
+                                           if(level_4[l].name===d.data.name) return true;
+                                      }
                                   }
                               }
                           }
@@ -97,6 +116,7 @@ $(document).ready(function(){
                   }
               }
           }
+          //}
           return false;
       }
       function get_color(d, svgIndex) {
@@ -106,7 +126,7 @@ $(document).ready(function(){
           else{
               var exists_in_compar_graph = compare_graphs(d,window['jsondata_unequal'+svgIndex]['children'],false);
               var exists_in_transfer_graph = compare_graphs(d,window.transferlistdata['children'], true);
-              if(window.level === "Role"){
+              if(window.level === "Role"||window.level === "ROLLE"){
                   if(exists_in_compar_graph||exists_in_transfer_graph){
                       d['exists'] = true;
                       if(d.depth===1)return "darkgrey";
@@ -114,7 +134,8 @@ $(document).ready(function(){
                       if(d.depth===3)return "lightgrey";
                   }else{
                       d['exists'] = false;
-                      if(d.depth===3){return d.data.tf_application.color}
+                      //if(d.depth===3){return d.data.tf_application.color}
+                      if(d.depth===3){return d.data.color}
                       else{return "white"}
                   }
               }
@@ -125,7 +146,8 @@ $(document).ready(function(){
                       if(d.depth===2)return "lightgrey";
                   }else{
                       d['exists'] = false;
-                      if(d.depth===2){return d.data.tf_application.color}
+                      //if(d.depth===2){return d.data.tf_application.color}
+                      if(d.depth===2){return d.data.color}
                       else{return "white"}
                   }
               }
@@ -135,7 +157,8 @@ $(document).ready(function(){
                       if(d.depth===1)return "lightgrey";
                   }else{
                       d['exists'] = false;
-                      if(d.depth===1){return d.data.tf_application.color}
+                      //if(d.depth===1){return d.data.tf_application.color}
+                      if(d.depth===1){return d.data.color}
                       else{return "white"}
                   }
               }
@@ -143,7 +166,7 @@ $(document).ready(function(){
       }
       function get_tooltip_text(d) {
           var text;
-          if (window.level === "Role") {
+          if (window.level === "Role"||window.level === "ROLLE") {
               if(d.depth === 1){
                   text = "<b>AF:</b> "+d.data.name+"<br/>"+"<b>AF-Beschreibung:</b> "+d.data.description
               }else if(d.depth === 2){
@@ -219,7 +242,7 @@ $(document).ready(function(){
       zoomTo([root.x, root.y, root.r * 2 + margin]);
 
       function zoom(d) {
-          if (d.depth===3) return;
+          if (!d.hasOwnProperty('children')) return;
         var focus0 = focus; focus = d;
 
         var transition = d3.transition()

@@ -120,17 +120,8 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col">
-                        <label for="entries_per_page">Zeilen pro Seite:</label>
-                        <input class="form-control" type="text" id=”entries_per_page” name='entries_per_page' value="{{ paged_data.paginator.per_page }}"
-                               placeholder="... Zeilen">
-                    </div>
-                    <div class="col">
-                        <div class="row">
-                            <label class="hidden">Suchen:</label>
-                        </div>
-                        <div class="row">
-                            <button type="submit" class="btn btn-light btn-outline-secondary " id="sub-button">Suche</button>
-                        </div>
+                        <label class="hidden">Suchen:</label>
+                        <button type="submit" class="btn btn-light btn-outline-secondary " id="sub-button">Suche</button>
                     </div>
                 </div>
             </div>
@@ -151,6 +142,32 @@
     </li>
     {% endfor %}
 </ul>
+<form action="" method="get">
+    <div class="row">
+        <div class="col-sm">
+            <button name="first_page" type="submit" class="btn btn-light btn-outline-secondary ">Erste Seite</button>
+        </div>
+        <div class="col-sm">
+            <button name="prev_page" type="submit" class="btn btn-light btn-outline-secondary ">Vorherige Seite</button>
+        </div>
+        <div class="col-sm">
+            <h5><b></b></h5>
+        </div>
+        <div class="col-sm">
+            <button name="next_page" type="submit" class="btn btn-light btn-outline-secondary ">Nächste Seite</button>
+        </div>
+        <div class="col-sm">
+            <button name="last_page" type="submit" class="btn btn-light btn-outline-secondary ">Letzte Seite</button>
+        </div>
+                <div class="col-sm">
+            <label for="entries_per_page">Zeilen pro Seite:</label>
+        </div>
+        <div class="col-sm">
+            <input class="form-control" type="text" id=”entries_per_page” name='entries_per_page' value="{{ paged_data.paginator.per_page }}"
+                   placeholder="... Zeilen">
+        </div>
+    </div>
+</form>
 {% if is_paginated %}
 <ul class="pagination">
     {% if paged_data.has_previous %}

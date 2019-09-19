@@ -40,7 +40,7 @@ function remove_current_card(form, card_id, collapse_id){
     if(remove_confirm){
         $.ajax({type:'POST',
                 data:data,
-                url:'http://127.0.0.1:8000/users/'+inputs[1]['value']+'/',
+                url:window.current_host+'/api/userhatuseridundnamen/'+window.requesting_user_userid_combination_pk+'/',
                 async:false,
                 success: function(res){console.log(res);
                     user_res = res;
@@ -50,7 +50,7 @@ function remove_current_card(form, card_id, collapse_id){
         if (successful) {
             $.ajax({type:'DELETE',
                 data:data,
-                url:'http://127.0.0.1:8000/changerequests/'+inputs[0]['value']+'/',
+                url:window.current_host+'/api/changerequests/'+inputs[0]['value']+'/',
                 async:false,
                 success: function(res){console.log(res);
                     successful=true},

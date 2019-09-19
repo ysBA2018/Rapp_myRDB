@@ -230,6 +230,9 @@ class TblAppliedTf(models.Model):
     applied_rolle_id = models.ForeignKey(to='TblAppliedRolle', on_delete=models.PROTECT)
     applied_af_id = models.ForeignKey(to='TblAppliedAf', on_delete=models.PROTECT)
     applied_gf_id = models.ForeignKey(to='TblAppliedGf', on_delete=models.PROTECT)
+    deleted = models.BooleanField(default=False)
+    transfered = models.BooleanField(default=False)
+    requested = models.BooleanField(default=False)
 
 
 class TblAppliedGf(models.Model):
@@ -239,6 +242,9 @@ class TblAppliedGf(models.Model):
     applied_rolle_id = models.ForeignKey(to='TblAppliedRolle', on_delete=models.PROTECT)
     applied_af_id = models.ForeignKey(to='TblAppliedAf', on_delete=models.PROTECT)
     applied_tfs = models.ManyToManyField(to='TblAppliedTf', related_name='applied_tfs', default=None)
+    deleted = models.BooleanField(default=False)
+    transfered = models.BooleanField(default=False)
+    requested = models.BooleanField(default=False)
 
 
 class TblAppliedAf(models.Model):
@@ -247,6 +253,9 @@ class TblAppliedAf(models.Model):
     userHatUserID_id = models.ForeignKey(to='UserHatTblUserIDundName',on_delete=models.PROTECT)
     applied_rolle_id = models.ForeignKey(to='TblAppliedRolle', on_delete=models.PROTECT)
     applied_gfs = models.ManyToManyField(to='TblAppliedGf',related_name='applied_gfs',default=None)
+    deleted = models.BooleanField(default=False)
+    transfered = models.BooleanField(default=False)
+    requested = models.BooleanField(default=False)
 
 
 class TblAppliedRolle(models.Model):
@@ -254,6 +263,9 @@ class TblAppliedRolle(models.Model):
     model_rolle_id = models.ForeignKey(to='TblRollen', to_field='rollenid',on_delete=models.PROTECT)
     userHatUserID_id = models.ForeignKey(to='UserHatTblUserIDundName',on_delete=models.PROTECT)
     applied_afs = models.ManyToManyField(to='TblAppliedAf',related_name='applied_afs',default=None)
+    deleted = models.BooleanField(default=False)
+    transfered = models.BooleanField(default=False)
+    requested = models.BooleanField(default=False)
 
 
 class TblRollen(models.Model):
@@ -545,6 +557,24 @@ class TblOrga(models.Model):
         return reverse('team-create', args=[])
 
 
+class ChangeRequests(models.Model):
+    #'pk', 'requesting_user', 'compare_user', 'action', 'right_name',
+    #'right_type', 'reason_for_action', 'created', 'last_modified', 'status', 'reason_for_decline'
+    id = models.AutoField(db_column='id', primary_key=True)
+    requesting_user = models.CharField(max_length=7)
+    requesting_user_hat_userid_name_combination = models.ForeignKey(to='UserHatTblUserIDundName', related_name='requesting_userid', on_delete=models.CASCADE, null=True)
+    compare_user = models.CharField(max_length=7)
+    compare_user_hat_userid_name_combination = models.ForeignKey(to='UserHatTblUserIDundName', related_name='compare_userid', on_delete=models.CASCADE, null=True)
+    action = models.CharField(max_length=10)
+    right_name = models.CharField(max_length=150)
+    right_type = models.CharField(max_length=5)
+    reason_for_action = models.CharField(max_length=500)
+    status = models.CharField(max_length=10, default='unanswered')
+    reason_for_decline = models.CharField(max_length=500, default='')
+    created = models.DateTimeField(auto_now_add=True, editable=False, null=False, blank=False)
+    last_modified = models.DateTimeField(auto_now=True, editable=False, null=False, blank=False)
+
+
 class UserHatTblUserIDundName(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
     user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
@@ -552,7 +582,7 @@ class UserHatTblUserIDundName(models.Model):
     rollen = models.ManyToManyField(to='TblAppliedRolle', related_name='applied_rollen', default=None, blank=True)
     delete_list = models.ManyToManyField(to='TblAppliedRolle', related_name='deleted_applied_rollen', default=None, blank=True)
     transfer_list = models.ManyToManyField(to='TblAppliedRolle', related_name='transfered_applied_rollen', default=None, blank=True)
-
+    my_requests = models.ManyToManyField(to=ChangeRequests, related_name='user_change_requests', default=None, blank=True)
 '''
 class UserHatTblUserIDundName_Geloescht(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)

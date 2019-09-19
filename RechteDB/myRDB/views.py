@@ -383,10 +383,10 @@ class Users(generic.ListView):
     def get_queryset(self):
         headers = get_headers(self.request)
         self.extra_context['orgas'] = populate_orga_choice_field(headers, 'orgas', self.request)
-        #TODO: self.extra_context['roles'] = populate_role_choice_field(headers, 'roles', self.request)
+        # TODO: self.extra_context['roles'] = populate_role_choice_field(headers, 'roles', self.request)
         lis = ['zi_organisation', 'abteilung', 'gruppe']
         for e in lis:
-            collection_title = e+'s'
+            collection_title = e + 's'
             self.extra_context[collection_title] = populate_choice_fields(headers, e, self.request)
         url = docker_container_ip + '/api/useridundnamen/'
         params, changed = build_url_params(self.request, self.extra_context)
@@ -628,7 +628,10 @@ class Compare(generic.ListView):
 
             compare_user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user_json_data)
 
-            graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user, compare_user_info, True, headers, self.request, legend_data_dict, cached_af_descriptions)
+            graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user, compare_user_info, True,
+                                                                                      headers, self.request,
+                                                                                      legend_data_dict,
+                                                                                      cached_af_descriptions)
             self.request.session['cached_af_descriptions'] = cached_af_descriptions
             # compUserRoles = user_json_data['roles']
             # compUserAfs = user_json_data['children']
@@ -685,8 +688,11 @@ class Compare(generic.ListView):
                 cached_af_descriptions = dict()
 
             try:
-                graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user_json_data, user_info, False, headers,
-                                                                  self.request, legend_data_dict, cached_af_descriptions)
+                graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user_json_data, user_info,
+                                                                                          False, headers,
+                                                                                          self.request,
+                                                                                          legend_data_dict,
+                                                                                          cached_af_descriptions)
                 self.extra_context['jsondata'] = graph_data
                 # afs = user_json_data['children']
 
@@ -752,6 +758,22 @@ class ProfileRightsAnalysis(generic.ListView):
     def get_queryset(self):
         self.extra_context['current_site'] = "analysis"
         setViewMode(self.request, self.extra_context)
+        headers = get_headers(self.request)
+
+        legend_data_dict = self.request.session.get('legend_data_dict')
+        legend_data = self.request.session.get('legend_data')
+        if (not legend_data_dict or not legend_data) and not 'legendData' in self.extra_context:
+            legend_data = get_tf_applications(headers, self.request)
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+            legend_data_dict = {x['url']: x for x in legend_data}
+            self.request.session['legend_data_dict'] = legend_data_dict
+            self.request.session['legend_data'] = legend_data
+        elif (legend_data_dict and legend_data) and not 'legendData' in self.extra_context:
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+
+        cached_af_descriptions = self.request.session.get('cached_af_descriptions')
 
         user_data = self.request.session.get('user_data')
         table_data = self.request.session.get('table_data')
@@ -771,9 +793,8 @@ class ProfileRightsAnalysis(generic.ListView):
         if self.request.GET.keys().__contains__("level"):
             self.extra_context['level'] = self.request.GET['level']
         else:
-            self.extra_context['level'] = 'AF'
-        logged_in_user_token = self.request.user.auth_token
-        headers = {'Authorization': 'Token ' + logged_in_user_token.key}
+            self.extra_context['level'] = 'ROLLE'
+
         equalRights = []
         unequalRights = []
         equalModelRights = []
@@ -783,7 +804,7 @@ class ProfileRightsAnalysis(generic.ListView):
 
         equalModelRights, equalRights, equalRightsStats, unequalModelRights, unequalRights, unequalRightsStats = self.compare_right_and_modelright(
             equalModelRights, equalRights, equalRightsStats, headers, unequalModelRights, unequalRights,
-            unequalRightsStats, user_data)
+            unequalRightsStats, user_data, legend_data_dict, cached_af_descriptions)
 
         self.extra_context['equal_rights'] = sorted(equalRights, key=lambda k: k['name'])
         self.extra_context['unequal_rights'] = sorted(unequalRights, key=lambda k: k['name'])
@@ -792,10 +813,12 @@ class ProfileRightsAnalysis(generic.ListView):
         self.extra_context['equal_rights_stats'] = sorted(equalRightsStats, key=lambda k: k['right_name'])
         self.extra_context['unequal_rights_stats'] = sorted(unequalRightsStats, key=lambda k: k['right_name'])
 
-        self.extra_context['user_identity'] = user_data['identity']
-        self.extra_context['user_first_name'] = user_data['first_name']
-        self.extra_context['user_name'] = user_data['name']
-        self.extra_context['user_department'] = user_data['department']
+        self.extra_context['user_identity'] = self.request.session.get('user_identity')
+        self.extra_context['user_first_name'] = self.request.session.get('user_first_name')
+        self.extra_context['user_name'] = self.request.session.get('user_name')
+        self.extra_context['user_department'] = self.request.session.get('user_department')
+
+        self.extra_context['user_count'] = self.request.session.get('user_count')
         self.extra_context['role_count'] = self.request.session.get('role_count')
         self.extra_context['af_count'] = self.request.session.get('af_count')
         self.extra_context['gf_count'] = self.request.session.get('gf_count')
@@ -803,149 +826,253 @@ class ProfileRightsAnalysis(generic.ListView):
         return None
 
     def compare_right_and_modelright(self, equalModelRights, equalRights, equalRightsStats, headers, unequalModelRights,
-                                     unequalRights, unequalRightsStats, user_data):
-        if self.extra_context['level'] == "AF":
-            afs = sorted(user_data['children'], key=lambda k: k['name'])
-            for af in afs:
-                through = False
-                model_afs = iter(
-                    sorted(get_user_model_rights_by_key(user_data['pk'], headers, self.request)['direct_connect_afs'],
-                           key=lambda k: k['af_name']))
-                # if af['name'] != "":  # wegen direct_connect_gfs <-> af.af_name = "" <-> muss noch beim einlesen der daten umgebaut werden
-                while not through:
-                    try:
-                        current_model = next(model_afs)
-                    except StopIteration:
-                        print('model_af stop iteration')
-                        through = True
-                    if af['name'] == current_model['af_name']:
-                        stats = {}
-                        stats['right_name'] = current_model['af_name']
-                        stats['description'] = current_model['af_description']
-                        self.prepareModelJSONdata(current_model, True, False, headers)
-                        equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
-                            af,
-                            current_model,
-                            equalRights,
-                            unequalRights,
-                            equalModelRights,
-                            unequalModelRights,
-                            True,
-                            False,
-                            stats,
-                            unequalRightsStats,
-                            equalRightsStats)
-                        through = True;
-                        break
+                                     unequalRights, unequalRightsStats, user_data, legend_data_dict, cached_af_descriptions):
+        for user in user_data['children']:
+            if self.extra_context['level'] == "ROLLE":
+                rollen = sorted(user['children'], key=lambda k: k['name'])
+                for rolle in rollen:
+                    through = False
+                    model_rollen = iter(
+                        sorted([get_by_url(x, get_headers(self.request)) for x in user['rollen']],
+                               key=lambda k: k['rollenname']))
+                    while not through:
+                        try:
+                            current_model = next(model_rollen)
+                        except StopIteration:
+                            print('model_rolle stop iteration')
+                            through = True
+                        if rolle['name'] == current_model['rollenname']:
+                            stats = {}
+                            stats['right_name'] = current_model['rollenname']
+                            stats['description'] = current_model['rollenbeschreibung']
+                            stats['model_af_count'], stats['model_gf_count'], stats[
+                                'model_tf_count'] = self.prepareModelJSONdata(current_model, True, False, False,
+                                                                              headers, legend_data_dict, None)
+                            equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
+                                rolle,
+                                current_model,
+                                equalRights,
+                                unequalRights,
+                                equalModelRights,
+                                unequalModelRights,
+                                True,
+                                False,
+                                False,
+                                stats,
+                                unequalRightsStats,
+                                equalRightsStats)
+                            through = True
+                            break
+            elif self.extra_context['level'] == "AF":
+                rollen = sorted(user['children'], key=lambda k: k['name'])
+                model_rollen = sorted([get_by_url(x, get_headers(self.request)) for x in user['rollen']],
+                           key=lambda k: k['rollenname'])
+                model_afs_list = []
+                for model_rolle in model_rollen:
+                    model_afs_list += [get_by_url(x, get_headers(self.request)) for x in model_rolle['afs']]
 
-                # else:
-                #    afs.remove(af)
-        elif self.extra_context['level'] == "GF":
-            afs = user_data['children']
-            gfs = []
-            for af in afs:
-                for gf in af['children']:
-                    gfs.append(gf)
-            gfs = sorted(gfs, key=lambda k: k['name'])
+                for rolle in rollen:
+                    afs = sorted(rolle['children'], key=lambda k: k['name'])
+                    for af in afs:
+                        model_afs = iter(sorted(model_afs_list,
+                                                key=lambda k: k['af_name']))
+                        through = False
+                        while not through:
+                            try:
+                                current_model = next(model_afs)
+                            except StopIteration:
+                                print('model_af stop iteration')
+                                through = True
+                            if af['name'] == current_model['af_name']:
+                                stats = {}
+                                stats['right_name'] = current_model['af_name']
+                                stats['model_af_count'], stats['model_gf_count'], stats[
+                                    'model_tf_count'] = self.prepareModelJSONdata(current_model, False, True, False,
+                                                                                  headers, legend_data_dict, cached_af_descriptions)
+                                stats['description'] = current_model['af_beschreibung']
 
-            model_afs = get_user_model_rights_by_key(user_data['pk'], headers, self.request)['direct_connect_afs']
-            model_gfs = []
-            for af in model_afs:
-                for gf in af['gfs']:
-                    model_gfs.append(gf)
-            model_gfs = iter(sorted(model_gfs, key=lambda k: k['gf_name']))
+                                equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
+                                    af,
+                                    current_model,
+                                    equalRights,
+                                    unequalRights,
+                                    equalModelRights,
+                                    unequalModelRights,
+                                    False,
+                                    True,
+                                    False,
+                                    stats,
+                                    unequalRightsStats,
+                                    equalRightsStats)
+                                through = True
+                                break
+            elif self.extra_context['level'] == "GF":
+                rollen = sorted(user['children'], key=lambda k: k['name'])
+                model_rollen = sorted([get_by_url(x, get_headers(self.request)) for x in user['rollen']],
+                           key=lambda k: k['rollenname'])
+                model_afs_list = []
+                for model_rolle in model_rollen:
+                    model_afs_list += [get_by_url(x, get_headers(self.request)) for x in model_rolle['afs']]
+                model_gfs_list = []
+                for model_af in model_afs_list:
+                    model_gfs_list += [get_by_url(x, get_headers(self.request)) for x in model_af['gfs']]
+                for rolle in rollen:
+                    afs = sorted(rolle['children'], key=lambda k: k['name'])
+                    for af in afs:
+                        gfs = sorted(af['children'], key=lambda k: k['name'])
+                        for gf in gfs:
+                            model_gfs = iter(sorted(model_gfs_list,
+                                                    key=lambda k: k['name_gf_neu']))
+                            through = False
+                            while not through:
+                                try:
+                                    current_model = next(model_gfs)
+                                except StopIteration:
+                                    print('model_gf stop iteration')
+                                    through = True
+                                if gf['name'] == current_model['name_gf_neu']:
+                                    stats = {}
+                                    stats['right_name'] = current_model['name_gf_neu']
+                                    stats['model_af_count'], stats['model_gf_count'], stats[
+                                        'model_tf_count'] = self.prepareModelJSONdata(current_model, False, False, True,
+                                                                                      headers, legend_data_dict, None)
+                                    stats['description'] = current_model['gf_beschreibung']
 
-            for gf in gfs:
-                through = False
-                # if gf['name'] != "":  # wegen direct_connect_gfs <-> af.af_name = "" <-> muss noch beim einlesen der daten umgebaut werden
-                while not through:
-                    try:
-                        current_model = next(model_gfs)
-                    except StopIteration:
-                        print("in GF-StopIteration!")
-                        through = True
-                    if gf['name'] == current_model['gf_name']:
-                        stats = {}
-                        stats['right_name'] = current_model['gf_name']
-                        stats['description'] = current_model['gf_description']
-                        self.prepareModelJSONdata(current_model, False, True, headers)
-                        equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
-                            gf,
-                            current_model,
-                            equalRights,
-                            unequalRights,
-                            equalModelRights,
-                            unequalModelRights,
-                            False,
-                            True,
-                            stats,
-                            unequalRightsStats,
-                            equalRightsStats)
-                        through = True
-                        break
-
-                # else:
-                #    gfs.remove(gf)
+                                    equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats = self.compareRightToModel(
+                                        gf,
+                                        current_model,
+                                        equalRights,
+                                        unequalRights,
+                                        equalModelRights,
+                                        unequalModelRights,
+                                        False,
+                                        False,
+                                        True,
+                                        stats,
+                                        unequalRightsStats,
+                                        equalRightsStats)
+                                    through = True
+                                    break
         return equalModelRights, equalRights, equalRightsStats, unequalModelRights, unequalRights, unequalRightsStats
 
     def compareRightToModel(self, userRight, compareModel, equalRights, unequalRights, equalModelRights,
-                            unequalModelRights, isAF, isGF, stats, unequalRightsStats, equalRightsStats):
+                            unequalModelRights, isRolle, isAF, isGF, stats, unequalRightsStats, equalRightsStats):
         equal = False
+        equalAFSum = 0
         equalGFSum = 0
         equalTFSum = 0
 
         tf_count = 0
-        model_tf_count = 0
         tf_count_diff = 0
+        gf_count = 0
+        gf_count_diff = 0
 
+        if isRolle:
+            af_count = len(userRight['children'])
+            af_count_diff = stats['model_af_count'] - af_count
+
+            stats['af_count'] = af_count
+            stats['af_count_diff'] = af_count_diff
+
+            for af in sorted(userRight['children'], key=lambda k: k['name']):
+                through = False
+                modelAFIter = iter(sorted(compareModel['children'], key=lambda k: k['name']))
+
+                while not through:
+                    try:
+                        currentAFModel = next(modelAFIter)
+                        if af['name'] == currentAFModel['name']:
+                            equalAFSum += 1
+                            break
+                    except StopIteration:
+                        print('Model_AF stop iteration')
+                        through = True
+
+                gf_count += len(af['children'])
+
+                for gf in sorted(af['children'], key=lambda k: k['name']):
+                    through = False
+                    modelGFIter = iter(sorted(currentAFModel['children'], key=lambda k: k['name']))
+                    while not through:
+                        try:
+                            currentGFModel = next(modelGFIter)
+                            if gf['name'] == currentGFModel['name']:
+                                equalGFSum += 1
+                                break
+                        except StopIteration:
+                            print('Model_GF stop iteration')
+                            through = True
+
+                    tf_count += len(gf['children'])
+
+                    for tf in sorted(gf['children'], key=lambda k: k['name']):
+                        modelTFIter = iter(sorted(currentGFModel['children'], key=lambda k: k['name']))
+                        through = False
+                        while not through:
+                            try:
+                                currentTFModel = next(modelTFIter)
+                                if tf['name'] == currentTFModel['name']:
+                                    equalTFSum += 1
+                                    break
+                            except StopIteration:
+                                print('Model_GF stop iteration')
+                                through = True
+            if equalAFSum == stats['model_af_count'] and equalGFSum == stats['model_gf_count'] and equalTFSum == stats['model_tf_count'] and af_count_diff == 0 and gf_count_diff == 0 and tf_count_diff == 0:
+                equal = True
         if isAF:
-            modelGFIter = iter(sorted(compareModel['children'], key=lambda k: k['name']))
-
-            gf_count = len(userRight['children'])
-            model_gf_count = len(compareModel['children'])
-            gf_count_diff = model_gf_count - gf_count
-
-            stats['gf_count'] = gf_count
-            stats['model_gf_count'] = model_gf_count
-            stats['gf_count_diff'] = gf_count_diff
-
             for gf in sorted(userRight['children'], key=lambda k: k['name']):
-                try:
-                    currentGFModel = next(modelGFIter)
-                except StopIteration:
-                    print("in StopIteration")
-                    break
+                through = False
+                modelGFIter = iter(sorted(compareModel['children'], key=lambda k: k['name']))
+                while not through:
+                    try:
+                        currentGFModel = next(modelGFIter)
+                        if gf['name'] == currentGFModel['name']:
+                            equalGFSum += 1
+                            break
+                    except StopIteration:
+                        print('Model_GF stop iteration')
+                        through = True
 
-                if gf['name'] == currentGFModel['name']:
-                    equalGFSum += 1
-                modelTFIter = iter(sorted(currentGFModel['children'], key=lambda k: k['name']))
-
-                model_tf_count += len(currentGFModel['children'])
                 tf_count += len(gf['children'])
-                tf_count_diff = model_tf_count - tf_count
 
                 for tf in sorted(gf['children'], key=lambda k: k['name']):
-                    currentTFModel = next(modelTFIter)
-                    if tf['name'] == currentTFModel['name']:
-                        equalTFSum += 1
-            if equalGFSum == gf_count and equalTFSum == tf_count and gf_count_diff == 0 and tf_count_diff == 0:
+                    modelTFIter = iter(sorted(currentGFModel['children'], key=lambda k: k['name']))
+                    through = False
+                    while not through:
+                        try:
+                            currentTFModel = next(modelTFIter)
+                            if tf['name'] == currentTFModel['name']:
+                                equalTFSum += 1
+                                break
+                        except StopIteration:
+                            print('Model_TF stop iteration')
+                            through = True
+            if equalGFSum == stats['model_gf_count'] and equalTFSum == stats['model_tf_count'] and gf_count_diff == 0 and tf_count_diff == 0:
                 equal = True
         if isGF:
-            modelTFIter = iter(sorted(compareModel['children'], key=lambda k: k['name']))
-
-            model_tf_count += len(compareModel['children'])
-            tf_count += len(userRight['children'])
-            tf_count_diff = model_tf_count - tf_count
-
+            tf_count = len(userRight['children'])
             for tf in sorted(userRight['children'], key=lambda k: k['name']):
-                currentTFModel = next(modelTFIter)
-                if tf['name'] == currentTFModel['name']:
-                    equalTFSum += 1
-            if equalTFSum == tf_count and tf_count_diff == 0:
+                through = False
+                modelTFIter = iter(sorted(compareModel['children'], key=lambda k: k['name']))
+
+                while not through:
+                    try:
+                        currentTFModel = next(modelTFIter)
+                        if tf['name'] == currentTFModel['name']:
+                            equalTFSum += 1
+                            break
+                    except StopIteration:
+                        print('Model_TF stop iteration')
+                        through = True
+            if equalTFSum == stats['model_tf_count'] and tf_count_diff == 0:
                 equal = True
 
+        gf_count_diff = stats['model_gf_count'] - gf_count
+        stats['gf_count'] = gf_count
+        stats['gf_count_diff'] = gf_count_diff
+
+        tf_count_diff = stats['model_tf_count'] - tf_count
         stats['tf_count'] = tf_count
-        stats['model_tf_count'] = model_tf_count
         stats['tf_count_diff'] = tf_count_diff
 
         if equal:
@@ -958,22 +1085,78 @@ class ProfileRightsAnalysis(generic.ListView):
             unequalRightsStats.append(stats)
         return equalRights, unequalRights, equalModelRights, unequalModelRights, equalRightsStats, unequalRightsStats
 
-    def prepareModelJSONdata(self, json_data, is_af, is_gf, headers):
-        if is_af:
-            json_data["name"] = json_data.pop('af_name')
-            json_data["children"] = json_data.pop('gfs')
-            for gf in json_data['children']:
-                gf["name"] = gf.pop('gf_name')
-                gf["children"] = gf.pop('tfs')
-                for tf in gf['children']:
-                    tf["name"] = tf.pop('tf_name')
-                    tf["size"] = 2000
-        if is_gf:
-            json_data["name"] = json_data.pop('gf_name')
-            json_data["children"] = json_data.pop('tfs')
-            for tf in json_data['children']:
-                tf["name"] = tf.pop('tf_name')
-                tf["size"] = 2000
+    def prepareModelJSONdata(self, json_data, is_rolle, is_af, is_gf, headers, legend_data, cached_af_descriptions):
+        model_af_count = 0
+        model_gf_count = 0
+        model_tf_count = 0
+        if is_rolle:
+            af_old = None
+            json_data["name"] = json_data.pop('rollenname')
+            json_data["children"] = []
+            for model_af in json_data['afs']:
+                model_af = get_by_url(model_af, headers)
+                model_af["name"] = model_af['af_name']
+                model_af["children"] = []
+                json_data['children'].append(model_af)
+                for model_gf in model_af['gfs']:
+                    model_gf = get_by_url(model_gf, headers)
+                    model_gf["name"] = model_gf['name_gf_neu']
+                    model_gf["children"] = []
+                    model_af['children'].append(model_gf)
+                    if model_gf['tfs']:
+                        if model_af != af_old:
+                            model_af_count += 1
+                            af_old = model_af
+                        model_gf_count += 1
+                        model_tf_count += len(model_gf['tfs'])
+
+                    for model_tf in model_gf['tfs']:
+                        model_tf = get_by_url(model_tf, headers)
+                        model_tf["name"] = model_tf['tf']
+                        plattform = legend_data.get(model_tf['plattform'])
+                        hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                        model_tf['color'] = hslColor
+                        model_tf["size"] = 2000
+                        model_gf['children'].append(model_tf)
+        elif is_af:
+            json_data["name"] = json_data['af_name']
+            json_data['af_beschreibung'] = cached_af_descriptions.get(json_data['af_name'])
+            json_data["children"] = []
+            for model_gf in json_data['gfs']:
+                model_gf = get_by_url(model_gf, headers)
+                model_gf["name"] = model_gf['name_gf_neu']
+                model_gf["children"] = []
+                json_data['children'].append(model_gf)
+                if model_gf['tfs']:
+                    model_gf_count += 1
+                    model_tf_count += len(model_gf['tfs'])
+
+                for model_tf in model_gf['tfs']:
+                    model_tf = get_by_url(model_tf, headers)
+                    model_tf["name"] = model_tf['tf']
+                    plattform = legend_data.get(model_tf['plattform'])
+                    hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                    model_tf['color'] = hslColor
+                    model_tf["size"] = 2000
+                    model_gf['children'].append(model_tf)
+        elif is_gf:
+            json_data["name"] = json_data['name_gf_neu']
+            json_data['gf_beschreibung'] = None
+            json_data["children"] = []
+            if json_data['tfs']:
+                model_tf_count += len(json_data['tfs'])
+
+            for model_tf in json_data['tfs']:
+                model_tf = get_by_url(model_tf, headers)
+                model_tf["name"] = model_tf['tf']
+                if not json_data['gf_beschreibung']:
+                    json_data['gf_beschreibung'] = model_tf['gf_beschreibung']
+                plattform = legend_data.get(model_tf['plattform'])
+                hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                model_tf['color'] = hslColor
+                model_tf["size"] = 2000
+                json_data['children'].append(model_tf)
+        return model_af_count, model_gf_count, model_tf_count
 
 
 class Profile(generic.ListView):
@@ -1030,19 +1213,21 @@ class Profile(generic.ListView):
             self.extra_context['no_profile'] = None
             user_pk = user.pk
         except UnboundLocalError:
-            #TODO: Noch auf USER - muss auf TblUserIdundNamen umgestelt werden
+            # TODO: Noch auf USER - muss auf TblUserIdundNamen umgestelt werden
             userid_und_name = get_useridundnamen_by_userid(user_id, headers)[0]
-            user_hat_user_id_und_name = get_user_userid_name_combination(headers,None,userid_und_name['id'],self.request)
+            user_hat_user_id_und_name = get_user_userid_name_combination(headers, None, userid_und_name['id'],
+                                                                         self.request)
             if user_hat_user_id_und_name:
-                user_hat_user_id_und_name= user_hat_user_id_und_name[0]
+                user_hat_user_id_und_name = user_hat_user_id_und_name[0]
                 user_json = get_by_url(user_hat_user_id_und_name['user_name'], headers)
                 user_pk = user_json['id']
                 user = User.objects.get(id=user_pk)
             else:
                 self.extra_context.clear()
-                self.extra_context['no_profile'] = "Diese NutzerID-Name-Kombination wurde noch keinem Nutzer zugewiesen.\n" \
-                                                   "Bitte erzeugen Sie für "+user_id+" per Admin ein Nutzerprofil\n" \
-                                                    "oder weisen Sie diese einem Nutzer zu!"
+                self.extra_context[
+                    'no_profile'] = "Diese NutzerID-Name-Kombination wurde noch keinem Nutzer zugewiesen.\n" \
+                                    "Bitte erzeugen Sie für " + user_id + " per Admin ein Nutzerprofil\n" \
+                                                                          "oder weisen Sie diese einem Nutzer zu!"
                 return
 
         user_json_data = get_user_by_key(user_pk, headers, self.request)
@@ -1057,28 +1242,32 @@ class Profile(generic.ListView):
                 update_personal_right_models(ui, headers, self.request)
 
             last_rights_update = datetime.datetime.now()
-            patch_user_last_rights_update(user_pk,last_rights_update,headers)
+            patch_user_last_rights_update(user_pk, last_rights_update, headers)
             user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user_json_data)
 
-        graph_data, scatterData, counts, cached_af_descriptions= prepareJSONdata(user_id, user_info, False, headers, self.request, legend_data_dict, cached_af_descriptions)
+        graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user_id, user_info, False, headers,
+                                                                                  self.request, legend_data_dict,
+                                                                                  cached_af_descriptions)
         self.extra_context['jsondata'] = graph_data
 
         self.extra_context['scatterData'] = scatterData
 
-        transfer_graph_data, transfer_list_with_category, transfer_rights_count, cached_af_descriptions = prepareTransferJSONdata(user_info,
-                                                                                                          self.request,
-                                                                                                          headers,
-                                                                                                          legend_data_dict,
-                                                                                                            cached_af_descriptions)
+        transfer_graph_data, transfer_list_with_category, transfer_rights_count, cached_af_descriptions = prepareTransferJSONdata(
+            user_info,
+            self.request,
+            headers,
+            legend_data_dict,
+            cached_af_descriptions)
         self.extra_context['transferlist'] = transfer_graph_data
         # transfer_list_table_data, transfer_list_count = prepareTransferTabledata(transfer_list)
         # self.extra_context['transfer_list_table_data'] = transfer_list_table_data
         self.extra_context['transfer_list_count'] = transfer_rights_count
 
-        delete_graph_data, delete_list_with_category, delete_rights_count, cached_af_descriptions = prepareDeleteJSONdata(user_info,
-                                                                                                  self.request, headers,
-                                                                                                  legend_data_dict,
-                                                                                                    cached_af_descriptions)
+        delete_graph_data, delete_list_with_category, delete_rights_count, cached_af_descriptions = prepareDeleteJSONdata(
+            user_info,
+            self.request, headers,
+            legend_data_dict,
+            cached_af_descriptions)
         self.request.session['cached_af_descriptions'] = cached_af_descriptions
         # delete_list, delete_list_with_category = [],[]
         self.extra_context['deletelist'] = delete_graph_data
@@ -1107,12 +1296,18 @@ class Profile(generic.ListView):
 
         self.extra_context['user_id'] = user.pk
         self.extra_context['user_identity'] = user.username
+        self.request.session['user_identity'] = user.username
         self.extra_context['user_first_name'] = user.first_name
+        self.request.session['user_first_name'] = user.first_name
         self.extra_context['user_name'] = user.last_name
+        self.request.session['user_name'] = user.last_name
+
         if graph_data['children']:
             self.extra_context['user_department'] = graph_data['children'][0]['gruppe']
+            self.request.session['user_department'] = graph_data['children'][0]['gruppe']
         else:
             self.extra_context['user_department'] = "Kein Nutzer & daher keine Gruppe zugewiesen!"
+            self.request.session['user_department'] = "Kein Nutzer & daher keine Gruppe zugewiesen!"
 
         self.request.session['user_count'] = counts['user']
         self.request.session['role_count'] = counts['roles']
@@ -1138,50 +1333,72 @@ class RequestPool(generic.ListView):
     context_object_name = 'list_data'
 
     def get_queryset(self):
+        headers = get_headers(self.request)
+        self.extra_context['current_host'] = docker_container_ip
+
+        legend_data_dict = self.request.session.get('legend_data_dict')
+        legend_data = self.request.session.get('legend_data')
+        if (not legend_data_dict or not legend_data) and not 'legendData' in self.extra_context:
+            legend_data = get_tf_applications(headers, self.request)
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+            legend_data_dict = {x['url']: x for x in legend_data}
+            self.request.session['legend_data_dict'] = legend_data_dict
+            self.request.session['legend_data'] = legend_data
+        elif (legend_data_dict and legend_data) and not 'legendData' in self.extra_context:
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+
         change_requests_json_data = get_changerequests(get_headers(self.request), self.request)
         print(change_requests_json_data)
-        requests_by_users = self.repack_data(change_requests_json_data)
+        requests_by_users = self.repack_data(change_requests_json_data, headers, legend_data_dict)
         print(requests_by_users)
         self.extra_context['requesting_users'] = requests_by_users
         self.extra_context['accept_form'] = AcceptChangeForm
         self.extra_context['decline_form'] = DeclineChangeForm
         return []
 
-    def repack_data(self, change_requests):
+    def repack_data(self, change_requests, headers, legend_data_dict):
         list_by_user = []
         for data in change_requests:
             if data['status'] == "unanswered":
                 user_dict = {'requesting_user': data['requesting_user'], 'apply_requests': [], 'delete_requests': []}
                 if not list_by_user.__contains__(user_dict):
                     list_by_user.append(user_dict)
-
+        cached_user_data = dict()
         for data in change_requests:
             for user in list_by_user:
                 if user['requesting_user'] == data['requesting_user']:
-                    requesting_user = get_user_by_key(data['requesting_user'],
-                                                      headers=get_headers(self.request), request=self.request)
+                    if not data['requesting_user'] in cached_user_data:
+                        requesting_user_json = get_user_by_name(user['requesting_user'].lower(), headers, self.request)[
+                            0]
+                        requesting_user_info = get_user_info_dict_for_all_applied_userids(headers, self.request,
+                                                                                          requesting_user_json)
+                        requesting_user = requesting_user_info[0]['rights_data']
+                        cached_user_data[data['requesting_user']] = requesting_user_info[0]['rights_data']
+                    else:
+                        requesting_user = cached_user_data.get(data['requesting_user'])
                     if data['status'] == "unanswered":
                         # TODO: xv-nummer als SLUG-Field -> dann url über xvnummer aufrufbar
                         if data['action'] == 'apply':
                             right = get_right_from_list(requesting_user, data['right_type'], data['right_name'],
-                                                        requesting_user['transfer_list'])
+                                                        requesting_user['transfer_list'], headers, legend_data_dict)
                             if right is None:
                                 model = None
                             else:
-                                model = get_model_right(requesting_user, data['right_type'], right['model_right_pk'],
-                                                        self.request)
+                                model = right['model_right_pk']
                             user["apply_requests"].append({'right': right, 'model': model, 'type': data['right_type'],
                                                            'right_name': data['right_name'],
                                                            'reason_for_action': data['reason_for_action'],
                                                            'request_pk': data['pk']})
                         else:
                             right = get_right_from_list(requesting_user, data['right_type'], data['right_name'],
-                                                        requesting_user['delete_list'])
+                                                        requesting_user['delete_list'], headers, legend_data_dict)
                             if right is None:
                                 model = None
                             else:
-                                model = get_model_right(requesting_user, data['right_type'], right['model_right_pk'],
-                                                        self.request)
+                                model = right['model_right_pk']
+
                             user["delete_requests"].append({'right': right, 'model': model, 'type': data['right_type'],
                                                             'right_name': data['right_name'],
                                                             'reason_for_action': data['reason_for_action'],
@@ -1210,73 +1427,90 @@ class MyRequests(generic.ListView):
 
     def get_queryset(self):
         self.extra_context['current_site'] = "my_requests"
+        self.extra_context['current_host'] = docker_container_ip
         if 'user_identity' in self.request.session:
             user_identity = self.request.session.get('user_identity')
         else:
             user_identity = self.request.user.identity
         self.extra_context['requesting_user'] = user_identity
         # setViewMode(self.request, self.extra_context)
-        user = get_user_by_key(user_identity, get_headers(self.request), self.request)
-        request_list = self.get_my_requests(user)
-        repacked_request_list = self.repack_list(request_list)
+        headers = get_headers(self.request)
+
+        legend_data_dict = self.request.session.get('legend_data_dict')
+        legend_data = self.request.session.get('legend_data')
+        if (not legend_data_dict or not legend_data) and not 'legendData' in self.extra_context:
+            legend_data = get_tf_applications(headers, self.request)
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+            legend_data_dict = {x['url']: x for x in legend_data}
+            self.request.session['legend_data_dict'] = legend_data_dict
+            self.request.session['legend_data'] = legend_data
+        elif (legend_data_dict and legend_data) and not 'legendData' in self.extra_context:
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+
+        user = get_user_by_name(user_identity.lower(), headers, self.request)[0]
+        user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user)
+        self.extra_context['requesting_user_userid_combination_pk'] = user_info[0]['rights_data']['id']
+
+        request_list = self.get_my_requests(user_info[0]['rights_data'])
+        repacked_request_list = self.repack_list(request_list, user_info, headers, legend_data_dict)
         unanswered_list, accepted_list, declined_list = self.presort(repacked_request_list)
         self.extra_context['declined_list'] = declined_list
         self.extra_context['unanswered_list'] = unanswered_list
         return accepted_list
 
-    def repack_list(self, list):
+    def repack_list(self, list, user_info, headers, legend_data_dict):
         repacked_list = []
+        requesting_user = user_info[0]['rights_data']
         for request in list:
-            requesting_user = get_user_by_key(request['requesting_user'], headers=get_headers(self.request),
-                                              request=self.request)
             if request['action'] == 'apply':
                 # TODO: wenn berechtigung auf comp_user oder user seite gelöscht wurde -> zuerst modell-recht anzeigen -> wenn auch gelöscht - dann erst None setzen und damit esatz-circle anzeigen
                 if request['status'] == "accepted":
                     right = get_right_from_list(requesting_user, request['right_type'], request['right_name'],
-                                                requesting_user['user_afs'])
+                                                requesting_user['rollen'], headers, legend_data_dict)
                     if right is None:
                         model = None
                     else:
-                        model = get_model_right(requesting_user, request['right_type'], right['model_right_pk'],
-                                                self.request)
+                        model = right['model_right_pk']
+
                 elif request['status'] == "declined":
-                    compare_user = get_user_by_key(request['compare_user'], headers=get_headers(self.request),
-                                                   request=self.request)
+                    compare_user_json = get_user_by_name(request['compare_user'], headers, self.request)[0]
+                    compare_user_info = get_user_info_dict_for_all_applied_userids(headers, self.request,
+                                                                                   compare_user_json)
+                    compare_user = compare_user_info[0]['rights_data']
                     right = get_right_from_list(compare_user, request['right_type'], request['right_name'],
-                                                compare_user['user_afs'])
+                                                compare_user['rollen'], headers, legend_data_dict)
                     if right is None:
                         model = None
                     else:
-                        model = get_model_right(compare_user, request['right_type'], right['model_right_pk'],
-                                                self.request)
+                        model = right['model_right_pk']
                 else:
                     right = get_right_from_list(requesting_user, request['right_type'], request['right_name'],
-                                                requesting_user['transfer_list'])
+                                                requesting_user['transfer_list'], headers, legend_data_dict)
                     if right is None:
                         model = None
                     else:
-                        model = get_model_right(requesting_user, request['right_type'], right['model_right_pk'],
-                                                self.request)
+                        model = right['model_right_pk']
             if request['action'] == 'delete':
                 if request['status'] == "accepted":
                     right = None
                     model = None
                 elif request['status'] == "declined":
                     right = get_right_from_list(requesting_user, request['right_type'], request['right_name'],
-                                                requesting_user['user_afs'])
+                                                requesting_user['rollen'], headers, legend_data_dict)
                     if right is None:
                         model = None
                     else:
-                        model = get_model_right(requesting_user, request['right_type'], right['model_right_pk'],
-                                                self.request)
+                        model = right['model_right_pk']
                 else:
                     right = get_right_from_list(requesting_user, request['right_type'], request['right_name'],
-                                                requesting_user['delete_list'])
+                                                requesting_user['delete_list'], headers, legend_data_dict)
                     if right is None:
                         model = None
                     else:
-                        model = get_model_right(requesting_user, request['right_type'], right['model_right_pk'],
-                                                self.request)
+                        model = right['model_right_pk']
+
             repacked_list.append({'right': right, 'model': model, 'request': request})
         return repacked_list
 
@@ -1323,39 +1557,61 @@ class RightApplication(generic.ListView):
     context_object_name = "list_data"
 
     def get_queryset(self):
+        self.extra_context['current_host'] = docker_container_ip
         self.extra_context['current_site'] = "right_application"
         self.extra_context['compare_user'] = self.request.session.get('user_search')
         user_identity = self.request.session.get('user_identity')
-        legend_data_dict = self.request.session.get('legend_data_dict')
         self.extra_context['requesting_user'] = user_identity
         # setViewMode(self.request, self.extra_context)
         headers = get_headers(self.request)
-        user_json_data = get_user_by_key(user_identity, headers, self.request)
 
-        roles = user_json_data['roles']
+        legend_data_dict = self.request.session.get('legend_data_dict')
+        legend_data = self.request.session.get('legend_data')
+        if (not legend_data_dict or not legend_data) and not 'legendData' in self.extra_context:
+            legend_data = get_tf_applications(headers, self.request)
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
+            legend_data_dict = {x['url']: x for x in legend_data}
+            self.request.session['legend_data_dict'] = legend_data_dict
+            self.request.session['legend_data'] = legend_data
+        elif (legend_data_dict and legend_data) and not 'legendData' in self.extra_context:
+            sorted_legend_data = sorted(legend_data, key=lambda r: r["tf_technische_plattform"])
+            self.extra_context['legendData'] = sorted_legend_data
 
-        user_json_data, scatterData = prepareJSONdata(user_json_data['identity'], user_json_data, False, headers,
-                                                      self.request, legend_data_dict)
+        cached_af_descriptions = self.request.session.get('cached_af_descriptions')
+        if not cached_af_descriptions:
+            cached_af_descriptions = dict()
 
-        transfer_list, transfer_list_with_category, single_rights_count, cached_af_descriptions = prepareTransferJSONdata(user_json_data['transfer_list'],)
-        model_transfer_list = get_model_list(transfer_list_with_category, headers, self.request)
+        user_json_data = get_user_by_name(user_identity, headers, self.request)[0]
+        user_info = get_user_info_dict_for_all_applied_userids(headers, self.request, user_json_data)
+        self.extra_context['requesting_user_userid_combination_pk'] = user_info[0]['rights_data']['id']
+        # roles = user_json_data['roles']
+
+        graph_data, scatterData, counts, cached_af_descriptions = prepareJSONdata(user_json_data['username'], user_info,
+                                                                                  False, headers,
+                                                                                  self.request, legend_data_dict,
+                                                                                  cached_af_descriptions)
+
+        transfer_graph_data, transfer_list_with_category, single_rights_count, cached_af_descriptions = prepareTransferJSONdata(
+            user_info, self.request, headers, legend_data_dict, cached_af_descriptions)
+        model_transfer_list = get_model_list(transfer_list_with_category, cached_af_descriptions, headers)
         # transfer_list_table_data, transfer_list_count = prepareTransferTabledata(transfer_list)
         # self.extra_context['transfer_list_table_data'] = transfer_list_table_data
         # self.extra_context['transfer_list_count'] = transfer_list_count
-        self.extra_context['transfer_list'] = transfer_list
+        self.extra_context['transfer_list'] = transfer_graph_data
         self.extra_context['stripped_transfer_list'] = [right['right'] for right in transfer_list_with_category]
         print(self.extra_context.get('stripped_transfer_list'))
         self.extra_context['model_transfer_list'] = model_transfer_list
         self.extra_context['transfer_form'] = ApplyRightForm
 
-        delete_list = user_json_data['delete_list']
-        delete_list, delete_list_with_category = prepareDeleteJSONdata(delete_list)
-        model_delete_list = get_model_list(delete_list_with_category, headers, self.request)
-        delete_list_table_data, delete_list_count = prepareTrashTableData(delete_list)
+        delete_graph_data, delete_list_with_category, single_rights_count, cached_af_descriptions = prepareDeleteJSONdata(
+            user_info, self.request, headers, legend_data_dict, cached_af_descriptions)
+        model_delete_list = get_model_list(delete_list_with_category, cached_af_descriptions, headers)
+        # delete_list_table_data, delete_list_count = prepareTrashTableData(delete_graph_data)
         # self.extra_context['delete_list_table_data'] = delete_list_table_data
         # self.extra_context['delete_list_count'] = delete_list_count
 
-        self.extra_context['delete_list'] = delete_list
+        self.extra_context['delete_list'] = delete_graph_data
         self.extra_context['stripped_delete_list'] = [right['right'] for right in delete_list_with_category]
         print(self.extra_context.get('stripped_delete_list'))
         self.extra_context['model_delete_list'] = model_delete_list
@@ -1366,10 +1622,15 @@ class RightApplication(generic.ListView):
         # afs = user_json_data['children']
         # data, gf_count, tf_count = prepareTableData(user, roles, afs, headers)
 
-        self.extra_context['user_identity'] = user_json_data['identity']
+        self.extra_context['user_identity'] = user_json_data['username']
         self.extra_context['user_first_name'] = user_json_data['first_name']
-        self.extra_context['user_name'] = user_json_data['name']
-        self.extra_context['user_department'] = user_json_data['department']
+        self.extra_context['user_name'] = user_json_data['last_name']
+        if graph_data['children']:
+            self.extra_context['user_department'] = graph_data['children'][0]['gruppe']
+        else:
+            self.extra_context['user_department'] = "Kein Nutzer & daher keine Gruppe zugewiesen!"
+
+        self.extra_context['user_count'] = self.request.session.get('user_count')
         self.extra_context['role_count'] = self.request.session.get('role_count')
         self.extra_context['af_count'] = self.request.session.get('af_count')
         self.extra_context['gf_count'] = self.request.session.get('gf_count')
@@ -1399,7 +1660,7 @@ def get_model_right(comp_user, type, pk, request):
     return model
 
 
-def get_right_from_list(comp_user, type, right, rights):
+def get_right_from_list(comp_user, type, right, rights, headers, legend_data):
     '''
         method used by my_requests and request_pool for finding specific right in a list and
         preparing right_data for display as circlePacking
@@ -1409,40 +1670,70 @@ def get_right_from_list(comp_user, type, right, rights):
     :param rights:
     :return:
     '''
-    for af in rights:
-        if type == 'AF':
-            if af['af_name'] == right:
-                af['name'] = af.pop('af_name')
-                af['children'] = af.pop('gfs')
-                af['model_right_pk'] = af.pop('model_af_pk')
-                for gf in af['children']:
-                    gf['name'] = gf.pop('gf_name')
-                    gf['children'] = gf.pop('tfs')
-                    for tf in gf['children']:
-                        tf['name'] = tf.pop('tf_name')
-                        tf['size'] = 2000
-                return af
-        if type == 'GF':
-            for gf in af['gfs']:
-                if gf['gf_name'] == right:
-                    gf['name'] = gf.pop('gf_name')
-                    gf['children'] = gf.pop('tfs')
-                    gf['model_right_pk'] = gf.pop('model_gf_pk')
-                    for tf in gf['children']:
-                        tf['name'] = tf.pop('tf_name')
-                        tf['size'] = 2000
-                    return gf
-        if type == 'TF':
-            for gf in af['gfs']:
-                for tf in gf['tfs']:
-                    if tf['tf_name'] == right:
-                        tf['name'] = tf.pop('tf_name')
-                        tf['size'] = 2000
-                        tf['model_right_pk'] = tf.pop('model_tf_pk')
-                        return tf
+    for rolle in rights:
+        if type == 'ROLLE':
+            if rolle['model_rolle_id']['rollenname'] == right:
+                rolle['name'] = rolle['model_rolle_id']['rollenname']
+                rolle['children'] = rolle['applied_afs']
+                rolle['model_right_pk'] = rolle['model_rolle_id']
+                for af in rolle['children']:
+                    af['name'] = af['model_af_id']['af_name']
+                    af['children'] = af['applied_gfs']
+                    for gf in af['children']:
+                        gf['name'] = gf['model_gf_id']['name_gf_neu']
+                        gf['children'] = gf['applied_tfs']
+                        for tf in gf['children']:
+                            tf['name'] = tf['model_tf_id']['tf']
+                            plattform = legend_data.get(tf['model_tf_id']['plattform'])
+                            hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                            tf['color'] = hslColor
+                            tf['size'] = 2000
+                return rolle
+        elif type == 'AF':
+            for af in rolle['applied_afs']:
+                if af['model_af_id']['af_name'] == right:
+                    af['name'] = af['model_af_id']['af_name']
+                    af['children'] = af['applied_gfs']
+                    af['model_right_pk'] = af['model_af_id']
+                    for gf in af['children']:
+                        gf['name'] = gf['model_gf_id']['name_gf_neu']
+                        gf['children'] = gf['applied_tfs']
+                        for tf in gf['children']:
+                            tf['name'] = tf['model_tf_id']['tf']
+                            plattform = legend_data.get(tf['model_tf_id']['plattform'])
+                            hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                            tf['color'] = hslColor
+                            tf['size'] = 2000
+                    return af
+        elif type == 'GF':
+            for af in rolle['applied_afs']:
+                for gf in af['applied_gfs']:
+                    if gf['model_gf_id']['name_gf_neu'] == right:
+                        gf['model_right_pk'] = gf['model_gf_id']
+                        gf['name'] = gf['model_gf_id']['name_gf_neu']
+                        gf['children'] = gf['applied_tfs']
+                        for tf in gf['children']:
+                            tf['name'] = tf['model_tf_id']['tf']
+                            plattform = legend_data.get(tf['model_tf_id']['plattform'])
+                            hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                            tf['color'] = hslColor
+                            tf['size'] = 2000
+                        return gf
+        elif type == 'TF':
+            for af in rolle['applied_afs']:
+                for gf in af['applied_gfs']:
+                    for tf in gf['applied_tfs']:
+                        if tf['tf_name'] == right:
+                            tf['name'] = tf['model_tf_id']['tf']
+                            plattform = legend_data.get(tf['model_tf_id']['plattform'])
+                            hslColor = "hsl(%d, 50%%, 50%%)" % int(plattform['color'])
+                            tf['color'] = hslColor
+                            tf['size'] = 2000
+                            tf['model_right_pk'] = tf['model_tf_id']
+                            return tf
 
 
-def get_model_list(transfer_list_with_category, headers, request):
+def get_model_list(transfer_list_with_category, cached_af_descriptions, headers):
     '''
         method for building up list of model-rights to some rights-list(transfer-, delete-, userright-)
     :param transfer_list_with_category:
@@ -1453,18 +1744,24 @@ def get_model_list(transfer_list_with_category, headers, request):
     model_list = []
     for right in transfer_list_with_category:
         model = None
-        if right['type'] == 'af':
-            model = get_af_by_key(pk=right['right']['model_af_pk'], headers=headers, request=request)
+        if right['type'] == 'rolle':
+            model = right['right']['model_rolle_id']
+            model['right_name'] = model.pop('rollenname')
+            model['description'] = model.pop('rollenbeschreibung')
+        elif right['type'] == 'af':
+            model = right['right']['model_af_id']
             model['right_name'] = model.pop('af_name')
-            model['description'] = model.pop('af_description')
-        if right['type'] == 'gf':
-            model = get_gf_by_key(pk=right['right']['model_gf_pk'], headers=headers, request=request)
-            model['right_name'] = model.pop('gf_name')
-            model['description'] = model.pop('gf_description')
-        if right['type'] == 'tf':
-            model = get_tf_by_key(pk=right['right']['model_tf_pk'], headers=headers, request=request)
-            model['right_name'] = model.pop('tf_name')
-            model['description'] = model.pop('tf_description')
+            model['description'] = cached_af_descriptions.get(model['id'])
+        elif right['type'] == 'gf':
+            model = right['right']['model_gf_id']
+            model['right_name'] = model.pop('name_gf_neu')
+            first_tf = get_by_url(model['tfs'][0], headers)
+            model['description'] = first_tf['gf_beschreibung']
+
+        elif right['type'] == 'tf':
+            model = right['right']['model_tf_id']
+            model['right_name'] = model.pop('tf')
+            model['description'] = model.pop('tf_beschreibung')
         model['type'] = right['type'].upper()
         model_list.append(model)
     return model_list
@@ -1551,7 +1848,7 @@ def setViewMode(request, extra_context):
 
 
 def populate_choice_fields(headers, e, request):
-    url = docker_container_ip + '/api/useridundnamen/?field='+e
+    url = docker_container_ip + '/api/useridundnamen/?field=' + e
     json_data = get_by_url(url, headers)
     if type(json_data) == list:
         results = {e: json_data}
@@ -1883,7 +2180,7 @@ def get_changerequests(headers, request):
     :return:
     '''
     # url = 'http://' + request.get_host() + '/changerequests/'
-    url = docker_container_ip + '/changerequests/'
+    url = docker_container_ip + '/api/changerequests/'
     json = requests.get(url, headers=headers).json()
     if 'results' in json:
         json = json['results']
@@ -2378,11 +2675,20 @@ def update_personal_right_models(user_info, headers, request):
     rights_data = user_info['rights_data']
     user_tfs = get_tf_aus_gesamt_by_user_name(user_data['id'], headers)
 
-    cached_roles = dict(); cached_afs = dict() ;cached_gfs = dict(); cached_tfs = dict()
+    cached_roles = dict();
+    cached_afs = dict();
+    cached_gfs = dict();
+    cached_tfs = dict()
 
-    cached_applied_roles = dict(); cached_applied_afs = dict(); cached_applied_gfs = dict();cached_applied_tfs = dict()
+    cached_applied_roles = dict();
+    cached_applied_afs = dict();
+    cached_applied_gfs = dict();
+    cached_applied_tfs = dict()
 
-    cached_gf_hat_tf = dict(); cached_af_hat_gf = dict(); cached_rolle_hat_af = dict(); cached_user_hat_rolle = dict()
+    cached_gf_hat_tf = dict();
+    cached_af_hat_gf = dict();
+    cached_rolle_hat_af = dict();
+    cached_user_hat_rolle = dict()
 
     roles_changed = True
     for tf in user_tfs:
@@ -2407,7 +2713,8 @@ def update_personal_right_models(user_info, headers, request):
                         'zielperson': 'Keine Zielperson', 'af_text': 'Keine af_text', 'gf_text': 'Keine gf_text',
                         'af_langtext': 'Keine af_langtext', 'af_ausschlussgruppen': 'Keine af_ausschlussgruppen',
                         'af_einschlussgruppen': 'Keine af_einschlussgruppen',
-                        'af_sonstige_vergabehinweise': 'Keine af_sonstige_vergabehinweise', 'geloescht': 0, 'kannweg': 0,
+                        'af_sonstige_vergabehinweise': 'Keine af_sonstige_vergabehinweise', 'geloescht': 0,
+                        'kannweg': 0,
                         'modelliert': datetime.datetime.now()}
                 res = create_gf(data, headers)
                 model_gf = json.loads(res.text)
@@ -2419,7 +2726,7 @@ def update_personal_right_models(user_info, headers, request):
 
         model_gf_id = model_gf['id']
         model_tf_id = tf['id']
-        gf_hat_tf_key = "{}_{}".format(model_gf_id,model_tf_id)
+        gf_hat_tf_key = "{}_{}".format(model_gf_id, model_tf_id)
         if not gf_hat_tf_key in cached_gf_hat_tf:
             gf_hat_tf = get_gf_hat_tf_by_ids(model_gf['id'], tf['id'], headers)
             cached_gf_hat_tf[gf_hat_tf_key] = gf_hat_tf
@@ -2429,7 +2736,7 @@ def update_personal_right_models(user_info, headers, request):
             patch_gf_tfs(model_gf['id'], tf['id'], headers)
 
         model_af_id = model_af['id']
-        af_hat_gf_key = "{}_{}".format(model_af_id,model_gf_id)
+        af_hat_gf_key = "{}_{}".format(model_af_id, model_gf_id)
         if not af_hat_gf_key in cached_af_hat_gf:
             af_hat_gf = get_af_hat_gf_by_ids(model_af['id'], model_gf['id'], headers)
             cached_af_hat_gf[af_hat_gf_key] = af_hat_gf
@@ -2444,7 +2751,7 @@ def update_personal_right_models(user_info, headers, request):
         found = False
         for user_role in user_rollen:
             rollenname = user_role['rollenname']
-            rolle_hat_af_key = "{}_{}".format(rollenname,model_af_id)
+            rolle_hat_af_key = "{}_{}".format(rollenname, model_af_id)
             if not rolle_hat_af_key in cached_rolle_hat_af:
                 rolle_hat_af = get_rolle_hat_af_by_ids(rollenname, model_af_id, headers)
                 cached_rolle_hat_af[rolle_hat_af_key] = rolle_hat_af
@@ -2472,7 +2779,7 @@ def update_personal_right_models(user_info, headers, request):
                 roles_changed = False
         else:
             if not rollenname in cached_roles:
-                user_role = get_rolle_by_rollenname(rollenname,headers, request)[0]
+                user_role = get_rolle_by_rollenname(rollenname, headers, request)[0]
                 cached_roles[rollenname] = user_role
                 roles_changed = True
             else:
@@ -2486,7 +2793,7 @@ def update_personal_right_models(user_info, headers, request):
             if not applied_rolle:
                 res = create_applied_rolle(user_role, rights_data, headers)
                 applied_rolle = json.loads(res.text)
-                patch_userhatuseridundnamen_rollen(user_hat_userid_id,applied_rolle['id'],headers)
+                patch_userhatuseridundnamen_rollen(user_hat_userid_id, applied_rolle['id'], headers)
             else:
                 applied_rolle = applied_rolle[0]
             cached_applied_roles[rollenid] = applied_rolle
@@ -2498,7 +2805,7 @@ def update_personal_right_models(user_info, headers, request):
             if not applied_af:
                 res = create_applied_af(model_af, applied_rolle, headers)
                 applied_af = json.loads(res.text)
-                patch_applied_rolle_applied_afs(applied_rolle['id'],applied_af['id'],headers)
+                patch_applied_rolle_applied_afs(applied_rolle['id'], applied_af['id'], headers)
             else:
                 applied_af = applied_af[0]
             cached_applied_afs[model_af_id] = applied_af
@@ -2506,11 +2813,12 @@ def update_personal_right_models(user_info, headers, request):
             applied_af = cached_applied_afs.get(model_af_id)
 
         if not model_gf_id in cached_applied_gfs:
-            applied_gf = get_AppliedGf_by_gf_id(model_gf_id, user_hat_userid_id, applied_rolle['id'], applied_af['id'], headers)
+            applied_gf = get_AppliedGf_by_gf_id(model_gf_id, user_hat_userid_id, applied_rolle['id'], applied_af['id'],
+                                                headers)
             if not applied_gf:
                 res = create_applied_gf(model_gf, applied_af, headers)
                 applied_gf = json.loads(res.text)
-                patch_applied_af_applied_gfs(applied_af['id'],applied_gf['id'],headers)
+                patch_applied_af_applied_gfs(applied_af['id'], applied_gf['id'], headers)
             else:
                 applied_gf = applied_gf[0]
             cached_applied_gfs[model_gf_id] = applied_gf
@@ -2518,17 +2826,17 @@ def update_personal_right_models(user_info, headers, request):
             applied_gf = cached_applied_gfs.get(model_gf_id)
 
         if not model_tf_id in cached_applied_tfs:
-            applied_tf = get_AppliedTf_by_tf_id(model_tf_id, user_hat_userid_id, applied_rolle['id'], applied_af['id'], applied_gf['id'], headers)
+            applied_tf = get_AppliedTf_by_tf_id(model_tf_id, user_hat_userid_id, applied_rolle['id'], applied_af['id'],
+                                                applied_gf['id'], headers)
             if not applied_tf:
                 res = create_applied_tf(tf, applied_gf, headers)
                 applied_tf = json.loads(res.text)
-                patch_applied_gf_applied_tfs(applied_gf['id'],applied_tf['id'],headers)
+                patch_applied_gf_applied_tfs(applied_gf['id'], applied_tf['id'], headers)
             else:
                 applied_tf = applied_tf[0]
             cached_applied_tfs[model_tf_id] = applied_tf
         else:
             applied_tf = cached_applied_tfs.get(model_tf_id)
-
 
     print(len(user_tfs), user_tfs)
 
@@ -2736,6 +3044,14 @@ def prepareDeleteJSONdata(user_info, request, headers, legend_data, cached_af_de
                                     else:
                                         gf['description'] = tf_details['gf_beschreibung']
                                     gf_old = gf['name']
+                                if tf['deleted']:
+                                    delete_list_with_category.append({'right': tf, 'type': 'tf'})
+                            if gf['deleted']:
+                                delete_list_with_category.append({'right': gf, 'type': 'gf'})
+                    if af['deleted']:
+                        delete_list_with_category.append({'right': af, 'type': 'af'})
+            if rolle['deleted']:
+                delete_list_with_category.append({'right': rolle, 'type': 'rolle'})
 
     return delete_graph_data, delete_list_with_category, single_rights_count, cached_af_descriptions
 
@@ -2821,8 +3137,58 @@ def prepareTransferJSONdata(user_info, request, headers, legend_data, cached_af_
                                     else:
                                         gf['description'] = tf_details['gf_beschreibung']
                                     gf_old = gf['name']
+                                if tf['transfered']:
+                                    transfer_list_with_category.append({'right': tf, 'type': 'tf'})
+                            if gf['transfered']:
+                                transfer_list_with_category.append({'right': gf, 'type': 'gf'})
+                    if af['transfered']:
+                        transfer_list_with_category.append({'right': af, 'type': 'af'})
+            if rolle['transfered']:
+                transfer_list_with_category.append({'right': rolle, 'type': 'rolle'})
 
     return transfer_graph_data, transfer_list_with_category, single_rights_count, cached_af_descriptions
+
+
+class ChangeRequestsViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows ChangeRequests to be viewed or edited.
+    creates new changerequests after API-request from rightsapplication
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ChangeRequestsSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        return ChangeRequests.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        print("In ViewSet-Create")
+        data = request.data
+        objects_to_change = json.loads(data['objects_to_change'])
+        serializer = None
+        added_requests = []
+        requesting_user_id = \
+        TblUserIDundName.objects.filter(userid=data['requesting_user[value]'].upper()).values_list('id', flat=True)[0]
+        requesting_user_userid_name_combi = UserHatTblUserIDundName.objects.filter(
+            userid_name_id=requesting_user_id).get()
+        compare_user_id = \
+        TblUserIDundName.objects.filter(userid=data['compare_user[value]'].upper()).values_list('id', flat=True)[0]
+        compare_user_userid_name_combi = UserHatTblUserIDundName.objects.filter(userid_name_id=compare_user_id).get()
+        for obj in objects_to_change:
+            obj_data = {'requesting_user': data['requesting_user[value]'],
+                        'compare_user': data['compare_user[value]'],
+                        'action': obj[0]['value'], 'right_name': obj[1]['value'], 'right_type': obj[2]['value'],
+                        'reason_for_action': obj[3]['value']}
+            serializer = self.get_serializer(data=obj_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            cr = ChangeRequests.objects.get(id=serializer.data['pk'])
+            cr.requesting_user_hat_userid_name_combination = requesting_user_userid_name_combi
+            cr.compare_user_hat_userid_name_combination = compare_user_userid_name_combi
+            cr.save()
+            added_requests.append(serializer.data['pk'])
+        headers = self.get_success_headers(serializer.data)
+        return Response(json.dumps(added_requests), status=status.HTTP_201_CREATED, headers=headers)
 
 
 class TblRollenViewSet(viewsets.ModelViewSet):
@@ -2913,8 +3279,8 @@ class TblUserIDundNameViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if 'field' in self.request.GET:
             field = self.request.GET['field']
-            data = TblUserIDundName.objects.order_by(field).values_list(field,flat=True).distinct()
-            qs_all=[]
+            data = TblUserIDundName.objects.order_by(field).values_list(field, flat=True).distinct()
+            qs_all = []
             for d in data:
                 if field == 'zi_organisation':
                     qs = TblUserIDundName.objects.filter(zi_organisation=d)
@@ -3622,33 +3988,6 @@ class TF_ApplicationViewSet(viewsets.ModelViewSet):
         return TF_Application.objects.all()
 
 
-class ChangeRequestsViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows ChangeRequests to be viewed or edited.
-    creates new changerequests after API-request from rightsapplication
-    """
-    permission_classes = (IsAuthenticated,)
-    serializer_class = ChangeRequestsSerializer
-    pagination_class = None
 
-    def get_queryset(self):
-        return ChangeRequests.objects.all()
-
-    def create(self, request, *args, **kwargs):
-        print("In ViewSet-Create")
-        data = request.data
-        objects_to_change = json.loads(data['objects_to_change'])
-        serializer = None
-        added_requests = []
-        for obj in objects_to_change:
-            obj_data = {'requesting_user': data['requesting_user[value]'], 'compare_user': data['compare_user[value]'],
-                        'action': obj[0]['value'], 'right_name': obj[1]['value'], 'right_type': obj[2]['value'],
-                        'reason_for_action': obj[3]['value']}
-            serializer = self.get_serializer(data=obj_data)
-            serializer.is_valid(raise_exception=True)
-            self.perform_create(serializer)
-            added_requests.append(serializer.data['pk'])
-        headers = self.get_success_headers(serializer.data)
-        return Response(json.dumps(added_requests), status=status.HTTP_201_CREATED, headers=headers)
 # Create your views here.
 '''
