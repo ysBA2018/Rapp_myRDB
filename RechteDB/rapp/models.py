@@ -19,6 +19,7 @@ from django.utils.html import format_html
 from django.urls import reverse  # Used to generate URLs by reversing the URL patterns
 from django.utils import timezone
 from django.db import connection
+from mdeditor.fields import MDTextField
 from django.dispatch import receiver
 
 from django.db.models.signals import post_save
@@ -344,10 +345,10 @@ class TblRollen(models.Model):
 # Meta-Tabelle, welche Arbeitsplatzfunktion in welcher Rolle enthalten ist (n:m Beziehung)
 #
 # Die drei ursprünglichen Einzelfelder nurXV, XABCV und DV wurden zusammengefast zu einer Col: einsatz:
-# 	einsatz = 8:	Nur gültig für AV, BV, CV-User (z.B. Zweituser-Recht)
-#	einsatz = 4:	Nur gültig für XV-Userid
-#	einsatz = 2: 	Gültig für alles außer DV-User
-#	einsatz = 1:	Nur gültig für DV-User
+#     einsatz = 8:    Nur gültig für AV, BV, CV-User (z.B. Zweituser-Recht)
+#    einsatz = 4:    Nur gültig für XV-Userid
+#    einsatz = 2:     Gültig für alles außer DV-User
+#    einsatz = 1:    Nur gültig für DV-User
 class TblRollehataf(models.Model):
     EINSATZ_NONE = 0
     EINSATZ_NURDV = 1
@@ -448,132 +449,6 @@ class TblUserhatrolle(models.Model):
         # Returns the url to access a particular instance of the model.
         return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
 
-'''
-class TblUserhatrolle_Geloescht(models.Model):
-    SCHWERPUNKT_TYPE = (
-        ('Schwerpunkt', 'Schwerpunktaufgabe'),
-        ('Vertretung', 'Vertretungstätigkeiten, Zweitsysteme'),
-        ('Allgemein', 'Rollen, die nicht Systemen zugeordnet sind'),
-    )
-
-    userundrollenid = models.AutoField(db_column='userundrollenid', primary_key=True,
-                                       verbose_name='ID')  # Field name made lowercase.
-    userid = models.ForeignKey('TblUserIDundName', models.PROTECT, to_field='userid', db_column='userid',
-                               verbose_name='UserID, Name')  # Field name made lowercase.
-    rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
-                                   db_column='rollenname')  # Field name made lowercase.
-    schwerpunkt_vertretung = \
-        models.CharField(db_column='schwerpunkt_vertretung',
-                         max_length=100,
-                         blank=True, null=True,
-                         choices=SCHWERPUNKT_TYPE,
-                         db_index=True
-                         )  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    bemerkung = models.TextField(db_column='bemerkung', blank=True, null=True)  # Field name made lowercase.
-    letzte_aenderung = models.DateTimeField(db_column='letzte_aenderung', default=timezone.now, blank=True,
-                                            db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    userHatUserID_id = models.ForeignKey('UserHatTblUserIDundName_Geloescht', models.CASCADE,
-                                         db_column='userHatUserID_id', default=None)  # Field name made lowercase.
-
-    del_afs = models.ManyToManyField(TblAfliste, through='TblRollehataf_Geloescht', default=None,
-                                     related_name='del_afs')
-    on_delete_list = models.BooleanField(default=False)
-
-    class Meta:
-        managed = True
-        db_table = 'tbl_UserHatRolle_Geloescht'
-        verbose_name = "User und Ihre Rollen Geloescht"
-        verbose_name_plural = "01_User und Ihre Rollen (tbl_UserHatRolle) Geloescht"
-        ordering = ['userid__name', '-userid__userid', 'schwerpunkt_vertretung', 'rollenname', ]
-        unique_together = (('userid', 'rollenname'),)
-
-    def __str__(self) -> str:
-        return str(self.userundrollenid)
-
-    def get_rollenbeschreibung(self):
-        return str(self.rollenname.rollenbeschreibung)
-
-    get_rollenbeschreibung.short_description = 'Rollenbeschreibung'
-
-    def get_absolute_url(self):
-        # Returns the url for the whole list.
-        return reverse('user_rolle_af', args=[])
-
-    def get_absolute_update_url(self):
-        # Returns the url to access a particular instance of the model.
-        return reverse('user_rolle_af-update', args=[str(self.userundrollenid)])
-
-    def get_absolute_create_url(self):
-        # Returns the url to open the create-instance of the model (no ID given, the element does not exist yet).
-        return reverse('user_rolle_af-create', args=[])
-
-    def get_absolute_delete_url(self):
-        # Returns the url to access a particular instance of the model.
-        return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
-
-
-class TblUserhatrolle_Transferiert(models.Model):
-    SCHWERPUNKT_TYPE = (
-        ('Schwerpunkt', 'Schwerpunktaufgabe'),
-        ('Vertretung', 'Vertretungstätigkeiten, Zweitsysteme'),
-        ('Allgemein', 'Rollen, die nicht Systemen zugeordnet sind'),
-    )
-
-    userundrollenid = models.AutoField(db_column='userundrollenid', primary_key=True,
-                                       verbose_name='ID')  # Field name made lowercase.
-    userid = models.ForeignKey('TblUserIDundName', models.PROTECT, to_field='userid', db_column='userid',
-                               verbose_name='UserID, Name')  # Field name made lowercase.
-    rollenname = models.ForeignKey('TblRollen', models.PROTECT, to_field='rollenname',
-                                   db_column='rollenname')  # Field name made lowercase.
-    schwerpunkt_vertretung = \
-        models.CharField(db_column='schwerpunkt_vertretung',
-                         max_length=100,
-                         blank=True, null=True,
-                         choices=SCHWERPUNKT_TYPE,
-                         db_index=True
-                         )  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    bemerkung = models.TextField(db_column='bemerkung', blank=True, null=True)  # Field name made lowercase.
-    letzte_aenderung = models.DateTimeField(db_column='letzte_aenderung', default=timezone.now, blank=True,
-                                            db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
-    userHatUserID_id = models.ForeignKey('UserHatTblUserIDundName_Transferiert', models.CASCADE,
-                                         db_column='userHatUserID_id', default=None)  # Field name made lowercase.
-
-    trans_afs = models.ManyToManyField(TblAfliste, through='TblRollehataf_Transferiert', default=None,
-                                       related_name='trans_afs')
-    on_transfer_list = models.BooleanField(default=False)
-
-    class Meta:
-        managed = True
-        db_table = 'tbl_UserHatRolle_Transferiert'
-        verbose_name = "User und Ihre Rollen Transferiert"
-        verbose_name_plural = "01_User und Ihre Rollen (tbl_UserHatRolle) Transferiert"
-        ordering = ['userid__name', '-userid__userid', 'schwerpunkt_vertretung', 'rollenname', ]
-        unique_together = (('userid', 'rollenname'),)
-
-    def __str__(self) -> str:
-        return str(self.userundrollenid)
-
-    def get_rollenbeschreibung(self):
-        return str(self.rollenname.rollenbeschreibung)
-
-    get_rollenbeschreibung.short_description = 'Rollenbeschreibung'
-
-    def get_absolute_url(self):
-        # Returns the url for the whole list.
-        return reverse('user_rolle_af', args=[])
-
-    def get_absolute_update_url(self):
-        # Returns the url to access a particular instance of the model.
-        return reverse('user_rolle_af-update', args=[str(self.userundrollenid)])
-
-    def get_absolute_create_url(self):
-        # Returns the url to open the create-instance of the model (no ID given, the element does not exist yet).
-        return reverse('user_rolle_af-create', args=[])
-
-    def get_absolute_delete_url(self):
-        # Returns the url to access a particular instance of the model.
-        return reverse('user_rolle_af-delete', args=[str(self.userundrollenid)])
-'''
 
 # Die Tabelle enthält die Teambeschreibungen. Das eigentliche Team ist das Feld "team"
 class TblOrga(models.Model):
@@ -636,24 +511,7 @@ class UserHatTblUserIDundName(models.Model):
     delete_list = models.ManyToManyField(to='TblAppliedRolle', related_name='deleted_applied_rollen', default=None, blank=True)
     transfer_list = models.ManyToManyField(to='TblAppliedRolle', related_name='transfered_applied_rollen', default=None, blank=True)
     my_requests = models.ManyToManyField(to=ChangeRequests, related_name='user_change_requests', default=None, blank=True)
-'''
-class UserHatTblUserIDundName_Geloescht(models.Model):
-    id = models.AutoField(db_column='id', primary_key=True)
-    user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
-    userid_name_id = models.ForeignKey('TblUserIDundName', db_column='userid_name_id', on_delete=models.CASCADE)
-    del_rollen = models.ManyToManyField(TblRollen, through='TblUserhatrolle_Geloescht', default=None,
-                                        related_name='del_rollen')
-    on_delete_list = models.BooleanField(default=True)
 
-
-class UserHatTblUserIDundName_Transferiert(models.Model):
-    id = models.AutoField(db_column='id', primary_key=True)
-    user_name = models.ForeignKey('User', db_column='username', on_delete=models.CASCADE)
-    userid_name_id = models.ForeignKey('TblUserIDundName', db_column='userid_name_id', on_delete=models.CASCADE)
-    trans_rollen = models.ManyToManyField(TblRollen, through='TblUserhatrolle_Transferiert', default=None,
-                                          related_name='trans_rollen')
-    on_transfer_list = models.BooleanField(default=True)
-'''
 
 # Die Namen aller aktiven und gelöschten UserIDen und der dazugehörenden Namen (Realnamen und Technische User)
 class TblUserIDundName(models.Model):
@@ -1210,13 +1068,13 @@ class Modellierung(models.Model):
 
 class Direktverbindungen(models.Model):
     """
-	Tabelle aus dem Export für die TF-Rezertifizierung.
-	Die Daten enthalten alle derzeit bekannten Direktverbindungen zu TFs der Abteilung.
+    Tabelle aus dem Export für die TF-Rezertifizierung.
+    Die Daten enthalten alle derzeit bekannten Direktverbindungen zu TFs der Abteilung.
 
-	Auch das kann dem späteren Erzeugen von Mails dienen, um User auf Möglichekiten hinzuweisen,
-	sich von Direct Connects zu trennen.
-	Diese Tabelle muss geeignet mit der Tabelle Modellierung verknüpft werden
-	"""
+    Auch das kann dem späteren Erzeugen von Mails dienen, um User auf Möglichekiten hinzuweisen,
+    sich von Direct Connects zu trennen.
+    Diese Tabelle muss geeignet mit der Tabelle Modellierung verknüpft werden
+    """
     organisation = models.CharField(max_length=30, null=False)
     entscheidung = models.CharField(max_length=30, null=True)
     entitlement = models.CharField(max_length=100, null=False, db_index=True)
@@ -1239,6 +1097,26 @@ class Direktverbindungen(models.Model):
         verbose_name_plural = '61_Direktverbindungen'
         unique_together = (('entitlement', 'account_name'),)
 
+
+class Manuelle_Berechtigung(models.Model):
+    name = models.CharField(max_length=50, null=False, unique=True,)
+    verbundene_af = models.ForeignKey('TblAfliste', models.PROTECT, null=True,)
+    ersteller = models.CharField(max_length=50, null=True,)
+    letzte_aenderung = models.DateTimeField(default=timezone.now)
+    statisch = MDTextField()
+    relativ = MDTextField()
+
+    class Meta:
+        managed = True
+        verbose_name = "Manuell nachzuhaltenede Berechtigung"
+        verbose_name_plural = "10_Manuell nachzuhaltenede Berechtigungen"
+        ordering = ['name']
+
+    def __str__(self) -> str:
+        return str(self.id) \
+               + ' ' \
+               + str(self.name) \
+               + ' (erstellt von {} am {})'.format(self.ersteller, timezone.now())
 
 class CustomAccountManager(BaseUserManager):
     def create_user(self, username, email, password):

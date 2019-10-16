@@ -8,6 +8,7 @@ from django.contrib import admin
 # Zum Verändern der Standardeigenschaften eines Textpanes
 from django.db import models
 from django.forms import Textarea
+from mdeditor.widgets import MDEditorWidget
 
 # Die Datenbanken / Models
 from .models import *
@@ -81,34 +82,34 @@ class RollenInline(admin.TabularInline):
 # ######################################################################################################
 @admin.register(TblGesamt)
 class GesamtAdmin(ImportExportModelAdmin):
-    actions_on_top = False  # Keine Actions, weil diese Tabelle nie manuell geändert wird
+    actions_on_top = False        # Keine Actions, weil diese Tabelle nie manuell geändert wird
     actions_on_bottom = False
 
-    list_select_related = ('modell', 'userid_name', 'plattform',)
+    list_select_related = ('modell', 'userid_name', 'plattform', )
 
     # Diese Fieldsets greifen bei Detailsichten zu Änderungen und Neuanlagen von Einträgen.
     # Braucht so eigentlich niemand...
     fieldsets = [
         ('Standard-Informationen', {'fields': ['userid_name', 'tf', 'tf_beschreibung',
-                                               'enthalten_in_af', 'modell',
-                                               'plattform', 'gf', 'af_gueltig_bis', 'direct_connect',
-                                               'af_zuweisungsdatum', 'datum', 'geloescht', ]}),
+                                                   'enthalten_in_af', 'modell',
+                                                'plattform', 'gf', 'af_gueltig_bis', 'direct_connect',
+                                                'af_zuweisungsdatum', 'datum', 'geloescht', ]}),
         ('Detail-Informationen  ', {'fields': ['tf_kritikalitaet', 'tf_eigentuemer_org',
-                                               'vip_kennzeichen', 'zufallsgenerator',
-                                               'af_gueltig_ab', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung',
-                                               'gefunden', 'wiedergefunden', 'geaendert', 'neueaf', 'nicht_ai',
-                                               'patchdatum', 'wertmodellvorpatch', 'loeschdatum', ],
-                                    'classes': ['collapse']}),
+                                                   'vip_kennzeichen', 'zufallsgenerator',
+                                                'af_gueltig_ab', 'hoechste_kritikalitaet_tf_in_af', 'gf_beschreibung',
+                                                'gefunden', 'wiedergefunden', 'geaendert', 'neueaf', 'nicht_ai',
+                                                'patchdatum', 'wertmodellvorpatch', 'loeschdatum', ],
+                                                'classes': ['collapse']}),
     ]
     list_display = ('id', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'gf',
-                    'plattform', 'get_direct_connect', 'get_active',
-                    )
-    list_filter = ('geloescht', 'direct_connect', 'userid_name__gruppe', 'plattform',)
-    list_display_links = ('id',)
-    list_editable = ('tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf',)
+        'plattform', 'get_direct_connect', 'get_active',
+    )
+    list_filter = ('geloescht', 'direct_connect', 'userid_name__gruppe', 'plattform', )
+    list_display_links = ('id', )
+    list_editable = ('tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf', )
     search_fields = ['id', 'userid_name__name', 'tf',
-                     'tf_beschreibung',  # 'enthalten_in_af', 'plattform', 'gf',
-                     ]
+                    'tf_beschreibung', #'enthalten_in_af', 'plattform', 'gf',
+    ]
 
     list_per_page = 50
 
@@ -122,19 +123,20 @@ class GesamtAdmin(ImportExportModelAdmin):
 # ######################################################################################################
 @admin.register(TblUserIDundName)
 class UserIDundNameAdmin(admin.ModelAdmin):
-    list_select_related = ('orga',)
+
+    list_select_related = ('orga', )
 
     fieldsets = [
         ('User-Informationen', {'fields': ['userid', 'name', 'orga', 'geloescht']}),
-        ('Orga-Details      ', {'fields': ['zi_organisation', 'abteilung', 'gruppe'], 'classes': ["""'collapse'"""]}),
+        ('Orga-Details      ', {'fields': ['zi_organisation', 'abteilung', 'gruppe'], 'classes': ["""'collapse'"""] }),
     ]
 
     list_display = ('id', 'userid', 'colored_name', 'orga', 'zi_organisation', 'get_active', 'abteilung', 'gruppe',)
-    list_display_links = ('userid', 'colored_name', 'get_active',)
-    list_editable = ('orga', 'zi_organisation', 'abteilung', 'gruppe',)
+    list_display_links = ('userid', 'colored_name', 'get_active', )
+    list_editable = ('orga', 'zi_organisation', 'abteilung', 'gruppe', )
     search_fields = ['name', 'zi_organisation', 'abteilung', 'gruppe', 'userid']
 
-    list_filter = ('geloescht', 'abteilung', 'gruppe', 'orga',)
+    list_filter = ('geloescht', 'abteilung', 'gruppe', 'orga', )
 
     actions_on_top = True
     actions_on_bottom = True
@@ -144,9 +146,7 @@ class UserIDundNameAdmin(admin.ModelAdmin):
     # inlines += [GesamtInline]
 
     list_per_page = 25
-
-
-# inlines = [UserhatrolleInline]
+    # inlines = [UserhatrolleInline]
 
 
 # ######################################################################################################
@@ -156,11 +156,11 @@ class UserIDundNameAdmin(admin.ModelAdmin):
 class Orga(admin.ModelAdmin):
     actions_on_top = True
     actions_on_bottom = True
-    list_display = ('team', 'themeneigentuemer',)
-    list_filter = ('themeneigentuemer',)
-    list_display_links = ('team',)
-    list_editable = ('themeneigentuemer',)
-    search_fields = ['team', ]
+    list_display = ('team', 'themeneigentuemer', )
+    list_filter = ('themeneigentuemer', )
+    list_display_links = ('team', )
+    list_editable = ('themeneigentuemer', )
+    search_fields = ['team',]
 
     inlines = [UserIDundNameInline]
 
@@ -172,15 +172,13 @@ class Orga(admin.ModelAdmin):
 class Plattform(admin.ModelAdmin):
     actions_on_top = True
     actions_on_bottom = True
-    list_display = ('id', 'tf_technische_plattform', 'color')
+    list_display = ('id', 'tf_technische_plattform',)
     # list_filter = ('tf_technische_plattform',)
     # list_display_links = ('tf_technische_plattform')
-    list_editable = ('tf_technische_plattform', 'color')
-    search_fields = ['tf_technische_plattform', 'color']
-
-
-# Nette Idee, grottig lahm
-# inlines = [GesamtInline]
+    list_editable = ('tf_technische_plattform',)
+    search_fields = ['tf_technische_plattform', ]
+    # Nette Idee, grottig lahm
+    # inlines = [GesamtInline]
 
 
 # ######################################################################################################
@@ -193,8 +191,8 @@ class UebersichtAfGfs(admin.ModelAdmin):
 
     fieldsets = [
         ('Standard       ', {'fields': ['name_af_neu', 'name_gf_neu', 'af_text', 'gf_text',
-                                        'geloescht', 'af_langtext', 'modelliert', ]}),
-        ('Rechte-Details ', {'fields': ['zielperson', 'kommentar', 'af_ausschlussgruppen', 'af_einschlussgruppen',
+                                        'geloescht', 'af_langtext', 'modelliert', 'zielperson', ]}),
+        ('Rechte-Details ', {'fields': ['kommentar', 'af_ausschlussgruppen', 'af_einschlussgruppen',
                                         'af_sonstige_vergabehinweise', 'kannweg', ],
                              'classes': ['collapse']}),
     ]
@@ -202,20 +200,18 @@ class UebersichtAfGfs(admin.ModelAdmin):
     list_display = ('id', 'name_af_neu', 'name_gf_neu', 'af_text', 'gf_text',
                     'geloescht', 'af_langtext', 'modelliert', 'zielperson',
                     'kommentar', 'af_ausschlussgruppen', 'af_einschlussgruppen',
-                    'af_sonstige_vergabehinweise', 'kannweg',)
+                    'af_sonstige_vergabehinweise', 'kannweg', )
 
-    list_filter = ('geloescht', 'modelliert', 'zielperson', 'kannweg',)
+    list_filter = ('geloescht', 'modelliert', 'zielperson', 'kannweg', )
 
     list_display_links = ()
 
     list_editable = ('name_af_neu', 'name_gf_neu', 'af_text', 'gf_text', 'af_langtext', 'zielperson', 'kommentar',
-                     'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise',)
+                     'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise', )
 
     search_fields = ['name_af_neu', 'name_gf_neu', 'af_text', 'gf_text', 'af_langtext', ]
 
-
-# inlines = [GesamtInline]
-
+    # inlines = [GesamtInline]
 
 # ######################################################################################################
 # tbl GesamtHistorie
@@ -227,11 +223,10 @@ class TblGesamtHistorie(admin.ModelAdmin):
 
     list_display = ('id', 'id_alt', 'userid_name', 'tf', 'tf_beschreibung', 'enthalten_in_af', 'gf',
                     'modell', 'tf_kritikalitaet', 'tf_eigentuemer_org', 'plattform',
-                    'vip_kennzeichen', 'zufallsgenerator', 'datum', 'geloescht', 'gefunden', 'wiedergefunden',
-                    'geaendert', 'neueaf',
-                    'loeschdatum',)
+                    'vip_kennzeichen', 'zufallsgenerator', 'datum', 'geloescht', 'gefunden', 'wiedergefunden', 'geaendert', 'neueaf',
+                    'loeschdatum', )
 
-    search_fields = ['id_alt__id', 'userid_name__name', 'tf', 'tf_beschreibung', 'enthalten_in_af', ]
+    search_fields = ['id_alt__id', 'userid_name__name', 'tf', 'tf_beschreibung', 'enthalten_in_af',]
 
 
 ######################################################################################################
@@ -246,21 +241,20 @@ class Userhatrolle(admin.ModelAdmin):
 
     formfield_overrides = {
         models.TextField: {
-            'widget': Textarea(
-                attrs={
-                    'rows': 1,
-                    'cols': 40,
-                    'style': 'height: 1.4em;'
-                })},
+            'widget': Textarea (
+                attrs = {
+                        'rows': 1,
+                        'cols': 40,
+                        'style': 'height: 1.4em;'
+        })},
     }
 
     list_display = ('userundrollenid', 'userid', 'rollenname', 'schwerpunkt_vertretung',
-                    'get_rollenbeschreibung', 'bemerkung', 'letzte_aenderung',)
-    list_filter = ('schwerpunkt_vertretung',)
-    list_display_links = ('userundrollenid', 'rollenname',)
-    list_editable = ('schwerpunkt_vertretung', 'bemerkung',)
-    search_fields = ['schwerpunkt_vertretung', 'rollenname__rollenname', 'bemerkung', 'userid__name',
-                     'userid__userid', ]
+                    'get_rollenbeschreibung', 'bemerkung', 'letzte_aenderung', )
+    list_filter = ('schwerpunkt_vertretung', )
+    list_display_links = ('userundrollenid', 'rollenname', )
+    list_editable = ('schwerpunkt_vertretung', 'bemerkung', )
+    search_fields = [ 'schwerpunkt_vertretung', 'rollenname__rollenname', 'bemerkung', 'userid__name', 'userid__userid', ]
 
     list_per_page = 25
     extra = 1
@@ -304,7 +298,7 @@ class Afliste(admin.ModelAdmin):
 
     list_display = ('id', 'af_name', 'neu_ab',)
     # list_display_links = ( 'id', )
-    list_editable = ('af_name',)
+    list_editable = ('af_name', )
     search_fields = ['af_name', ]
     # list_filter = ( )
 
@@ -323,19 +317,19 @@ class Rollehataf(admin.ModelAdmin):
 
     formfield_overrides = {
         models.TextField: {
-            'widget': Textarea(
-                attrs={
-                    'rows': 1,
-                    'cols': 40,
-                    'style': 'height: 1.4em;'
-                })},
+            'widget': Textarea (
+                attrs = {
+                        'rows': 1,
+                        'cols': 40,
+                        'style': 'height: 1.4em;'
+        })},
     }
 
-    list_display = ('rollenmappingid', 'rollenname', 'af', 'get_muss', 'einsatz', 'bemerkung',)
-    list_display_links = ('rollenname',)
-    list_editable = ('af', 'bemerkung',)
+    list_display = ('rollenmappingid', 'rollenname', 'af', 'get_muss', 'einsatz', 'bemerkung', )
+    list_display_links = ('rollenname', )
+    list_editable = ('af', 'bemerkung', )
     search_fields = ['rollenname__rollenname', 'af__af_name', 'bemerkung', ]
-    list_filter = ('mussfeld', 'einsatz',)
+    list_filter = ('mussfeld', 'einsatz', )
 
     list_per_page = 25
 
@@ -345,14 +339,14 @@ class Rollehataf(admin.ModelAdmin):
 # ######################################################################################################
 @admin.register(Tblsubsysteme)
 class Subsysteme(admin.ModelAdmin):
-    alle = ['sgss', 'definition', 'verantwortlicher', 'fk', ]
+    alle = ['sgss', 'definition', 'verantwortlicher', 'fk',]
     search_fields = alle
     list_display = alle
 
 
 @admin.register(Tblsachgebiete)  # ToDo Mal eine aktuelle Sachgebiets-/Subsystemtabelle runterladen
 class Sachgebiete(admin.ModelAdmin):
-    alle = ['sachgebiet', 'definition', 'verantwortlicher', 'fk', ]
+    alle = ['sachgebiet', 'definition', 'verantwortlicher', 'fk',]
     search_fields = alle
     list_display = alle
 
@@ -360,8 +354,8 @@ class Sachgebiete(admin.ModelAdmin):
 @admin.register(TblDb2)
 class Db2(admin.ModelAdmin):
     list_display = ['id', 'source', 'grantee', 'creator', 'table',
-                    'selectauth', 'insertauth', 'updateauth', 'deleteauth', 'alterauth', 'indexauth',
-                    'grantor', 'grantedts', 'datum']
+            'selectauth', 'insertauth', 'updateauth', 'deleteauth', 'alterauth', 'indexauth',
+            'grantor', 'grantedts', 'datum']
     search_fields = ['table', 'grantee', 'grantor']
     list_filter = ('source', 'datum')
 
@@ -405,7 +399,7 @@ class Modellierung(ImportExportModelAdmin):
     ]
     search_fields = alle
     list_display = alle
-    list_editable = ()  # Read Only Tabelle
+    list_editable = () # Read Only Tabelle
 
     # Parameter für import/export
     resource_class = ModellierungExporterModel
@@ -426,6 +420,12 @@ class Direktverbindungen(ImportExportModelAdmin):
     # Parameter für import/export
     resource_class = DirektverbindungenExporterModel
     sortable_by = ['entitlement', 'plattform', 'gf', 'af']
+
+@admin.register(Manuelle_Berechtigung)
+class Manuelle_BerechtigungAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': MDEditorWidget}
+    }
 
 
 @admin.register(UserHatTblUserIDundName)

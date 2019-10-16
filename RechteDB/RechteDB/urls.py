@@ -76,6 +76,7 @@ router.register(r'fulltfs', views.FullTblTfsViewSet, 'fulltf')
 
 router.register(r'changerequests', views.ChangeRequestsViewSet, 'changerequests')
 router.register(r'schreibweisen', views.TblSchreibweisenViewSet, 'schreibweise')
+from django.conf.urls.static import static
 
 
 admin.site.site_header = 'RechteDB - Adminseiten'
@@ -95,8 +96,14 @@ if settings.DEBUG:
 from django.conf.urls import include
 # Use include() to add paths from the rapp application
 urlpatterns += [
-    path('rapp/', include('rapp.urls')),
+	path('accounts/', include('django.contrib.auth.urls')),
+	path('rapp/', include('rapp.urls')),
+	path('mdeditor/', include('mdeditor.urls'))
 ]
+
+if settings.DEBUG:
+    # static files (images, css, javascript, etc.)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Das ist die wichtigste Zeile: / wird auf /rapp gemappt
 from django.views.generic import RedirectView
