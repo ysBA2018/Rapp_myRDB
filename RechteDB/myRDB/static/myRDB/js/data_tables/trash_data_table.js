@@ -17,6 +17,7 @@ $(document).ready(function() {
 
     trash_table = $('#trash_table').DataTable({
         "pageLength":3,
+        "scrollY": "20vh",
         "aLengthMenu":[[3,10,25,50,100,-1],[3,10,25,50,100,"All"]],
         "order":[[2,'asc']]
     });

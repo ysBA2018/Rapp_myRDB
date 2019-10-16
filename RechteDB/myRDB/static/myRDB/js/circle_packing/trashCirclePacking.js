@@ -126,30 +126,79 @@ $(document).ready(function(){
         circle.attr("r", function(d) { return d.r * k; });
       }
 
-      //function dragstarted(d){
-      //    d3.event.sourceEvent.stopPropagation()
-      //    console.log("dragstarted");
-      //    d3.select(this).raise().classed("active",true);
-      //}
-      //function dragged(d) {
-      //    console.log("dragged");
-      //    d.x += d3.event.dx;
-      //    d.y += d3.event.dy;
-      //    draw();
-      //}
-      //function dragended(d) {
-      //    console.log("dragended");
-      //    d3.select(this).classed("active",false);
-      //}
-      //function draw() {
-      //    var k = diameter / (root.r * 2 + margin);
-      //    node.attr("transform", function(d){
-      //        return "translate("+(d.x -root.x)*k+","+(d.y-root.y)*k+")";
-      //    });
-      //    circle.attr("r", function(d){
-      //        return d.r*k;
-      //    });
-      //}
+      function find_svgIndex(d) {
+        var svgIndex = 0;
+        var data;
+        var found =false;
+        while(found===false){
+            data = window['jsondata_unequal'+svgIndex];
+            if(typeof data==='undefined'){
+                return svgIndex;
+            }
+                if(window.level==='ROLLE'){
+                    if(d.depth===2) {
+                        if (d.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }else if(d.depth===3) {
+                        if (d.parent.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }else if(d.depth===4) {
+                        if (d.parent.parent.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }else if(d.depth===5) {
+                        if (d.parent.parent.parent.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }
+                }
+                else if(window.level==='AF'){
+                    if(d.depth===1) {
+                        for (i in d.children) {
+                            if (d.children[i].data.name === data.name) {
+                                return svgIndex;
+                            }
+                        }
+                    }else if(d.depth===2) {
+                        if (d.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }else if(d.depth===3) {
+                        if (d.parent.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }
+                }else if(window.level==='GF'){
+                    if(d.depth===1) {
+                        for (i in d.children) {
+                            for (j in d.children[j].children) {
+                                if (d.children[i].children[j].data.name === data.name) {
+                                    return svgIndex;
+                                }
+                            }
+                        }
+                    }else if(d.depth===2) {
+                        if (d.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }else if(d.depth===3) {
+                        if (d.parent.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }
+                }
+                else{
+                    return;
+                }
+
+            console.log(data);
+            svgIndex+=1;
+        }
+        return svgIndex
+    }
+
     function updateTrash(updated_data){
           console.log(updated_data);
           root = updated_data;
@@ -341,7 +390,9 @@ $(document).ready(function(){
         if (successful === true) {
             var trash = window.trashlistdata['children'];
             var rights;
+            var svgIndex;
             if (window.current_site === 'analysis') {
+                svgIndex = find_svgIndex(d);
                 rights = window['jsondata_unequal' + svgIndex];
             } else {
                 rights = window.jsondata['children'];
@@ -354,7 +405,10 @@ $(document).ready(function(){
             updateTrash(window['trashlistdata']);
 
             if (window.current_site === 'analysis') {
-
+                if(typeof rights!=='undefined') {
+                    d3.select("#analysisCirclePackingSVG_unequal" + svgIndex).select("g").data(window['jsondata_unequal' + svgIndex]).exit().remove();
+                    window.updateUnequalCP(svgIndex);
+                }
             } else {
                 d3.select('#circlePackingSVG').select('g').data(window.jsondata).exit().remove();
                 window.updateCP();
@@ -710,7 +764,9 @@ $(document).ready(function(){
                                 console.log(j + "," + d.data.name);
                                 right_lev_2["parent"] = d.parent.data.name;
                                 update_right_counters(right_lev_2, "role");
-                                restore_from_delete_list(rights, right_lev_2, right, null, null, null, 'role');
+                                if(typeof rights!=='undefined'){
+                                    restore_from_delete_list(rights, right_lev_2, right, null, null, null, 'role');
+                                }
                                 right['children'].splice(j, 1);
                                 if (right['children'].length === 0) {
                                     trash.splice(i, 1)
@@ -734,7 +790,9 @@ $(document).ready(function(){
                                         right_lev_3["grandparent"] = d.parent.parent.data.name;
                                         right_lev_3["parent"] = d.parent.data.name;
                                         update_right_counters(right_lev_3, "af");
-                                        restore_from_delete_list(rights, right_lev_3, right_lev_2, right, null, null, 'af');
+                                        if(typeof rights!=='undefined') {
+                                            restore_from_delete_list(rights, right_lev_3, right_lev_2, right, null, null, 'af');
+                                        }
                                         right_lev_2['children'].splice(k, 1);
                                         if (right_lev_2['children'].length === 0) {
                                             right['children'].splice(j, 1)
@@ -742,7 +800,6 @@ $(document).ready(function(){
                                         if (right['children'].length === 0) {
                                             trash.splice(i, 1)
                                         }
-
                                         return;
                                     }
                                 }
@@ -768,7 +825,9 @@ $(document).ready(function(){
                                                 right_lev_3["grandparent"] = d.parent.parent.data.name;
                                                 right_lev_3["parent"] = d.parent.data.name;
                                                 update_right_counters(right_lev_3, "gf");
-                                                restore_from_delete_list(rights, right_lev_3, right_lev_2, rightBase, right, null, 'gf');
+                                                if(typeof rights!=='undefined') {
+                                                    restore_from_delete_list(rights, right_lev_3, right_lev_2, rightBase, right, null, 'gf');
+                                                }
                                                 right_lev_2['children'].splice(k, 1);
                                                 if (right_lev_2['children'].length === 0) {
                                                     rightBase['children'].splice(j, 1)
@@ -811,7 +870,9 @@ $(document).ready(function(){
                                                         right_lev_3["grandparent"] = d.parent.parent.data.name;
                                                         right_lev_3["parent"] = d.parent.data.name;
                                                         update_right_counters(right_lev_3, "tf");
-                                                        restore_from_delete_list(rights, right_lev_3, right_lev_2, right0, rightBase, right, 'tf');
+                                                        if(typeof rights!=='undefined') {
+                                                            restore_from_delete_list(rights, right_lev_3, right_lev_2, right0, rightBase, right, 'tf');
+                                                        }
                                                         right_lev_2['children'].splice(k, 1);
                                                         if (right_lev_2['children'].length === 0) {
                                                             right0['children'].splice(j, 1)
@@ -825,7 +886,6 @@ $(document).ready(function(){
                                                         if (right['children'].length === 0) {
                                                             trash.splice(g, 1)
                                                         }
-
                                                         return;
                                                     }
                                                 }

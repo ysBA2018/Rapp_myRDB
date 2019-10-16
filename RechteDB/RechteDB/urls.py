@@ -31,6 +31,8 @@ router.register(r'useridundnamen', views.TblUserIDundNameViewSet, 'useridundname
 router.register(r'rollen', views.TblRollenViewSet, 'rolle')
 router.register(r'afs', views.TblAflisteViewSet, 'af')
 router.register(r'afgfs', views.TblUebersichtAfGfsViewSet, 'afgf')
+router.register(r'tfs', views.TblTfViewSet, 'tf')
+
 router.register(r'gesamte', views.TblGesamtViewSet, 'gesamt')
 
 router.register(r'appliedroles', views.TblAppliedRolleViewSet, 'appliedrole')
@@ -59,6 +61,7 @@ router.register(r'userhatrollen', views.TblUserhatrolleViewSet, 'userhatrolle')
 router.register(r'rollehatafs', views.TblRollehatafViewSet, 'rollehataf')
 router.register(r'afhatgfs', views.TblAfHatGfViewSet, 'afhatgf')
 router.register(r'gfhattfs', views.TblGfHatTfViewSet, 'gfhattf')
+router.register(r'tfhatschreibweisen', views.TblTfHatSchreibweiseViewSet, 'tfhatschreibweise')
 
 router.register(r'fulluserhatuseridundnamen', views.FullRightsUserHatTblUserIDundNameViewSet, 'fulluserhatuseridundname')
 router.register(r'fullappliedroles', views.FullRightsTblAppliedRolleViewSet, 'fullappliedrole')
@@ -69,8 +72,10 @@ router.register(r'fullappliedtfs', views.FullRightsTblAppliedTfsViewSet, 'fullap
 router.register(r'fullrollen', views.FullTblRollenViewSet, 'fullrolle')
 router.register(r'fullafs', views.FullTblAflisteViewSet, 'fullaf')
 router.register(r'fullafgfs', views.FullTblUebersichtAfGfsViewSet, 'fullafgf')
+router.register(r'fulltfs', views.FullTblTfsViewSet, 'fulltf')
 
 router.register(r'changerequests', views.ChangeRequestsViewSet, 'changerequests')
+router.register(r'schreibweisen', views.TblSchreibweisenViewSet, 'schreibweise')
 
 
 admin.site.site_header = 'RechteDB - Adminseiten'

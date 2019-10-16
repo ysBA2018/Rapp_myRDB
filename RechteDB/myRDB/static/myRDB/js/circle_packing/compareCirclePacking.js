@@ -125,7 +125,6 @@ $(document).ready(function(){
           }
       }
 
-    //TODO: bei erstellen von json color für leaves mitgeben!!!
       var circle = g.selectAll("circle")
         .data(nodes)
         .enter().append("circle")
@@ -163,10 +162,6 @@ $(document).ready(function(){
                   .duration(500)
                   .style("opacity",0)
           });
-
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
 
       //var text = g.selectAll("text")
       //  .data(nodes)
@@ -262,7 +257,6 @@ $(document).ready(function(){
           .attr("id","compareCPtooltip")
           .style("opacity",0);
 
-    //TODO: bei erstellen von json color für leaves mitgeben!!!
       circle = g.selectAll("circle")
         .data(nodes)
         .enter().append("circle")
@@ -301,9 +295,6 @@ $(document).ready(function(){
                   .style("opacity",0)
           });
 
-      leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
 
       //var text = g.selectAll("text")
       //  .data(nodes)

@@ -8,14 +8,14 @@
 <div class="card" id="accepted_delete_request_card{{ forloop.counter0 }}">
     <div class="card-header">
         <div class="row">
-            <div class="col-6" align="left">
+            <div class="col-sm-6" align="left">
                 <h5>
                     <a class="btn btn-primary" data-toggle="collapse" href="#accepted_delete_request{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="accepted_delete_request{{ forloop.counter0 }}">
                         Löschung | {{ delete_request.request.right_name }}
                     </a>
                 </h5>
             </div>
-            <div class="col-6" align="right">
+            <div class="col-sm-6" align="right">
                 <form class="accepted_delete_form" onsubmit="javascript: return remove_card_clicked(this);">
                     <input type="hidden" value="{{ delete_request.request.pk }}" name="pk">
                     <input type="hidden" value="{{ delete_request.request.requesting_user }}" name="requesting_user">

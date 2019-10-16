@@ -62,9 +62,6 @@ $(document).ready(function(){
                   .style("opacity",0)
           });
 
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
 
       var text = g.selectAll("text")
         .data(nodes)

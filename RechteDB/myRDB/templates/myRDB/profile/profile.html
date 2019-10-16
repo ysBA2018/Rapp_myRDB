@@ -1,4 +1,5 @@
 {% extends 'myRDB/base.html' %}
+{% block title %}MyRDB - Profil{% endblock %}
 {% block content %}
     {% load asjson %}
 
@@ -16,13 +17,15 @@
         var current_host = "{{ current_host }}";
         var trashlistdata = {{ deletelist | asjson }};
         var transferlistdata = {{ transferlist | asjson }};
+        var transfer_table_data = {{ transfer_list_table_data | safe }};
+
     </script>
     <script type="text/javascript" >
         var trash_table_count = {{ delete_list_count }};
     </script>
 
         <div class="row top-buffer">
-            <div class="col-6">
+            <div class="col-sm-6">
                 <div class="card">
                     {% if view_mode == "Graphische Ansicht" %}
                         {% include 'myRDB/circlePackingTemplate.html' %}
@@ -31,7 +34,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-sm-6">
                 <div class="row">
                     <div class="col">
                         {% include 'myRDB/scatterPlotTemplate.html' %}
@@ -46,14 +49,14 @@
             </div>
         </div>
         <div class="row top-buffer">
-            <div class="col">
+            <div class="col-sm-6">
                 {% if view_mode == "Graphische Ansicht" %}
                     {% include 'myRDB/trashTemplate.html' %}
                 {% else %}
                     {% include 'myRDB/trashTableTemplate.html' %}
                 {% endif %}
             </div>
-            <div class="col">
+            <div class="col-sm-6">
                 {% if view_mode == "Graphische Ansicht" %}
                     {% include 'myRDB/transferTemplate.html' %}
                 {% else %}

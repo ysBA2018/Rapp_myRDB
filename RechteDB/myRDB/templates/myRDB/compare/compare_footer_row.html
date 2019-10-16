@@ -1,5 +1,5 @@
 <div class="row top-buffer">
-    <div class="col">
+    <div class="col-sm-6">
         {# Hier die Trash-Drop-Fläche realisieren #}
         {% if view_mode == "Graphische Ansicht" %}
             {% include 'myRDB/trashTemplate.html' %}
@@ -7,7 +7,7 @@
             {% include 'myRDB/trashTableTemplate.html' %}
         {% endif %}
     </div>
-    <div class="col">
+    <div class="col-sm-6">
         {# Hier die Übertragenen-liste realisieren #}
         {% if view_mode == "Graphische Ansicht" %}
             {% include 'myRDB/transferTemplate.html' %}
@@ -15,20 +15,21 @@
             {% include 'myRDB/transferTableTemplate.html' %}
         {% endif %}
     </div>
-    <div class="col-6">
-        <div class="row-fluid">
-            {% include 'myRDB/profile/profileLegendTemplate.html' %}
-        </div>
-        <div class="row-fluid top-buffer">
-            <div class="card">
-                <div class="card-body">
-                    {# Hier die verschiedenen Buttons realisieren #}
-                     <form id=”apply_changes” method=”POST” action="{% url 'myRDB:apply_changes' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-light">Änderungen beantragen</button>
-                    </form>
-                </div>
+</div>
+<div class="row top-buffer">
+    <div class="col-sm-6">
+        {% include 'myRDB/profile/profileLegendTemplate.html' %}
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                {# Hier die verschiedenen Buttons realisieren #}
+                 <form id=”apply_changes” method=”POST” action="{% url 'myRDB:apply_changes' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-light">Änderungen beantragen</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+

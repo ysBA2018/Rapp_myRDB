@@ -11,6 +11,8 @@
                     <th scope="col">TF</th>
                     <th scope="col">GF</th>
                     <th scope="col">AF</th>
+                    <th scope="col">ROLLE</th>
+                    <th scope="col">USER</th>
                     {# <th scope="col">Rolle</th>  #}
                 </tr>
             </thead>
@@ -20,6 +22,8 @@
                     <td>{{ row.0 }}</td>
                     <td>{{ row.1 }}</td>
                     <td>{{ row.2 }}</td>
+                    <td>{{ row.3 }}</td>
+                    <td>{{ row.4 }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -33,48 +37,6 @@
     </div>
 </div>
 <div class="card-footer">
-<!--
-    {% if is_paginated %}
-    <ul class="pagination">
-        {% if page_obj.has_previous %}
-            {% if identity_param %}
-                <li><a href="?identity={{ identity_param }}&page={{ page_obj.previous_page_number }}&delete_list_page={{ delete_list_table_data.number }}&view_mode=Tabellarische Ansicht">&laquo;</a></li>
-            {% else %}
-                <li><a href="?page={{ page_obj.previous_page_number }}&delete_list_page={{ delete_list_table_data.number }}&view_mode=Tabellarische Ansicht">&laquo;</a></li>
-            {% endif %}
-        {% else %}
-        <li class="disabled"><span>&laquo;</span></li>
-        {% endif %}
-        {% for i in paginator.page_range %}
-            {% if identity_param %}
-                {% if page_obj.number == i %}
-                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                {% else %}
-                <li><a href="?identity={{ identity_param }}&page={{ i }}&delete_list_page={{ delete_list_table_data.number }}&view_mode=Tabellarische Ansicht">{{ i }}</a></li>
-                {% endif %}
-            {% else %}
-                {% if page_obj.number == i %}
-                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                {% else %}
-                <li><a href="?page={{ i }}&delete_list_page={{ delete_list_table_data.number }}&view_mode=Tabellarische Ansicht">{{ i }}</a></li>
-                {% endif %}
-            {% endif %}
-        {% endfor %}
-        {% if identity_param %}
-            {% if page_obj.has_next %}
-            <li><a href="?identity={{ identity_param }}&page={{ page_obj.next_page_number }}&delete_list_page={{ delete_list_table_data.number }}&view_mode=Tabellarische Ansicht">&raquo;</a></li>
-            {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-            {% endif %}
-        {% else %}
-            {% if page_obj.has_next %}
-            <li><a href="?page={{ page_obj.next_page_number }}&delete_list_page={{ delete_list_table_data.number }}&view_mode=Tabellarische Ansicht">&raquo;</a></li>
-            {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-            {% endif %}
-        {% endif %}
-    </ul>
-    {% endif %}
-    -->
+    <p class="card-text">Berechtigungen mit Rechtsklick & Bestätigung auf Löschliste setzen!</p>
 </div>
 

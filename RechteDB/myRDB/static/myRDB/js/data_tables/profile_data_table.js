@@ -1,9 +1,10 @@
 function check_for_row_in_user_table(row,data,dataIndex){
     var tbl_dta = window.compare_user_table_data;
     var data_table_stripped = tbl_dta.replace(/(&#39;)|(\s)/g,"");
-    var contains = data_table_stripped.includes(data);
+    var data_str = "("+data[0]+","+data[1]+","+data[2]+","+data[3]+",";
+    var contains = data_table_stripped.includes(data_str.replace(/(&#39;)|(\s)/g,""));
     if(contains){
-        $(row).addClass("darkgrey");
+        $(row).addClass("yellow");
     }
 }
 
@@ -39,19 +40,44 @@ $(document).ready(function() {
         console.log(this);
         var user_data = window.jsondata;
 
-        for (i in user_data['children']){
-            if(user_data['children'][i]['name']===this.lastElementChild.textContent){
-                var right = user_data['children'][i];
-                break;
+        loop1: for (i in user_data['children']){
+            var rollen = user_data['children'][i]['children'];
+            for(j in rollen){
+                if(rollen[j]['name']===this.lastElementChild.previousElementSibling.textContent){
+                    var rolle = rollen[j];
+                    var afs = rolle['children'];
+                    for(k in afs){
+                        if(afs[k]['name']===this.lastElementChild.previousElementSibling.previousElementSibling.textContent){
+                            var af = afs[k];
+                            var gfs = af['children'];
+                            for(l in gfs){
+                                if(gfs[l]['name']===this.firstElementChild.nextElementSibling.textContent){
+                                    var gf = gfs[l];
+                                    var tfs = gf['children']
+                                    for(m in tfs){
+                                        if(tfs[m]['name']===this.firstElementChild.textContent){
+                                            var tf = tfs[m];
+                                            break loop1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-        var text = "AF-Beschreibung: "+ right['description']+"\nAF gültig seit: "+right['af_applied'];
+        var text = "Rolle: "+rolle['name']+" / Rollen-Beschreibung: "+ rolle['description']
+            +"\nAF: "+af['name']+ " / AF-Beschreibung: "+af['description']
+            +"\nGF: "+gf['name']+ " / GF-Beschreibung: "+gf['description']
+            +"\nTF: "+tf['name']+ " / TF-Beschreibung: "+tf['description'];
 
         this.setAttribute( 'title', text );
     } );
 
     data_table = $('#data_table').DataTable({
         "processing": true,
+        "scrollY": "70vh",
         "serverSide": false,
         "pageLength":10,
         "aLengthMenu":[[10,25,50,100,-1],[10,25,50,100,"All"]],
@@ -112,7 +138,7 @@ $(document).ready(function() {
         e.preventDefault();
         var colIndex = window.data_table.cell(this).index().column;
         $(window.data_table.cells().nodes()).removeClass('highlight');
-        $(window.data_table.column(colIndex).nodes()).addClass('highlight');
+        //$(window.data_table.column(colIndex).nodes()).addClass('highlight');
     });
     function update_table_data(cell_data,right_type,row_data) {
         var rows_to_delete = [];
@@ -159,12 +185,12 @@ $(document).ready(function() {
            var data = this.data();
            if(data_to_reset_color.length===1){
                if (data_to_reset_color[0] ===data){
-                   this.nodes().to$().removeClass("darkgrey");
+                   this.nodes().to$().removeClass("yellow");
                }
            }
            else{
                if(data_to_reset_color.includes(data)){
-                   this.nodes().to$().removeClass("darkgrey");
+                   this.nodes().to$().removeClass("yellow");
                }
            }
         });

@@ -6,7 +6,7 @@
 
 <div class="card-body">
     <div class="row">
-        <div class="col-4">
+        <div class="col-sm-4">
             {# hier right-to-delete circle packing #}
             <script type="text/javascript" >
                 var jsondata_deletion{{ forloop.parentloop.counter0 }}{{ forloop.counter0 }} = {{ right.right | asjson }}
@@ -14,7 +14,7 @@
             <svg id="rightDeletionSVG{{ forloop.parentloop.counter0 }}{{ forloop.counter0 }}" width="300" height="300"></svg>
             <script type="text/javascript" src="{% static 'myRDB/js/circle_packing/requestPool/requestPoolCirclePacking_deletion.js' %}"></script>
         </div>
-        <div class="col-8">        
+        <div class="col-sm-8">
             {# hier Formular #}
             <label class="font-weight-bold" for="delete_right_applied{{ forloop.parentloop.counter0 }}{{ forloop.counter0 }}">Berechtigt seit:</label>
             <p class="text-left" id="delete_right_applied{{ forloop.parentloop.counter0 }}{{ forloop.counter0 }}">{{ right.model.af_applied }}</p>

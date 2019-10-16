@@ -62,9 +62,6 @@ $(document).ready(function(){
                   .style("opacity",0)
           });
 
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
 
       var text = g.selectAll("text")
         .data(nodes)
@@ -93,11 +90,7 @@ $(document).ready(function(){
               return function(t) { zoomTo(i(t)); };
             });
 
-        transition.selectAll("text")
-          .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-            .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-            .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-            .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+
       }
 
       function zoomTo(v) {
@@ -105,6 +98,5 @@ $(document).ready(function(){
         node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
         circle.attr("r", function(d) { return d.r * k; });
       }
-
     });
 }());

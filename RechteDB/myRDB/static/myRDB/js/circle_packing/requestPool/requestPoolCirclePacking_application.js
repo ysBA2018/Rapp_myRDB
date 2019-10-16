@@ -73,10 +73,6 @@ $(document).ready(function(){
                   .style("opacity",0)
           });
 
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
-
       var text = g.selectAll("text")
         .data(nodes)
         .enter().append("text")
@@ -87,14 +83,14 @@ $(document).ready(function(){
 
       var node = g.selectAll("circle,text");
 
-      svg
+       svg
           .style("background", "white")
           .on("click", function() { zoom(root); });
 
       zoomTo([root.x, root.y, root.r * 2 + margin]);
 
       function zoom(d) {
-          if(!d.hasOwnProperty('children')){return;}
+          if (!d.hasOwnProperty('children')) return;
         var focus0 = focus; focus = d;
 
         var transition = d3.transition()
@@ -103,12 +99,6 @@ $(document).ready(function(){
               var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
               return function(t) { zoomTo(i(t)); };
             });
-
-        transition.selectAll("text")
-          .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-            .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-            .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-            .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
       }
 
       function zoomTo(v) {

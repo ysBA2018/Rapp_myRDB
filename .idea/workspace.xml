@@ -3,9 +3,283 @@
   <component name="ChangeListManager">
     <list default="true" id="07bde36f-4587-4eb4-8bc0-de3e4ba813de" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RechteDB/RechteDB/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/RechteDB/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/css/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/remove_card_and_reverse_action.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/remove_card_and_reverse_action.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/compareCirclePacking.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/compareCirclePacking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_application.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_application.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_deletion.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_deletion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_application.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_application.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_deletion.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_deletion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/unanswered/myRequestsCirclePacking_unanswered_application.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/unanswered/myRequestsCirclePacking_unanswered_application.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/unanswered/myRequestsCirclePacking_unanswered_deletion.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/unanswered/myRequestsCirclePacking_unanswered_deletion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/requestPool/requestPoolCirclePacking_application.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/requestPool/requestPoolCirclePacking_application.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/requestPool/requestPoolCirclePacking_deletion.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/requestPool/requestPoolCirclePacking_deletion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisCirclePacking_equal.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisCirclePacking_equal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_equal.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_equal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_unequal.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_unequal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/transferCirclePacking.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/transferCirclePacking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/compare_data_table.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/compare_data_table.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/profile_data_table.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/profile_data_table.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/transfer_data_table.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/transfer_data_table.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/trash_data_table.js" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/trash_data_table.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/circlePackingTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/circlePackingTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareCirclePackingTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareCirclePackingTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareTableTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareTableTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare_footer_row.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare_footer_row.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/accepted/accepted_apply_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/accepted/accepted_apply_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/accepted/accepted_delete_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/accepted/accepted_delete_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/declined/declined_apply_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/declined/declined_apply_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/declined/declined_delete_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/declined/declined_delete_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/my_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/my_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/unanswered/unanswered_apply_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/unanswered/unanswered_apply_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/unanswered/unanswered_delete_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/unanswered/unanswered_delete_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileLegendTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileLegendTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileTableTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileTableTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_stats_table_equal.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_stats_table_equal.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/request_pool.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/request_pool.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/right_apply_request_card.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/right_apply_request_card.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/right_delete_request_card.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/right_delete_request_card.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/scatterPlotTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/scatterPlotTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTableTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTableTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTableTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTableTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTemplate.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTemplate.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RechteDB/myRDB/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/myRDB/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/rapp/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/rapp/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/rapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/rapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/Django-2.2.1.dist-info/INSTALLER" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/Django-2.2.1.dist-info/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/Django-2.2.1.dist-info/METADATA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/Django-2.2.1.dist-info/RECORD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/Django-2.2.1.dist-info/WHEEL" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/Django-2.2.1.dist-info/entry_points.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/Django-2.2.1.dist-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/_exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/_exceptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/_mysql.cp37-win_amd64.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/_mysql.cp37-win_amd64.pyd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/compat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/connections.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/connections.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/CLIENT.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/CLIENT.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/CR.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/CR.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/ER.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/ER.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/FIELD_TYPE.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/FIELD_TYPE.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/FLAG.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/FLAG.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/constants/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/converters.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/converters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/cursors.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/cursors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/release.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/release.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/times.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/MySQLdb/times.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/management/commands/debugsqlshell.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/management/commands/debugsqlshell.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/middleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/middleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/cache.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/headers.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/headers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/logging.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/logging.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/profiling.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/profiling.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/redirects.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/redirects.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/request.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/request.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/signals.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/signals.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/panel.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/panel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/tracking.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/tracking.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/sql/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/staticfiles.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/staticfiles.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/templates/panel.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/templates/panel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/templates/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/templates/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/timer.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/timer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/versions.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/panels/versions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/templates/debug_toolbar/panels/profiling.html" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/templates/debug_toolbar/panels/profiling.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/toolbar.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/toolbar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/debug_toolbar/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/ga/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/ga/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/ga/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/ga/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/kk/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/kk/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/kk/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/kk/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sk/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sk/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sk/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sk/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sr_Latn/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sr_Latn/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sr_Latn/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/sr_Latn/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/uk/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/uk/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/uk/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/contenttypes/locale/uk/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/hu/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/hu/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/hu/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/hu/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/kk/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/kk/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/kk/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/kk/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/ko/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/ko/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/ko/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/ko/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/nb/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/nb/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/nb/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/nb/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sk/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sk/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sk/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sk/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr_Latn/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr_Latn/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr_Latn/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/flatpages/locale/sr_Latn/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/ga/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/ga/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/ga/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/ga/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/sr_Latn/LC_MESSAGES/django.mo" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/sr_Latn/LC_MESSAGES/django.mo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/sr_Latn/LC_MESSAGES/django.po" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/redirects/locale/sr_Latn/LC_MESSAGES/django.po" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django/template/defaultfilters.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django/template/defaultfilters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_bootstrap4-0.0.8-py3.7.egg-info/PKG-INFO" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_bootstrap4-0.0.8-py3.7.egg-info/SOURCES.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_bootstrap4-0.0.8-py3.7.egg-info/dependency_links.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_bootstrap4-0.0.8-py3.7.egg-info/installed-files.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_bootstrap4-0.0.8-py3.7.egg-info/not-zip-safe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_bootstrap4-0.0.8-py3.7.egg-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/DESCRIPTION.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/INSTALLER" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/LICENSE.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/METADATA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/RECORD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/WHEEL" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/metadata.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_debug_toolbar-1.11.dist-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filter-2.1.0.dist-info/INSTALLER" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filter-2.1.0.dist-info/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filter-2.1.0.dist-info/METADATA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filter-2.1.0.dist-info/RECORD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filter-2.1.0.dist-info/WHEEL" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filter-2.1.0.dist-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/fields.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/fields.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/filters.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/filters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/rest_framework/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/rest_framework/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/rest_framework/backends.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/rest_framework/backends.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/rest_framework/filterset.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/rest_framework/filterset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/widgets.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_filters/widgets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/booleancolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/booleancolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/checkboxcolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/checkboxcolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/datecolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/datecolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/datetimecolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/datetimecolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/emailcolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/emailcolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/filecolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/filecolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/jsoncolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/jsoncolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/linkcolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/linkcolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/manytomanycolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/manytomanycolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/templatecolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/templatecolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/timecolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/timecolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/urlcolumn.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/columns/urlcolumn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/export/export.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/export/export.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/export/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/export/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/paginators.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/paginators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/rows.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/rows.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/templates/django_tables2/bootstrap4.html" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/templates/django_tables2/bootstrap4.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/django_tables2/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_widget_tweaks-1.4.3.dist-info/INSTALLER" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_widget_tweaks-1.4.3.dist-info/METADATA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_widget_tweaks-1.4.3.dist-info/RECORD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_widget_tweaks-1.4.3.dist-info/WHEEL" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/django_widget_tweaks-1.4.3.dist-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils-0.14.dist-info/DESCRIPTION.rst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils-0.14.dist-info/INSTALLER" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils-0.14.dist-info/METADATA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils-0.14.dist-info/RECORD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils-0.14.dist-info/WHEEL" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils-0.14.dist-info/metadata.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils-0.14.dist-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/_compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/_compat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/io.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/languages/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/languages/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/nodes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/html.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/html.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/misc.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/misc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/tables.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/directives/tables.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/languages/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/languages/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/roles.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/roles.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/parsers/rst/states.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/readers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/readers/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/statemachine.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/statemachine.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/frontmatter.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/frontmatter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/parts.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/parts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/references.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/universal.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/transforms/universal.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/code_analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/code_analyzer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/math/tex2mathml_extern.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/math/tex2mathml_extern.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/smartquotes.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/utils/smartquotes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/_html_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/_html_base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/docutils_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/docutils_xml.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html4css1/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html4css1/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html5_polyglot/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html5_polyglot/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html5_polyglot/minimal.css" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html5_polyglot/minimal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html5_polyglot/plain.css" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/html5_polyglot/plain.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/latex2e/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/latex2e/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/latex2e/default.tex" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/latex2e/default.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/odf_odt/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/odf_odt/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/pep_html/pep.css" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/pep_html/pep.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/s5_html/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/s5_html/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/xetex/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/docutils/writers/xetex/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/mysqlclient-1.4.2.post1.dist-info/INSTALLER" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/mysqlclient-1.4.2.post1.dist-info/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/mysqlclient-1.4.2.post1.dist-info/METADATA" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/mysqlclient-1.4.2.post1.dist-info/RECORD" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/mysqlclient-1.4.2.post1.dist-info/WHEEL" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/mysqlclient-1.4.2.post1.dist-info/top_level.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/compat.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/compat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/filter_stack.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/filter_stack.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/grouping.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/grouping.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/statement_splitter.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/engine/statement_splitter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/exceptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/aligned_indent.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/aligned_indent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/others.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/others.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/output.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/output.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/reindent.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/reindent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/right_margin.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/right_margin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/tokens.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/filters/tokens.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/formatter.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/formatter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/keywords.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/keywords.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/lexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/lexer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/sql.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/tokens.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/tokens.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/sqlparse/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/widget_tweaks/templatetags/widget_tweaks.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/widget_tweaks/templatetags/widget_tweaks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Lib/site-packages/widget_tweaks/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Lib/site-packages/widget_tweaks/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Scripts/django-admin.exe" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Scripts/django-admin.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Scripts/rst2html5.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Scripts/rst2html5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Scripts/sqlformat.exe" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Scripts/sqlformat.exe" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -49,6 +323,13 @@
         <item name="MariaDB - rapp_myrdb@localhost" type="feb32156:DbDataSourceImpl" />
         <item name="rapp_myrdb: schema" type="ebfa3cd1:MariaImplModel$Schema" />
         <item name="tables" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="rapp_tblappliedtf: table" type="dbc44a63:MariaImplModel$Table" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="MariaDB - rapp_myrdb@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="rapp_myrdb: schema" type="ebfa3cd1:MariaImplModel$Schema" />
+        <item name="tables" type="d4e8921:DatabaseStructure$FamilyGroup" />
         <item name="rapp_userhattbluseridundname: table" type="dbc44a63:MariaImplModel$Table" />
       </path>
       <path>
@@ -73,105 +354,98 @@
     <favorites_list name="Rapp_myRDB" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.8027478">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/views.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="299">
-                  <caret line="1106" column="42" selection-start-line="1106" selection-start-column="42" selection-end-line="1106" selection-end-column="42" />
-                  <folding>
-                    <element signature="e#0#10#0" expanded="true" />
-                    <element signature="e#51238#52370#0" />
-                    <element signature="e#52408#53451#0" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1802">
-                  <caret line="106" column="36" selection-start-line="106" selection-start-column="36" selection-end-line="106" selection-end-column="36" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/RechteDB/rapp/models.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="9367">
-                  <caret line="566" column="161" selection-start-line="566" selection-start-column="161" selection-end-line="566" selection-end-column="161" />
-                  <folding>
-                    <element signature="e#520#559#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="342">
-                  <caret line="107" column="70" selection-start-line="107" selection-start-column="70" selection-end-line="107" selection-end-column="70" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/urls.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="335">
-                  <caret line="70" column="65" selection-start-line="70" selection-start-column="36" selection-end-line="70" selection-end-column="65" />
-                  <folding>
-                    <element signature="e#623#655#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="1160" column="29" lean-forward="true" selection-start-line="1160" selection-start-column="29" selection-end-line="1160" selection-end-column="29" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/forms.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1292">
+              <caret line="84" column="60" selection-start-line="78" selection-start-column="16" selection-end-line="84" selection-end-column="60" />
+              <folding>
+                <element signature="e#0#24#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RechteDB/rapp/admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="7123">
+              <caret line="438" column="54" selection-start-line="438" selection-start-column="54" selection-end-line="438" selection-end-column="81" />
+              <folding>
+                <element signature="e#24#63#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="18887">
+              <caret line="1118" column="78" selection-start-line="1118" selection-start-column="78" selection-end-line="1118" selection-end-column="78" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/RechteDB/rapp/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="20825">
+              <caret line="1240" selection-start-line="1240" selection-end-line="1240" />
+              <folding>
+                <element signature="e#520#559#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get_right_from_list</find>
-      <find>my_re</find>
-      <find>self.extra_context['user</find>
-      <find>self.extra_context['user_id</find>
-      <find>self.extra_context['user_id'</find>
-      <find>user_userid_com</find>
-      <find>requesting_user</find>
-      <find>chan</find>
-      <find>change</find>
-      <find>Change</find>
-      <find>remove</find>
-      <find>apply_</find>
-      <find>rollen.</find>
-      <find>append</find>
-      <find>user_afs</find>
-      <find>decline</find>
+      <find>applied_afs.ad</find>
+      <find>.init</find>
+      <find>applied_afs.add</find>
+      <find>analys</find>
+      <find>rolle_to_copy</find>
+      <find>compare</find>
+      <find>get_colo</find>
+      <find>tf ==</find>
+      <find>RightsA</find>
+      <find>Profil</find>
+      <find>user_id</find>
+      <find>find</find>
+      <find>to_copy =</find>
+      <find>ProfileR</find>
+      <find>table</find>
       <find>Profile</find>
-      <find>legend_data</find>
-      <find>stats</find>
-      <find>af_description</find>
-      <find>af_descriptions</find>
-      <find>compareModel</find>
-      <find>userRight</find>
-      <find>stop</find>
-      <find>model</find>
-      <find>cached_af_descriptions</find>
-      <find>rechteneu</find>
-      <find>cached</find>
-      <find>cached_af_des</find>
-      <find>full</find>
+      <find>prepa</find>
+      <find>darkgrey</find>
+      <find>transfer_table_data</find>
+      <find>width</find>
+      <find>Comp</find>
+      <find>on</find>
+      <find>col-6</find>
+      <find>user</find>
+      <find>usercrea</find>
+      <find>sign</find>
+      <find>Register</find>
+      <find>applied_tf</find>
+      <find>CustomUserChangeForm</find>
+      <find>clear</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -181,71 +455,71 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/RechteDB/rapp/views.py" />
-        <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/apps.py" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/forms.py" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/admin.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/stored_procedures.py" />
-        <option value="$PROJECT_DIR$/Testfabrik_run.csv" />
-        <option value="$PROJECT_DIR$/Testfabrik_init.csv" />
-        <option value="$PROJECT_DIR$/Testfabrik_clear.csv" />
-        <option value="$PROJECT_DIR$/Aus IIQ - User und TF komplett Neu_20180817_abMe.csv" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/view_import.py" />
-        <option value="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/migrations/0009_auto_20190626_1451.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/migrations/0013_auto_20190704_1103.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/migrations/0009_auto_20190704_1134.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/forms.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/migrations/0010_auto_20190708_1343.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/migrations/0008_auto_20190708_1440.py" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare_profile_head.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile.html" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/migrations/0007_auto_20190814_1755.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/admin.py" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js" />
+        <option value="$PROJECT_DIR$/RechteDB/rapp/models.py" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/compareCirclePacking.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/remove_card_and_reverse_action.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/unanswered/myRequestsCirclePacking_unanswered_application.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/unanswered/myRequestsCirclePacking_unanswered_deletion.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_application.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_deletion.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_application.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_deletion.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_stats_table_equal.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisCirclePacking_equal.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_equal.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/transferCirclePacking.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js" />
+        <option value="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/serializers.py" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_unequal.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/css/style.css" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/trash_data_table.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/transfer_data_table.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/compare_data_table.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/profile_data_table.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTableTemplate.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareTableTemplate.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareCirclePackingTemplate.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/circlePackingTemplate.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileTableTemplate.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileLegendTemplate.html" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTemplate.html" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTemplate.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/transferCirclePacking.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTableTemplate.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/unanswered/unanswered_apply_requests.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/unanswered/unanswered_delete_requests.html" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare.html" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare_footer_row.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile_head.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application_footer_row.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/models.py" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/submit_apply_changes.js" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/my_requests.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/remove_card_and_reverse_action.js" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/remove_card.js" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/migrations/0014_auto_20190912_0931.py" />
-        <option value="$PROJECT_DIR$/RechteDB/rapp/models.py" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/request_pool.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/accept_request.js" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/decline_request.js" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/accepted/accepted_apply_requests.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/accepted/accepted_delete_requests.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/declined/declined_apply_requests.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/declined/declined_delete_requests.html" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_stats_table_unequal.html" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisCirclePacking_unequal.js" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_unequal.js" />
-        <option value="$PROJECT_DIR$/RechteDB/RechteDB/urls.py" />
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/serializers.py" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/scatterPlotTemplate.html" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/RechteDB/rapp/admin.py" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/forms.py" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/base.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/index.html" />
+        <option value="$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/views.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1382" />
-    <option name="height" value="744" />
+    <option name="x" value="-7" />
+    <option name="width" value="1344" />
+    <option name="height" value="735" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -269,51 +543,6 @@
               <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
               <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
               <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="circle_packing" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="static" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="circle_packing" type="462c0819:PsiDirectoryNode" />
-              <item name="right_analysis" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -323,15 +552,6 @@
               <item name="myRDB" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="templates" type="462c0819:PsiDirectoryNode" />
-              <item name="myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="profileRightsAnalysis" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
@@ -341,13 +561,18 @@
             </path>
             <path>
               <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
+              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
+              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -359,24 +584,24 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="settings.github" />
   </component>
   <component name="PyDebuggerOptionsProvider">
     <option name="mySaveCallSignatures" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB" />
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\mariadbconf.d" />
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\templates" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\myRDB" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp\migrations" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB" />
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\mariadbconf.d" />
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -523,7 +748,19 @@
       <workItem from="1568617907772" duration="17224000" />
       <workItem from="1568708214694" duration="6103000" />
       <workItem from="1568790917460" duration="20182000" />
-      <workItem from="1568876630874" duration="9392000" />
+      <workItem from="1568876630874" duration="13577000" />
+      <workItem from="1569224749868" duration="717000" />
+      <workItem from="1569229449823" duration="8702000" />
+      <workItem from="1569308483801" duration="13057000" />
+      <workItem from="1569397774678" duration="15585000" />
+      <workItem from="1569486746802" duration="6818000" />
+      <workItem from="1569826580580" duration="20038000" />
+      <workItem from="1569911601009" duration="24790000" />
+      <workItem from="1569997630649" duration="19594000" />
+      <workItem from="1570432117770" duration="8277000" />
+      <workItem from="1570515578228" duration="17723000" />
+      <workItem from="1571036752337" duration="20181000" />
+      <workItem from="1571208163036" duration="722000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -609,11 +846,18 @@
       <option name="project" value="LOCAL" />
       <updated>1568878518799</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Durch einführen von FullModelRights RightsAnalysis beschleunigt -&gt; weniger get-Requests">
+      <created>1568886642085</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1568886642085</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="699174000" />
+    <option name="totallyTimeSpent" value="859563000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -628,21 +872,21 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.22919819" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.2526475" />
       <window_info id="Structure" order="1" sideWeight="0.50220263" side_tool="true" weight="0.14977308" />
       <window_info id="Favorites" order="2" sideWeight="0.50222224" side_tool="true" weight="0.17927383" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49924356" weight="0.3289689" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.8434191" visible="true" weight="0.2569558" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.74886537" weight="0.2667758" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49848714" weight="0.3289689" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.71482605" weight="0.2569558" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.8668684" weight="0.2667758" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3289689" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.3289689" />
       <window_info anchor="bottom" id="Database Changes" order="9" weight="0.3289689" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.15658094" side_tool="true" weight="0.3207856" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.6923077" weight="0.2667758" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.13313162" side_tool="true" visible="true" weight="0.2569558" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.6913767" weight="0.2667758" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.3289689" />
       <window_info anchor="bottom" id="Database Console" order="13" sideWeight="0.8449319" weight="0.2667758" />
       <window_info anchor="bottom" id="Inspection Results" order="14" sideWeight="0.49924356" weight="0.3289689" />
@@ -705,389 +949,415 @@
     <MESSAGE value="update_personal_rights_model (DONE - TOO SLOW FOR NOW)" />
     <MESSAGE value="Nutzerliste [DONE] - Staff-Nutzer-Zugriff auf andere Nutzerprofile&#10;-&gt; vor Umbau von Pagination für schnelleres laden" />
     <MESSAGE value=" Umbau von Pagination für schnelleres laden [ZURÜCKGESTELLT]&#10; RightsAnalysis [DONE]&lt;- Verbesserungswürdig (läd zu langsam)" />
-    <option name="LAST_COMMIT_MESSAGE" value=" Umbau von Pagination für schnelleres laden [ZURÜCKGESTELLT]&#10; RightsAnalysis [DONE]&lt;- Verbesserungswürdig (läd zu langsam)" />
+    <MESSAGE value="Durch einführen von FullModelRights RightsAnalysis beschleunigt -&gt; weniger get-Requests" />
+    <option name="LAST_COMMIT_MESSAGE" value="Durch einführen von FullModelRights RightsAnalysis beschleunigt -&gt; weniger get-Requests" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2410</line>
+          <line>2445</line>
           <option name="timeStamp" value="76" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2742</line>
-          <option name="timeStamp" value="150" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2714</line>
-          <option name="timeStamp" value="152" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2646</line>
-          <option name="timeStamp" value="153" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2658</line>
-          <option name="timeStamp" value="154" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2702</line>
-          <option name="timeStamp" value="155" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>1073</line>
+          <line>1176</line>
           <option name="timeStamp" value="171" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>776</line>
+          <line>879</line>
           <option name="timeStamp" value="175" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>1037</line>
+          <line>1140</line>
           <option name="timeStamp" value="177" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>1022</line>
+          <line>1125</line>
           <option name="timeStamp" value="178" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>1054</line>
+          <line>1157</line>
           <option name="timeStamp" value="179" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>1033</line>
+          <line>1136</line>
           <option name="timeStamp" value="181" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>3245</line>
+          <line>3482</line>
           <option name="timeStamp" value="210" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1132</line>
-          <option name="timeStamp" value="228" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>3268</line>
+          <line>3505</line>
           <option name="timeStamp" value="240" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>403</line>
+          <line>410</line>
           <option name="timeStamp" value="241" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1545</line>
-          <option name="timeStamp" value="243" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1547</line>
-          <option name="timeStamp" value="244" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1557</line>
+          <line>1517</line>
           <option name="timeStamp" value="245" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1559</line>
+          <line>1519</line>
           <option name="timeStamp" value="249" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>1019</line>
-          <option name="timeStamp" value="250" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>3115</line>
+          <line>3350</line>
           <option name="timeStamp" value="251" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>170</line>
+          <line>221</line>
           <option name="timeStamp" value="256" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>172</line>
+          <line>223</line>
           <option name="timeStamp" value="257" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>178</line>
+          <line>229</line>
           <option name="timeStamp" value="258" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>159</line>
+          <line>210</line>
           <option name="timeStamp" value="259" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1540</line>
-          <option name="timeStamp" value="260" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>528</line>
+          <line>657</line>
           <option name="timeStamp" value="261" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>521</line>
+          <line>650</line>
           <option name="timeStamp" value="262" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>267</line>
+          <line>384</line>
           <option name="timeStamp" value="263" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1416</line>
+          <line>1389</line>
           <option name="timeStamp" value="269" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1624</line>
+          <line>1583</line>
           <option name="timeStamp" value="271" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1321</line>
+          <line>1305</line>
           <option name="timeStamp" value="274" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>399</line>
+          <line>528</line>
           <option name="timeStamp" value="276" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>180</line>
+          <line>231</line>
           <option name="timeStamp" value="277" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>392</line>
-          <option name="timeStamp" value="278" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
-          <line>466</line>
+          <line>595</line>
           <option name="timeStamp" value="279" />
         </line-breakpoint>
         <line-breakpoint type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>926</line>
+          <line>919</line>
           <option name="timeStamp" value="287" />
         </line-breakpoint>
         <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>981</line>
+          <line>973</line>
           <option name="timeStamp" value="308" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>808</line>
-          <option name="timeStamp" value="311" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>841</line>
-          <option name="timeStamp" value="316" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>944</line>
-          <option name="timeStamp" value="317" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1077</line>
+          <line>1075</line>
           <option name="timeStamp" value="318" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2879</line>
+          <line>3071</line>
           <option name="timeStamp" value="320" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>2398</line>
+          <line>2433</line>
           <option name="timeStamp" value="321" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>3401</line>
+          <line>3692</line>
           <option name="timeStamp" value="322" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
-          <line>1158</line>
-          <option name="timeStamp" value="323" />
+          <line>2848</line>
+          <option name="timeStamp" value="367" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
+          <line>1200</line>
+          <option name="timeStamp" value="369" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
+          <line>364</line>
+          <option name="timeStamp" value="370" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
+          <line>242</line>
+          <option name="timeStamp" value="375" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
+          <line>361</line>
+          <option name="timeStamp" value="376" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py</url>
+          <line>252</line>
+          <option name="timeStamp" value="377" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>1687</line>
+          <option name="timeStamp" value="380" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>795</line>
+          <option name="timeStamp" value="382" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>1023</line>
+          <option name="timeStamp" value="383" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>703</line>
+          <option name="timeStamp" value="388" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/forms.py</url>
+          <line>29</line>
+          <option name="timeStamp" value="390" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/forms.py</url>
+          <line>45</line>
+          <option name="timeStamp" value="391" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>2750</line>
+          <option name="timeStamp" value="393" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>2751</line>
+          <option name="timeStamp" value="394" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>2752</line>
+          <option name="timeStamp" value="396" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>2753</line>
+          <option name="timeStamp" value="397" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>3912</line>
+          <option name="timeStamp" value="398" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>3954</line>
+          <option name="timeStamp" value="399" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>3996</line>
+          <option name="timeStamp" value="400" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/RechteDB/myRDB/views.py</url>
+          <line>4041</line>
+          <option name="timeStamp" value="401" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/compareCirclePacking.js</url>
-          <line>338</line>
+          <line>329</line>
           <option name="timeStamp" value="168" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>84</line>
+          <line>85</line>
           <option name="timeStamp" value="195" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>66</line>
+          <line>67</line>
           <option name="timeStamp" value="196" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>49</line>
+          <line>50</line>
           <option name="timeStamp" value="197" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>32</line>
+          <line>33</line>
           <option name="timeStamp" value="198" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>135</line>
+          <line>136</line>
           <option name="timeStamp" value="199" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>40</line>
+          <line>41</line>
           <option name="timeStamp" value="200" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>57</line>
+          <line>58</line>
           <option name="timeStamp" value="201" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>74</line>
+          <line>75</line>
           <option name="timeStamp" value="203" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>76</line>
+          <line>77</line>
           <option name="timeStamp" value="204" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>59</line>
+          <line>60</line>
           <option name="timeStamp" value="205" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>42</line>
+          <line>43</line>
           <option name="timeStamp" value="206" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>92</line>
+          <line>93</line>
           <option name="timeStamp" value="207" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>94</line>
+          <line>95</line>
           <option name="timeStamp" value="209" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>39</line>
+          <line>40</line>
           <option name="timeStamp" value="211" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>41</line>
+          <line>42</line>
           <option name="timeStamp" value="212" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>56</line>
+          <line>57</line>
           <option name="timeStamp" value="213" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>55</line>
+          <line>56</line>
           <option name="timeStamp" value="214" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>58</line>
+          <line>59</line>
           <option name="timeStamp" value="215" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>60</line>
+          <line>61</line>
           <option name="timeStamp" value="216" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>61</line>
+          <line>62</line>
           <option name="timeStamp" value="217" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>77</line>
+          <line>78</line>
           <option name="timeStamp" value="218" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>75</line>
+          <line>76</line>
           <option name="timeStamp" value="219" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>72</line>
+          <line>73</line>
           <option name="timeStamp" value="220" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>73</line>
+          <line>74</line>
           <option name="timeStamp" value="221" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>93</line>
+          <line>94</line>
           <option name="timeStamp" value="222" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>91</line>
+          <line>92</line>
           <option name="timeStamp" value="223" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>90</line>
+          <line>91</line>
           <option name="timeStamp" value="224" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="jinja2-line">
           <url>file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html</url>
-          <line>95</line>
+          <line>96</line>
           <option name="timeStamp" value="225" />
         </line-breakpoint>
       </breakpoints>
@@ -1097,363 +1367,383 @@
     <SUITE FILE_PATH="coverage/Rapp_myRDB$stored_procedures.coverage" NAME="stored_procedures Coverage Results" MODIFIED="1559739961039" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/RechteDB/rapp" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTableTemplate.html">
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/requestPool/requestPoolCirclePacking_application.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="47" lean-forward="true" selection-start-line="12" selection-start-column="47" selection-end-line="12" selection-end-column="47" />
+        <state relative-caret-position="102">
+          <caret line="58" column="62" lean-forward="true" selection-start-line="58" selection-start-column="62" selection-end-line="58" selection-end-column="90" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTemplate.html">
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisCirclePacking_equal.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="71" selection-start-line="14" selection-start-column="71" selection-end-line="14" selection-end-column="71" />
+        <state relative-caret-position="284">
+          <caret line="68" column="68" selection-start-line="68" selection-start-column="68" selection-end-line="68" selection-end-column="68" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileLegendTemplate.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare.html">
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_equal.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="66" column="36" lean-forward="true" selection-start-line="66" selection-start-column="36" selection-end-line="66" selection-end-column="36" />
+        <state relative-caret-position="233">
+          <caret line="77" column="58" lean-forward="true" selection-start-line="77" selection-start-column="58" selection-end-line="77" selection-end-column="58" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/transferCirclePacking.js">
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_stats_table_equal.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="303" column="11" lean-forward="true" selection-start-line="303" selection-start-column="11" selection-end-line="303" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/compareCirclePacking.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="339">
-          <caret line="762" column="21" selection-start-line="762" selection-start-column="21" selection-end-line="762" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/db/models/sql/query.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="1419" selection-start-line="1419" selection-end-line="1419" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://bb35f193-5a93-4129-9d80-972f64131320/schema/rapp_myrdb/table/rapp_userhattbluseridundname">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state projectRestartId="03e9d70c-02b3-4da2-911e-c3bc7e5eeb70">
-          <filtering>
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile_head.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="51" selection-start-line="16" selection-start-column="51" selection-end-line="16" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="146" column="26" selection-start-line="146" selection-start-column="26" selection-end-line="146" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templatetags/index.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application_card.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="10" column="27" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="698">
-          <caret line="52" selection-start-line="52" selection-end-line="52" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/relations.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="414" selection-start-line="414" selection-end-line="414" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/rapp/migrations/0011_auto_20190910_1007.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="31" column="113" selection-start-line="31" selection-start-column="113" selection-end-line="31" selection-end-column="113" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="423" column="24" lean-forward="true" selection-start-line="423" selection-start-column="24" selection-end-line="423" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_application.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="363">
-          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application_footer_row.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="3" column="41" lean-forward="true" selection-start-line="3" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="15" selection-start-line="15" selection-end-line="15" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/rightApplication/right_application.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="96" selection-start-line="96" selection-end-line="97" selection-end-column="98" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/remove_card_and_reverse_action.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="56" column="36" lean-forward="true" selection-start-line="56" selection-start-column="36" selection-end-line="56" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/unanswered/myRequestsCirclePacking_unanswered_application.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="28" column="30" lean-forward="true" selection-start-line="28" selection-start-column="30" selection-end-line="28" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/submit_apply_changes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="526">
-          <caret line="80" column="122" selection-start-line="80" selection-start-column="122" selection-end-line="80" selection-end-column="122" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/rapp/migrations/0014_auto_20190912_0931.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="213">
-          <caret line="17" selection-start-line="17" selection-end-line="25" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/generics.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="111" selection-start-line="111" selection-end-line="111" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/mixins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="25" selection-start-line="25" selection-end-line="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/viewsets.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="115" selection-start-line="115" selection-end-line="115" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/decorators/csrf.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="53" selection-start-line="53" selection-end-line="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="494" selection-start-line="494" selection-end-line="494" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/remove_card.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="52" column="20" selection-start-line="52" selection-start-column="20" selection-end-line="52" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/my_requests.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="9" column="32" selection-start-line="9" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/requestPool/request_pool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="8" selection-start-line="7" selection-start-column="8" selection-end-line="7" selection-end-column="8" />
+        <state relative-caret-position="53">
+          <caret line="13" column="9" selection-start-line="13" selection-start-column="9" selection-end-line="13" selection-end-column="9" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/rest_framework/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
+        <state relative-caret-position="-2073">
           <caret line="208" selection-start-line="208" selection-end-line="208" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/generic/list.py">
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/circlePacking.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="141" selection-start-line="141" selection-end-line="141" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/generic/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="70" selection-start-line="70" selection-end-line="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/contrib/auth/decorators.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/core/handlers/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="114" selection-start-line="114" selection-end-line="114" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_equal_compare_card.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/template/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="533" selection-start-line="533" selection-end-line="533" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/accept_request.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="867">
-          <caret line="51" column="84" selection-start-line="51" selection-start-column="84" selection-end-line="51" selection-end-column="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/actions/decline_request.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="867">
-          <caret line="51" column="84" selection-start-line="51" selection-start-column="84" selection-end-line="51" selection-end-column="84" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_stats_table_unequal.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="84" column="19" lean-forward="true" selection-start-line="84" selection-start-column="19" selection-end-line="84" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_stats_table_equal.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare_footer_row.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="18" column="29" selection-start-line="18" selection-start-column="29" selection-end-line="18" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1802">
-          <caret line="106" column="36" selection-start-line="106" selection-start-column="36" selection-end-line="106" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/rapp/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9367">
-          <caret line="566" column="161" selection-start-line="566" selection-start-column="161" selection-end-line="566" selection-end-column="161" />
-          <folding>
-            <element signature="e#520#559#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_unequal.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="99">
-          <caret line="244" column="43" selection-start-line="244" selection-start-column="43" selection-end-line="244" selection-end-column="43" />
+        <state relative-caret-position="281">
+          <caret line="376" column="24" lean-forward="true" selection-start-line="376" selection-start-column="24" selection-end-line="376" selection-end-column="99" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisCirclePacking_unequal.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="204" column="14" lean-forward="true" selection-start-line="204" selection-start-column="14" selection-end-line="204" selection-end-column="43" />
+        <state relative-caret-position="369">
+          <caret line="277" column="33" selection-start-line="277" selection-start-column="33" selection-end-line="277" selection-end-column="33" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/urls.py">
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis_unequal_compare_card.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="70" column="65" selection-start-line="70" selection-start-column="36" selection-end-line="70" selection-end-column="65" />
+        <state relative-caret-position="221">
+          <caret line="13" column="36" selection-start-line="13" selection-start-column="20" selection-end-line="13" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="36" selection-start-line="15" selection-start-column="36" selection-end-line="15" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_unequal.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11152">
+          <caret line="656" column="34" selection-start-line="656" selection-start-column="34" selection-end-line="656" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/transferCirclePacking.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6256">
+          <caret line="368" selection-start-line="368" selection-end-line="368" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/trashCirclePacking.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6970">
+          <caret line="410" column="17" selection-start-line="410" selection-start-column="17" selection-end-line="410" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareProfileTableTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="41" column="11" lean-forward="true" selection-start-line="41" selection-start-column="11" selection-end-line="41" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3179">
+          <caret line="187" column="33" selection-start-line="187" selection-start-column="33" selection-end-line="187" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/css/bootstrap.min.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="5" column="123052" selection-start-line="5" selection-start-column="123047" selection-end-line="5" selection-end-column="123052" />
           <folding>
-            <element signature="e#623#655#0" expanded="true" />
+            <element signature="e#57526#57726#2" expanded="true" />
+            <element signature="e#57934#58083#2" expanded="true" />
+            <element signature="e#58585#58731#2" expanded="true" />
+            <element signature="e#59032#59198#1" expanded="true" />
+            <element signature="e#70814#71057#2" expanded="true" />
+            <element signature="e#71924#72173#2" expanded="true" />
+            <element signature="e#99236#99426#2" expanded="true" />
+            <element signature="e#99472#99662#2" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/css/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret lean-forward="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/trash_data_table.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="16" lean-forward="true" selection-start-line="19" selection-end-line="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="67" column="31" selection-start-line="67" selection-start-column="31" selection-end-line="67" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compare_footer_row.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="14" column="43" selection-start-line="14" selection-start-column="43" selection-end-line="14" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTableTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="40" column="8" lean-forward="true" selection-start-line="40" selection-start-column="8" selection-end-line="40" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareCirclePackingTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="70" selection-start-line="16" selection-start-column="70" selection-end-line="16" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/compare/compareTableTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="38" column="70" selection-start-line="38" selection-start-column="70" selection-end-line="38" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/circlePackingTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="37" lean-forward="true" selection-start-line="16" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileTableTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="39" column="96" selection-start-line="39" selection-start-column="96" selection-end-line="39" selection-end-column="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profileLegendTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="27" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/transferTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="27" selection-start-line="17" selection-start-column="27" selection-end-line="17" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/scatterPlotTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="301">
+          <caret line="24" column="35" selection-start-line="24" selection-start-column="35" selection-end-line="24" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="59" selection-start-line="20" selection-start-column="59" selection-end-line="20" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/compare_data_table.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1020">
+          <caret line="60" column="22" selection-start-line="60" selection-start-column="22" selection-end-line="60" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/transfer_data_table.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="43" column="26" selection-start-line="43" selection-start-column="26" selection-end-line="43" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/trashTableTemplate.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="36" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profile/profile.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="986">
+          <caret line="58" column="32" selection-start-line="58" selection-start-column="32" selection-end-line="58" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/myRequests/declined/declined_delete_requests.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="34" selection-start-line="19" selection-start-column="34" selection-end-line="19" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/data_tables/profile_data_table.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1343">
+          <caret line="79" column="22" selection-start-line="79" selection-start-column="22" selection-end-line="79" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="124">
+          <caret line="18" column="18" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/registration/register.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="21" lean-forward="true" selection-start-line="15" selection-start-column="21" selection-end-line="15" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/registration/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="26" lean-forward="true" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/rapp/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="63" selection-start-line="63" selection-end-line="66" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#24#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/generic/edit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="125" selection-start-line="125" selection-end-line="125" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/forms/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="184" selection-start-line="184" selection-end-line="184" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="16" column="33" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/base.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="39" column="86" selection-start-line="39" selection-start-column="86" selection-end-line="39" selection-end-column="86" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="3" column="30" selection-start-line="3" selection-start-column="30" selection-end-line="3" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/navbar.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/users.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="137">
+          <caret line="178" column="47" lean-forward="true" selection-start-line="178" selection-start-column="47" selection-end-line="178" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/db/models/manager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="177" selection-start-line="177" selection-end-line="177" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="1160" column="29" lean-forward="true" selection-start-line="1160" selection-start-column="29" selection-end-line="1160" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1292">
+          <caret line="84" column="60" selection-start-line="78" selection-start-column="16" selection-end-line="84" selection-end-column="60" />
+          <folding>
+            <element signature="e#0#24#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/rapp/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7123">
+          <caret line="438" column="54" selection-start-line="438" selection-start-column="54" selection-end-line="438" selection-end-column="81" />
+          <folding>
+            <element signature="e#24#63#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="107" column="70" selection-start-line="107" selection-start-column="70" selection-end-line="107" selection-end-column="70" />
+        <state relative-caret-position="18887">
+          <caret line="1118" column="78" selection-start-line="1118" selection-start-column="78" selection-end-line="1118" selection-end-column="78" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/views.py">
+    <entry file="file://$PROJECT_DIR$/RechteDB/rapp/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="1106" column="42" selection-start-line="1106" selection-start-column="42" selection-end-line="1106" selection-end-column="42" />
+        <state relative-caret-position="20825">
+          <caret line="1240" selection-start-line="1240" selection-end-line="1240" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
-            <element signature="e#51238#52370#0" />
-            <element signature="e#52408#53451#0" />
+            <element signature="e#520#559#0" expanded="true" />
           </folding>
         </state>
       </provider>

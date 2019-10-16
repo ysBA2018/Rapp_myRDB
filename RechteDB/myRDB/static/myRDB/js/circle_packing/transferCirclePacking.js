@@ -40,17 +40,77 @@ $(document).ready(function(){
           if(d.depth ===4) return 0.8;
           if(d.depth ===5) return 0.9;
       }
+      function compare_graphs(d, compare_data){
+          if(window.level==="ROLLE"){
+              for(var i in compare_data['children']){
+                  var af = compare_data['children'][i];
+                  if(af.name===d.parent.parent.data.name){
+                      for(var j in af['children']){
+                          var gf = af['children'][j];
+                          if(gf.name===d.parent.data.name){
+                              for(var k in gf['children']){
+                                  var tf = gf['children'][k];
+                                  if(tf.name===d.data.name){
+                                      return true;
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }if(window.level==="AF"){
+              for(i in compare_data['children']){
+                  gf = compare_data['children'][i];
+                  if(gf.name===d.parent.data.name){
+                      for(k in gf['children']){
+                          tf = gf['children'][k];
+                          if(tf.name===d.data.name){
+                              return true;
+                          }
+                      }
+                  }
+
+              }
+          }
+          else if(window.level==="GF"){
+              for(i in compare_data){
+                  tf = compare_data[i];
+                  if(tf.name===d.data.name){
+                      return true;
+                  }
+              }
+          }
+          return false;
+      }
       function get_color(d) {
           if(d.depth===0){
               return "white";
           }
           else{
-              if(d.depth===5){return d.data.color}
+              if(d.depth===5){
+                  if(window.current_site==="analysis"){
+                      var svgIndex= 0;
+                      var data = window['jsonModeldata_unequal'+svgIndex];
+                      while(data && !bool){
+                          var bool = compare_graphs(d,data);
+                          svgIndex+=1;
+                          data = window['jsonModeldata_unequal'+svgIndex];
+                      }
+                      if(bool){
+                          return "grey";
+                      }
+                      else {
+                          return d.data.color;
+                      }
+                  }
+                  else {
+                      return d.data.color;
+                  }
+              }
               else{return "white"}
           }
       }
 
-    //TODO: bei erstellen von json color für leaves mitgeben!!!
       var circle = g.selectAll("circle")
         .data(nodes)
         .enter().append("circle")
@@ -183,7 +243,6 @@ $(document).ready(function(){
           .attr("id","transferTooltip")
           .style("opacity",0);
 
-    //TODO: bei erstellen von json color für leaves mitgeben!!!
       circle = g.selectAll("circle")
         .data(nodes)
         .enter().append("circle")
@@ -221,11 +280,7 @@ $(document).ready(function(){
                   .duration(500)
                   .style("opacity",0)
           });
-      /*
-      leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
-        */
+
       //var text = g.selectAll("text")
       //  .data(nodes)
       //  .enter().append("text")
@@ -254,22 +309,26 @@ $(document).ready(function(){
         var found =false;
         while(found===false){
             data = window['jsonModeldata_unequal'+svgIndex];
-
-                if(window.level==='AF'){
-                    if(d.depth===1) {
+                if(window.level==='ROLLE'){
+                    if(d.depth===2) {
                         if (d.data.name === data.name) {
                             return svgIndex;
                         }
-                    }else if(d.depth===2) {
+                    }else if(d.depth===3) {
                         if (d.parent.data.name === data.name) {
                             return svgIndex;
                         }
-                    }else if(d.depth===3) {
+                    }else if(d.depth===4) {
                         if (d.parent.parent.data.name === data.name) {
                             return svgIndex;
                         }
+                    }else if(d.depth===5) {
+                        if (d.parent.parent.parent.data.name === data.name) {
+                            return svgIndex;
+                        }
                     }
-                }else if(window.level==='GF'){
+                }
+                else if(window.level==='AF'){
                     if(d.depth===1) {
                         for (i in d.children) {
                             if (d.children[i].data.name === data.name) {
@@ -285,6 +344,27 @@ $(document).ready(function(){
                             return svgIndex;
                         }
                     }
+                }else if(window.level==='GF'){
+                    if(d.depth===1) {
+                        for (i in d.children) {
+                            for (j in d.children[j].children) {
+                                if (d.children[i].children[j].data.name === data.name) {
+                                    return svgIndex;
+                                }
+                            }
+                        }
+                    }else if(d.depth===2) {
+                        if (d.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }else if(d.depth===3) {
+                        if (d.parent.data.name === data.name) {
+                            return svgIndex;
+                        }
+                    }
+                }
+                else{
+                    return;
                 }
 
             console.log(data);
@@ -367,11 +447,13 @@ $(document).ready(function(){
                 "greatgreatgrandparent": right_greatgreatgrandparent,
             };
             var successful=false;
-            var comparing_user_userid_combi_id = window.jsondata['children'][0]['user_userid_combi_id'];
+            if(window.current_site==='compare') {
+                user_userid_combi_id = window.jsondata['children'][0]['user_userid_combi_id'];
+            }
 
             $.ajax({type:'POST',
                     data:data,
-                    url:window.current_host + '/api/userhatuseridundnamen/' + comparing_user_userid_combi_id + '/',
+                    url:window.current_host + '/api/userhatuseridundnamen/' + user_userid_combi_id + '/',
                     async:false,
                     success: function(res){console.log(res);
                         successful=true},

@@ -177,25 +177,8 @@ $(document).ready(function(){
                   .duration(500)
                   .style("opacity",0)
           });
-      /*
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
-       */
-      //var text = g.selectAll("text")
-      //  .data(nodes)
-      //  .enter().append("text")
-      //    .attr("class", "label")
-      //    .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-      //    .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-      //    .text(function(d) { return d.data.name; });
 
         var node = g.selectAll("circle");
-      //var node = g.selectAll("circle,text");
-      //.call(d3.drag()
-        //                   .on("start",dragstarted)
-        //                   .on("drag",dragged)
-        //                   .on("end",dragended))
 
       svg
           .style("background", "white")
@@ -221,30 +204,6 @@ $(document).ready(function(){
         circle.attr("r", function(d) { return d.r * k; });
       }
 
-      //function dragstarted(d){
-      //    d3.event.sourceEvent.stopPropagation()
-      //    console.log("dragstarted");
-      //    d3.select(this).raise().classed("active",true);
-      //}
-      //function dragged(d) {
-      //    console.log("dragged");
-      //    d.x += d3.event.dx;
-      //    d.y += d3.event.dy;
-      //    draw();
-      //}
-      //function dragended(d) {
-      //    console.log("dragended");
-      //    d3.select(this).classed("active",false);
-      //}
-      //function draw() {
-      //    var k = diameter / (root.r * 2 + margin);
-      //    node.attr("transform", function(d){
-      //        return "translate("+(d.x -root.x)*k+","+(d.y-root.y)*k+")";
-      //    });
-      //    circle.attr("r", function(d){
-      //        return d.r*k;
-      //    });
-      //}
       function update(updated_data){
           console.log(updated_data);
           root = updated_data;
@@ -253,12 +212,6 @@ $(document).ready(function(){
         margin = 20,
         diameter = +svg.attr("width"),
         g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
-/*
-        color = d3.scaleLinear()
-            .domain([-1, 5])
-            .range(["hsl(360,100%,100%)", "hsl(0,0%,0%)"])
-            .interpolate(d3.interpolateHcl);
-*/
 
         pack = d3.pack()
             .size([diameter - margin, diameter - margin])

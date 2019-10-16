@@ -62,10 +62,6 @@ $(document).ready(function(){
                   .style("opacity",0)
           });
 
-      var leaves = d3.selectAll("circle").filter(function(d){
-        return d.children === null;
-      });
-
       var text = g.selectAll("text")
         .data(nodes)
         .enter().append("text")
@@ -93,6 +89,7 @@ $(document).ready(function(){
               var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
               return function(t) { zoomTo(i(t)); };
             });
+
 
       }
 

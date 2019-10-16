@@ -8,14 +8,14 @@
 <div class="card" id="declined_apply_request_card{{ forloop.counter0 }}">
     <div class="card-header">
         <div class="row">
-            <div class="col-6" align="left">
+            <div class="col-sm-6" align="left">
                 <h5>
                     <a class="btn btn-primary" data-toggle="collapse" href="#declined_apply_request{{ forloop.counter0 }}" role="button" aria-expanded="false" aria-controls="declined_apply_request{{ forloop.counter0 }}">
                         Beantragung | {{ apply_request.request.right_name }}
                     </a>
                 </h5>
             </div>
-            <div class="col-6" align="right">
+            <div class="col-sm-6" align="right">
                 <form class="declined_apply_form" onsubmit="javascript: return remove_card_clicked(this);">
                     <input type="hidden" value="{{ apply_request.request.pk }}" name="pk">
                     <input type="hidden" value="{{ apply_request.request.requesting_user }}" name="requesting_user">

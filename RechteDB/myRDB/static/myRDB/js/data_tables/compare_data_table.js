@@ -1,15 +1,17 @@
 function check_for_row_in_user_and_transfer_table(row,data,dataIndex){
     var data_table = window.user_table_data;
     var data_table_stripped = data_table.replace(/(&#39;)|(\s)/g,"");
-    var contains = data_table_stripped.includes(data);
+    var data_str = "("+data[0]+","+data[1]+","+data[2]+","+data[3]+",";
+
+    var contains = data_table_stripped.includes(data_str.replace(/(&#39;)|(\s)/g,""));
     if(contains){
-        $(row).addClass("darkgrey");
+        $(row).addClass("yellow");
     }
-    data_table = window.transfer_list_table_data;
+    data_table = window.transfer_table_data;
     data_table_stripped = data_table.replace(/(&#39;)|(\s)/g,"");
-    contains = data_table_stripped.includes(data);
+    contains = data_table_stripped.includes(data_str.replace(/(&#39;)|(\s)/g,""));
     if(contains){
-        $(row).addClass("darkgrey");
+        $(row).addClass("yellow");
     }
 }
 
@@ -19,19 +21,44 @@ $(document).ready(function() {
         console.log(this);
         var user_data = window.compare_jsondata;
 
-        for (i in user_data['children']){
-            if(user_data['children'][i]['name']===this.lastElementChild.textContent){
-                var right = user_data['children'][i];
-                break;
+        loop1: for (i in user_data['children']){
+            var rollen = user_data['children'][i]['children'];
+            for(j in rollen){
+                if(rollen[j]['name']===this.lastElementChild.previousElementSibling.textContent){
+                    var rolle = rollen[j];
+                    var afs = rolle['children'];
+                    for(k in afs){
+                        if(afs[k]['name']===this.lastElementChild.previousElementSibling.previousElementSibling.textContent){
+                            var af = afs[k];
+                            var gfs = af['children'];
+                            for(l in gfs){
+                                if(gfs[l]['name']===this.firstElementChild.nextElementSibling.textContent){
+                                    var gf = gfs[l];
+                                    var tfs = gf['children'];
+                                    for(m in tfs){
+                                        if(tfs[m]['name']===this.firstElementChild.textContent){
+                                            var tf = tfs[m];
+                                            break loop1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-        var text = "AF-Beschreibung: "+ right['description']+"\nAF gültig seit: "+right['af_applied'];
+        var text = "Rolle: "+rolle['name']+" / Rollen-Beschreibung: "+ rolle['description']
+            +"\nAF: "+af['name']+ " / AF-Beschreibung: "+af['description']
+            +"\nGF: "+gf['name']+ " / GF-Beschreibung: "+gf['description']
+            +"\nTF: "+tf['name']+ " / TF-Beschreibung: "+tf['description'];
 
         this.setAttribute( 'title', text );
     } );
 
     compare_data_table = $('#compare_data_table').DataTable({
         "pageLength":10,
+        "scrollY": "70vh",
         "aLengthMenu":[[10,25,50,100,-1],[10,25,50,100,"All"]],
         "createdRow":function (row, data, dataIndex) {
             check_for_row_in_user_and_transfer_table(row,data,dataIndex);
@@ -42,7 +69,7 @@ $(document).ready(function() {
     compare_data_table.$('tr').tooltip();
 
     function check_for_parent_existance(type, parent, grandparent){
-        var data_table = window.transfer_list_table_data;
+        var data_table = window.transfer_table_data;
         var data_table_stripped = data_table.replace(/(&#39;)|(\s)/g,"");
         if(type==="gf"){
             var contains = data_table_stripped.includes(parent);
@@ -125,7 +152,7 @@ $(document).ready(function() {
             return;
         }
         //console.log(this.parentElement.className);
-        if(!(this.parentElement.className==="darkgrey even")&&!(this.parentElement.className==="darkgrey odd")){
+        if(!(this.parentElement.className==="yellow even")&&!(this.parentElement.className==="yellow odd")){
             var r = confirm("Berechtigung:\n\n"+cell_data+"\n\nwirklich zu Transferliste hinzufügen?\n\n");
         }else{
             bootbox.alert("Berechtigung existiert bereits!\n", function () {
@@ -183,14 +210,14 @@ $(document).ready(function() {
         e.preventDefault();
         var colIndex = window.compare_data_table.cell(this).index().column;
         $(window.compare_data_table.cells().nodes()).removeClass('highlight');
-        $(window.compare_data_table.column(colIndex).nodes()).addClass('highlight');
+        //$(window.compare_data_table.column(colIndex).nodes()).addClass('highlight');
     });
     function update_table_data(cell_data,right_type,row_data) {
         if (right_type==="af"){
             window.compare_data_table.rows().every(function(rowIdx,tableLoop,rowLoop){
                var data = this.data();
                if(data[2]===cell_data){
-                   this.nodes().to$().addClass("darkgrey");
+                   this.nodes().to$().addClass("yellow");
                    window.transfer_table.row.add(data).draw();
                    window.transfer_table_count+=1;
                    document.getElementById('transfer_badge').innerHTML = window.transfer_table_count;
@@ -201,7 +228,7 @@ $(document).ready(function() {
             window.compare_data_table.rows().every(function(rowIdx,tableLoop,rowLoop){
                var data = this.data();
                if(data[1]===cell_data&&data[2]===row_data[2]){
-                   this.nodes().to$().addClass("darkgrey");
+                   this.nodes().to$().addClass("yellow");
                    window.transfer_table.row.add(data).draw();
                    window.transfer_table_count+=1;
                    document.getElementById('transfer_badge').innerHTML = window.transfer_table_count;
@@ -214,7 +241,7 @@ $(document).ready(function() {
             window.compare_data_table.rows().every(function(rowIdx,tableLoop,rowLoop){
                var data = this.data();
                if(data[0]===cell_data&&data[1]===row_data[1]&&data[2]===row_data[2]){
-                   this.nodes().to$().addClass("darkgrey");
+                   this.nodes().to$().addClass("yellow");
                    window.transfer_table.row.add(data).draw();
                    window.transfer_table_count+=1;
                    document.getElementById('transfer_badge').innerHTML = window.transfer_table_count;

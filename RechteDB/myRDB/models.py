@@ -16,14 +16,17 @@ from django.apps import apps
 import importlib
 
 modellist = importlib.import_module('rapp.models')
+
 TblRollen = modellist.TblRollen
+TblAfliste = modellist.TblAfliste
 TblUebersichtAfGfs = modellist.TblUebersichtAfGfs
+TblTf = modellist.TblTf
+
 TblOrga = modellist.TblOrga
 TblUserIDundName = modellist.TblUserIDundName
 TblPlattform = modellist.TblPlattform
 TblGesamt = modellist.TblGesamt
 TblGesamtHistorie = modellist.TblGesamtHistorie
-TblAfliste = modellist.TblAfliste
 Tblsachgebiete = modellist.Tblsachgebiete
 Tblsubsysteme = modellist.Tblsubsysteme
 TblDb2 = modellist.TblDb2
@@ -37,6 +40,7 @@ Letzter_import = modellist.Letzter_import
 Modellierung = modellist.Modellierung
 Direktverbindungen = modellist.Direktverbindungen
 User = modellist.User
+
 TblAppliedTf = modellist.TblAppliedTf
 TblAppliedGf = modellist.TblAppliedGf
 TblAppliedAf = modellist.TblAppliedAf
@@ -48,8 +52,10 @@ TblUserhatrolle = modellist.TblUserhatrolle
 TblRollehataf = modellist.TblRollehataf
 TblAfHatGf = modellist.TblAfHatGF
 TblGfHatTf = modellist.TblGfHatTF
+TblTfHatSchreibweise = modellist.TblTfHatSchreibweise
 
 ChangeRequests = modellist.ChangeRequests
+TblSchreibweisen = modellist.TblSchreibweisen
 
 '''
 class ChangeRequests(models.Model):

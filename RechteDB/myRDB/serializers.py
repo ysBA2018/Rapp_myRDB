@@ -7,6 +7,7 @@ import copy
 from .models import *
 import re
 
+docker_container_ip = "http://127.0.0.1:8000"
 
 class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -23,6 +24,35 @@ class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:gesamt-detail')
 
 
+class TblSchreibweisenSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblSchreibweisen
+        fields = ('url','id','schreibweise')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:schreibweise-detail')
+
+
+class TblTfSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblTf
+        fields = ('url', 'id', 'tf', 'tf_schreibweise', 'tf_beschreibung', 'tf_kritikalitaet',
+                  'tf_eigentuemer_org', 'plattform', 'vip_kennzeichen', 'zufallsgenerator',
+                   'direct_connect', 'datum', 'geloescht', 'gefunden', 'wiedergefunden', 'geaendert',
+                  'nicht_ai', 'patchdatum', 'wertmodellvorpatch', 'loeschdatum', 'letzte_aenderung')
+
+    tf_schreibweise = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:schreibweise-detail')
+    plattform = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:plattform-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:tf-detail')
+
+    def create(self, validated_data):
+        print("in TFSerializer-create")
+        validated_data = self.initial_data.dict()
+        print(validated_data)
+        plattform_id = validated_data['plattform'].replace(docker_container_ip+"/api/plattformen/","").replace("/","")
+        validated_data['plattform'] = TblPlattform.objects.get(id=plattform_id)
+        return TblTf.objects.create(**validated_data)
+
+
 class TblUebersichtAfGfsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblUebersichtAfGfs
@@ -32,7 +62,7 @@ class TblUebersichtAfGfsSerializer(serializers.HyperlinkedModelSerializer):
             'modelliert', 'tfs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:afgf-detail')
-    tfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:gesamt-detail')
+    tfs = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='myRDBNS:tf-detail')
 
     def create(self, validated_data):
         print("in GFSerializer-create")
@@ -79,6 +109,27 @@ class TblRollenSerializer(serializers.ModelSerializer):
         return TblRollen.objects.create(**validated_data)
 
 
+class TblPlattformSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblPlattform
+        fields = ('url', 'id', 'tf_technische_plattform', 'color')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:plattform-detail')
+
+
+class FullTblTfsSerializer(TblTfSerializer):
+    class Meta:
+        model = TblTf
+        fields = ('url', 'id', 'tf', 'tf_schreibweise', 'tf_beschreibung', 'tf_kritikalitaet',
+              'tf_eigentuemer_org', 'plattform', 'vip_kennzeichen', 'zufallsgenerator',
+              'direct_connect', 'datum', 'geloescht', 'gefunden', 'wiedergefunden', 'geaendert',
+              'nicht_ai', 'patchdatum', 'wertmodellvorpatch', 'loeschdatum', 'letzte_aenderung')
+
+    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:tf-detail')
+    tf_schreibweise = TblSchreibweisenSerializer(many=True)
+    plattform = TblPlattformSerializer()
+
+
 class FullTblUebersichtAFGfsSerializer(TblUebersichtAfGfsSerializer):
     class Meta:
         model = TblUebersichtAfGfs
@@ -88,7 +139,7 @@ class FullTblUebersichtAFGfsSerializer(TblUebersichtAfGfsSerializer):
             'modelliert', 'tfs')
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:fullafgf-detail')
-    tfs = TblGesamtSerializer(many=True)
+    tfs = FullTblTfsSerializer(many=True)
 
 
 class FullTblAflisteSerializer(TblAflisteSerializer):
@@ -190,58 +241,124 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
     def add_to_transfer_list_from_analysis(self, instance, data):
         print('in add to transfer fom analysis')
         print(data)
-        '''
-        if data['right_type'] == 'tf':
-            tf = TF.objects.get(pk=data['right_pk'])
-            new_user_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.pk)), color=tf.tf_application.color,
-                                  transfer=True)
-            for af in instance.transfer_list:
-                if af.af_name == data['grandparent']:
-                    for gf in af.gfs:
-                        if gf.gf_name == data['parent']:
-                            gf.tfs.append(new_user_tf)
-                            return instance
-                    gf = GF.objects.get(gf_name=data['parent'])
-                    help_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.pk, tfs=[new_user_tf])
-                    af.gfs.append(help_gf)
-                    return instance
-            gf = GF.objects.get(gf_name=data['parent'])
-            help_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.pk, tfs=[new_user_tf])
-            af = AF.objects.get(af_name=data['grandparent'])
-            help_af = User_AF(af_name=af.af_name, model_af_pk=af.pk, gfs=[help_gf])
-            instance.transfer_list.append(help_af)
-            return instance
-        if data['right_type'] == 'gf':
-            gf = GF.objects.get(pk=data['right_pk'])
-            new_user_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=int(float(gf.pk)), tfs=[])
-            for tf_id in gf.tfs_id:
-                tf = TF.objects.get(pk=tf_id)
-                u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.pk)), color=tf.tf_application.color,
-                               transfer=True)
-                new_user_gf.tfs.append(u_tf)
-            for af in instance.transfer_list:
-                if af.af_name == data['parent']:
-                    af.gfs.append(new_user_gf)
-                    return instance
-            af = AF.objects.get(af_name=data['parent'])
-            help_af = User_AF(af_name=af.af_name, model_af_pk=af.pk, gfs=[new_user_gf])
-            instance.transfer_list.append(help_af)
-            return instance
-
         if data['right_type'] == 'af':
-            af = AF.objects.get(pk=data['right_pk'])
-            new_user_af = User_AF(af_name=af.af_name, model_af_pk=int(float(af.pk)), gfs=[])
-            for gf_id in af.gfs_id:
-                gf = GF.objects.get(pk=gf_id)
-                u_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=gf.pk, tfs=[])
-                for tf_id in gf.tfs_id:
-                    tf = TF.objects.get(pk=tf_id)
-                    u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.pk)), color=tf.tf_application.color,
-                                   transfer=True)
-                    u_gf.tfs.append(u_tf)
-                new_user_af.gfs.append(u_gf)
-            instance.transfer_list.append(new_user_af)
-            '''
+            rolle_found = False
+            af_to_copy = TblAfliste.objects.get(id=data['right_pk'])
+            for rolle in instance.transfer_list.all():
+                if rolle.model_rolle_id.rollenname == data['parent']:
+                    rolle_found = True
+                    break
+            if not rolle_found:
+                rolle_to_copy = TblRollen.objects.filter(rollenname=data['parent']).first()
+                rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle_to_copy,
+                                                            userHatUserID_id = instance)
+            applied_af = TblAppliedAf.objects.create(model_af_id=af_to_copy, applied_rolle_id=rolle, userHatUserID_id=instance,
+                                                     transfered=True)
+            for gf in af_to_copy.gfs.all():
+                tfs = gf.tfs.all()
+                if tfs:
+                    cpy_gf = TblAppliedGf.objects.create(model_gf_id=gf, applied_af_id=applied_af, applied_rolle_id=rolle,
+                                                         userHatUserID_id=instance)
+                    for tf in tfs:
+                        cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf, applied_gf_id=cpy_gf, applied_af_id=applied_af,
+                                                         applied_rolle_id=rolle, userHatUserID_id=instance)
+                        cpy_gf.applied_tfs.add(cpy_tf.id)
+                    applied_af.applied_gfs.add(cpy_gf.id)
+            rolle.applied_afs.add(applied_af.id)
+            instance.transfer_list.add(rolle.id)
+        if data['right_type'] == 'gf':
+            rolle_found = False
+            gf_to_copy = TblUebersichtAfGfs.objects.get(id=data['right_pk'])
+            for rolle in instance.transfer_list.all():
+                if rolle.model_rolle_id.rollenname == data['grandparent']:
+                    rolle_found = True
+                    break
+            if rolle_found:
+                af_found = False
+                for af in rolle.applied_afs.all():
+                    if af.model_af_id.af_name == data['parent']:
+                        af_found = True
+                        break
+                if not af_found:
+                    af_to_copy = TblAfliste.objects.filter(af_name=data['parent']).first()
+                    af= TblAppliedAf.objects.create(model_af_id=af_to_copy, applied_rolle_id=rolle,userHatUserID_id = instance)
+                    rolle.applied_afs.add(af.id)
+                applied_gf = TblAppliedGf.objects.create(model_gf_id=gf_to_copy, applied_rolle_id=rolle, applied_af_id=af,
+                                                         userHatUserID_id=instance, transfered=True)
+                af.applied_gfs.add(applied_gf.id)
+            else:
+                rolle_to_copy = TblRollen.objects.filter(rollenname=data['grandparent']).first()
+                rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle_to_copy, userHatUserID_id=instance)
+                af_to_copy = TblAfliste.objects.filter(af_name=data['parent']).first()
+                af = TblAppliedAf.objects.create(model_af_id=af_to_copy, applied_rolle_id=rolle,
+                                                     userHatUserID_id=instance)
+                applied_gf = TblAppliedGf.objects.create(model_gf_id=gf_to_copy, applied_rolle_id=rolle, applied_af_id=af,
+                                                         userHatUserID_id=instance,transfered=True)
+                af.applied_gfs.add(applied_gf.id)
+                rolle.applied_afs.add(af.id)
+                instance.transfer_list.add(rolle.id)
+            for tf in gf_to_copy.tfs.all():
+                cpy_tf = TblAppliedTf.objects.create(model_tf_id=tf,
+                                                     applied_gf_id=applied_gf,
+                                                     applied_af_id=af,
+                                                     applied_rolle_id=rolle,
+                                                     userHatUserID_id=instance)
+                applied_gf.applied_tfs.add(cpy_tf.id)
+        if data['right_type'] == 'tf':
+            rolle_found = False
+            tf_to_copy = TblTf.objects.get(id=data['right_pk'])
+            for rolle in instance.transfer_list.all():
+                if rolle.model_rolle_id.rollenname == data['greatgrandparent']:
+                    rolle_found = True
+                    break
+            if rolle_found:
+                af_found = False
+                for af in rolle.applied_afs.all():
+                    if af.model_af_id.af_name == data['grandparent']:
+                        af_found = True
+                        break
+                if af_found:
+                    gf_found = False
+                    for gf in af.applied_gfs.all():
+                        if gf.model_gf_id.name_gf_neu == data['parent']:
+                            gf_found = True
+                            break
+                    if not gf_found:
+                        gf_to_copy = TblUebersichtAfGfs.objects.filter(name_gf_neu=data['parent']).first()
+                        gf = TblAppliedGf.objects.create(model_gf_id=gf_to_copy, applied_af_id=af, applied_rolle_id=rolle,
+                                                            userHatUserID_id=instance)
+                        af.applied_gfs.add(gf.id)
+                    applied_tf = TblAppliedTf.objects.create(model_tf_id=tf_to_copy, applied_gf_id=gf, applied_af_id=af,
+                                                             applied_rolle_id=rolle, userHatUserID_id=instance, transfered=True)
+                    gf.applied_tfs.add(applied_tf.id)
+                else:
+                    af_to_copy = TblAfliste.objects.filter(af_name=data['grandparent']).first()
+                    af = TblAppliedAf.objects.create(model_af_id=af_to_copy, applied_rolle_id=rolle, userHatUserID_id=instance)
+                    gf_to_copy = TblUebersichtAfGfs.objects.filter(name_gf_neu=data['parent']).first()
+                    gf = TblAppliedGf.objects.create(model_gf_id=gf_to_copy, applied_af_id=af, applied_rolle_id=rolle,
+                                                     userHatUserID_id=instance)
+                    applied_tf = TblAppliedTf.objects.create(model_tf_id=tf_to_copy, applied_gf_id=gf, applied_af_id=af,
+                                                             applied_rolle_id=rolle, userHatUserID_id=instance, transfered=True)
+                    gf.applied_tfs.add(applied_tf.id)
+                    af.applied_gfs.add(gf.id)
+                    rolle.applied_afs.add(af.id)
+            else:
+                rolle_to_copy = TblRollen.objects.filter(rollenname=data['greatgrandparent']).first()
+                rolle = TblAppliedRolle.objects.create(model_rolle_id=rolle_to_copy, userHatUserID_id=instance)
+                af_to_copy = TblAfliste.objects.filter(af_name=data['grandparent']).first()
+                af = TblAppliedAf.objects.create(model_af_id=af_to_copy, applied_rolle_id=rolle,
+                                                 userHatUserID_id=instance)
+                gf_to_copy = TblUebersichtAfGfs.objects.filter(name_gf_neu=data['parent']).first()
+                gf = TblAppliedGf.objects.create(model_gf_id=gf_to_copy, applied_af_id=af, applied_rolle_id=rolle,
+                                                 userHatUserID_id=instance)
+                applied_tf = TblAppliedTf.objects.create(model_tf_id=tf_to_copy, applied_gf_id=gf, applied_af_id=af,
+                                                         applied_rolle_id=rolle, userHatUserID_id=instance,
+                                                         transfered=True)
+                gf.applied_tfs.add(applied_tf.id)
+                af.applied_gfs.add(gf.id)
+                rolle.applied_afs.add(af.id)
+                instance.transfer_list.add(rolle.id)
+
         return instance
 
     def reverse_action(self, instance, data):
@@ -268,13 +385,24 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
             if right_type == 'ROLLE':
                 for rolle in list:
                     if right_name == rolle.model_rolle_id.rollenname:
-                        rolle.requested = True
+                        self.change_states(rolle,True)
+                        for af in rolle.applied_afs.all():
+                            self.change_states(af, True)
+                            for gf in af.applied_gfs.all():
+                                self.change_states(gf, True)
+                                for tf in gf.applied_tfs.all():
+                                    self.change_states(tf, True)
+
                         break
             elif right_type == 'AF':
                 for rolle in list:
                     for af in rolle.applied_afs.all():
                         if right_name == af.model_af_id.af_name:
-                            af.requested = True
+                            self.change_states(af, True)
+                            for gf in af.applied_gfs.all():
+                                self.change_states(gf, True)
+                                for tf in gf.applied_tfs.all():
+                                    self.change_states(tf, True)
                             break
                     else:
                         continue
@@ -284,7 +412,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                     for af in rolle.applied_afs.all():
                         for gf in af.applied_gfs.all():
                             if right_name == gf.model_gf_id.name_gf_neu:
-                                gf.requested = True
+                                self.change_states(gf, True)
+                                for tf in gf.applied_tfs.all():
+                                    self.change_states(tf, True)
                                 break
                         else:
                             continue
@@ -298,7 +428,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                         for gf in af.applied_gfs.all():
                             for tf in gf.applied_tfs.all():
                                 if right_name == tf.model_tf_id.tf:
-                                    tf.requested = True
+                                    self.change_states(tf, True)
                                     break
                             else:
                                 continue
@@ -363,7 +493,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                 for af in rolle.applied_afs.all():
                     for gf in af.applied_gfs.all():
                         for tf in gf.applied_tfs.all():
-                            if tf.model_tf_id.tf == request_data['right_name']:
+                            if tf.model_tf_id.tf == request_data['right_name'].lower():
                                 data = {'right_name': tf.model_tf_id.tf, 'parent': gf.model_gf_id.name_gf_neu, 'grandparent': af.model_af_id.af_name,
                                         'greatgrandparent':rolle.model_rolle_id.rollenname,'right_type': request_data['right_type'].lower()}
                                 break
@@ -394,7 +524,6 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
 
         return instance
 
-    # TODO: apply und delete auch für gfs und tfs implementieren
     def apply_right(self, instance, compare_xv_user, right_name, right_type, application_date):
         print("in apply right")
         if right_type == "ROLLE":
@@ -440,7 +569,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                 for af in rolle.applied_afs.all():
                     for gf in af.applied_gfs.all():
                         for tf in gf.applied_tfs.all():
-                            if tf.model_tf_id.tf == right_name:
+                            if tf.model_tf_id.tf == right_name.lower():
                                 for u_rolle in instance.rollen.all():
                                     if u_rolle.model_rolle_id.rollenname == rolle.model_rolle_id.rollenname:
                                         for u_af in u_rolle.applied_afs.all():
@@ -496,7 +625,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                 for af in rolle.applied_afs.all():
                     for gf in af.applied_gfs.all():
                         for tf in gf.applied_tfs.all():
-                            if tf.model_tf_id.tf == right_name:
+                            if tf.model_tf_id.tf == right_name.lower():
                                 gf.applied_tfs.remove(tf)
                                 break
                         if not gf.applied_tfs.all():
@@ -528,32 +657,6 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
         for key in keys:
             instance.my_requests.add(key)
         return instance
-
-    def copy_user_right(self, right, type):
-        '''
-        if type == "af":
-            u_af = User_AF(af_name=right.af_name, model_af_pk=int(float(right.model_af_pk)), gfs=[])
-            # u_af.Meta.abstract = True
-            for gf in right.gfs:
-                u_gf = User_GF(gf_name=gf.gf_name, model_gf_pk=int(float(gf.model_gf_pk)), tfs=[])
-                # u_gf.Meta.abstract = True
-                for tf in gf.tfs:
-                    u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.model_tf_pk)), color=tf.color)
-                    # u_tf.Meta.abstract = True
-                    u_gf.tfs.append(u_tf)
-                u_af.gfs.append(u_gf)
-            return u_af
-        elif type == "gf":
-            u_gf = User_GF(gf_name=right.gf_name, model_gf_pk=int(float(right.model_gf_pk)), tfs=[])
-            for tf in right.tfs:
-                u_tf = User_TF(tf_name=tf.tf_name, model_tf_pk=int(float(tf.model_tf_pk)), color=tf.color)
-                u_gf.tfs.append(u_tf)
-            return u_gf
-        elif type == "tf":
-            u_tf = User_TF(tf_name=right.tf_name, model_tf_pk=int(float(right.model_tf_pk)), color=right.color)
-            return u_tf
-            '''
-        return None
 
     def add_to_transfer_list(self, instance, data):
         print("in add_to_transfer_lst")
@@ -909,7 +1012,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             for applied_gf in applied_af.applied_gfs.all():
                                 if applied_gf.model_gf_id.name_gf_neu == data['parent']:
                                     for applied_tf in applied_gf.applied_tfs.all():
-                                        if applied_tf.model_tf_id.tf == data['right_name']:
+                                        if applied_tf.model_tf_id.tf == data['right_name'].lower():
                                             rolle_found = False
                                             for trans_rolle in instance.transfer_list.all():
                                                 if rolle.model_rolle_id.rollenid == trans_rolle.model_rolle_id.rollenid:
@@ -1078,7 +1181,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             for trans_gf in trans_af.applied_gfs.all():
                                 if trans_gf.model_gf_id.name_gf_neu == data['parent']:
                                     for trans_tf in trans_gf.applied_tfs.all():
-                                        if trans_tf.model_tf_id.tf == data['right_name']:
+                                        if trans_tf.model_tf_id.tf == data['right_name'].lower():
                                             trans_gf.applied_tfs.remove(trans_tf)
                                             trans_tf.delete()
                                             if not trans_gf.applied_tfs.all():
@@ -1099,13 +1202,19 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
             for del_rolle in instance.delete_list.all():
                 if del_rolle.model_rolle_id.rollenname == data['right_name']:
                     rolle_found = False
-                    del_rolle.deleted = False
+                    self.change_states(del_rolle,False)
 
                     for rolle in instance.rollen.all():
                         if rolle.model_rolle_id.rollenid == del_rolle.model_rolle_id.rollenid:
                             rolle_found = True
                             break
                     if not rolle_found:
+                        for del_af in del_rolle.applied_afs.all():
+                            self.change_states(del_af,False)
+                            for del_gf in del_af.applied_gfs.all():
+                                self.change_states(del_gf,False)
+                                for del_tf in del_gf.applied_tfs.all():
+                                    self.change_states(del_tf,False)
                         instance.rollen.add(del_rolle.id)
                         instance.delete_list.remove(del_rolle)
                         return instance
@@ -1117,6 +1226,12 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                     af_found = True
                                     break
                             if not af_found:
+                                self.change_states(del_af,False)
+                                for del_gf in del_af.applied_gfs.all():
+                                    self.change_states(del_gf,False)
+                                    for del_tf in del_gf.applied_tfs.all():
+                                        self.change_states(del_tf,False)
+
                                 rolle.applied_afs.add(del_af.id)
                             else:
                                 for del_gf in del_af.applied_gfs.all():
@@ -1126,6 +1241,10 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                             gf_found = True
                                             break
                                     if not gf_found:
+                                        self.change_states(del_gf,False)
+                                        for del_tf in del_gf.applied_tfs.all():
+                                            self.change_states(del_tf,False)
+
                                         af.applied_gfs.add(del_gf.id)
                                     else:
                                         for del_tf in del_gf.applied_tfs.all():
@@ -1135,17 +1254,18 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     tf_found = True
                                                     break
                                             if not tf_found:
+                                                self.change_states(del_tf,False)
                                                 gf.applied_tfs.add(del_tf.id)
                         instance.delete_list.remove(del_rolle)
                         return instance
-
         elif data['right_type'] == 'af':
             for del_rolle in instance.delete_list.all():
                 if del_rolle.model_rolle_id.rollenname == data['parent']:
                     for del_af in del_rolle.applied_afs.all():
                         if del_af.model_af_id.af_name == data['right_name']:
                             rolle_found = False
-                            del_af.deleted = False
+                            self.change_states(del_af,False)
+
                             for rolle in instance.rollen.all():
                                 if del_rolle.model_rolle_id.rollenid == rolle.model_rolle_id.rollenid:
                                     rolle_found = True
@@ -1153,6 +1273,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             if not rolle_found:
                                 helper_rolle = TblAppliedRolle.objects.create(model_rolle_id=del_rolle.model_rolle_id,
                                                                               userHatUserID_id=instance)
+                                for del_gf in del_af.applied_gfs.all():
+                                    self.change_states(del_gf,False)
+                                    for del_tf in del_gf.applied_tfs.all():
+                                        self.change_states(del_tf,False)
+
                                 helper_rolle.applied_afs.add(del_af.id)
                                 instance.rollen.add(helper_rolle.id)
                                 del_rolle.applied_afs.remove(del_af)
@@ -1166,6 +1291,11 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                         af_found = True
                                         break
                                 if not af_found:
+                                    for del_gf in del_af.applied_gfs.all():
+                                        self.change_states(del_gf,False)
+                                        for del_tf in del_gf.applied_tfs.all():
+                                            self.change_states(del_tf,False)
+
                                     rolle.applied_afs.add(del_af.id)
                                     del_rolle.applied_afs.remove(del_af)
                                     if not del_rolle.applied_afs.all():
@@ -1179,6 +1309,10 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                 gf_found = True
                                                 break
                                         if not gf_found:
+                                            self.change_states(del_gf,False)
+                                            for del_tf in del_gf.applied_tfs.all():
+                                                self.change_states(del_tf,False)
+
                                             af.applied_gfs.add(del_gf.id)
                                         else:
                                             for del_tf in del_gf.applied_tfs.all():
@@ -1188,6 +1322,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         tf_found = True
                                                         break
                                                 if not tf_found:
+                                                    self.change_states(del_tf,False)
                                                     gf.applied_tfs.add(del_tf.id)
                                     del_rolle.applied_afs.remove(del_af)
                                     if not del_rolle.applied_afs.all():
@@ -1201,7 +1336,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             for del_gf in del_af.applied_gfs.all():
                                 if del_gf.model_gf_id.name_gf_neu == data['right_name']:
                                     rolle_found = False
-                                    del_gf.deleted = False
+                                    self.change_states(del_gf,False)
 
                                     for rolle in instance.rollen.all():
                                         if del_rolle.model_rolle_id.rollenid == rolle.model_rolle_id.rollenid:
@@ -1213,6 +1348,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                         helper_af = TblAppliedAf.objects.create(model_af_id=del_af.model_af_id,
                                                                                 applied_rolle_id=del_rolle,
                                                                                 userHatUserID_id=instance)
+                                        for del_tf in del_gf.applied_tfs.all():
+                                            self.change_states(del_tf,False)
+
                                         helper_af.applied_gfs.add(del_gf.id)
                                         helper_rolle.applied_afs.add(helper_af.id)
                                         instance.rollen.add(helper_rolle.id)
@@ -1232,6 +1370,9 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                             helper_af = TblAppliedAf.objects.create(model_af_id=del_af.model_af_id,
                                                                                     applied_rolle_id=del_rolle,
                                                                                     userHatUserID_id=instance)
+                                            for del_tf in del_gf.applied_tfs.all():
+                                                self.change_states(del_tf,False)
+
                                             helper_af.applied_gfs.add(del_gf.id)
                                             rolle.applied_afs.add(helper_af.id)
                                             del_af.applied_gfs.remove(del_gf)
@@ -1247,6 +1388,10 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                     gf_found = True
                                                     break
                                             if not gf_found:
+                                                for del_tf in del_gf.applied_tfs.all():
+                                                    if del_tf.deleted:
+                                                        self.change_states(del_tf,False)
+
                                                 af.applied_gfs.add(del_gf.id)
                                                 del_af.applied_gfs.remove(del_gf)
                                                 if not del_af.applied_gfs.all():
@@ -1262,6 +1407,8 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                             tf_found = True
                                                             break
                                                     if not tf_found:
+                                                        self.change_states(del_tf,False)
+
                                                         gf.applied_tfs.add(del_tf.id)
                                                 del_af.applied_gfs.remove(del_gf)
                                                 if not del_af.applied_gfs.all():
@@ -1277,9 +1424,10 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             for del_gf in del_af.applied_gfs.all():
                                 if del_gf.model_gf_id.name_gf_neu == data['parent']:
                                     for del_tf in del_gf.applied_tfs.all():
-                                        if del_tf.model_tf_id.tf == data['right_name']:
+                                        if del_tf.model_tf_id.tf == data['right_name'].lower():
                                             rolle_found = False
-                                            del_tf.deleted = False
+                                            self.change_states(del_tf,False)
+
                                             for rolle in instance.rollen.all():
                                                 if del_rolle.model_rolle_id.rollenid == rolle.model_rolle_id.rollenid:
                                                     rolle_found = True
@@ -1371,6 +1519,22 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                                                         if not del_rolle.applied_afs.all():
                                                             instance.delete_list.remove(del_rolle)
                                                         return instance
+
+    def change_states(self, right, bool):
+        if not bool:
+            state_changed = False
+            if right.deleted:
+                right.deleted = bool
+                state_changed = True
+            if right.requested:
+                right.requested = bool
+                state_changed = True
+            if state_changed:
+                right.save()
+        else:
+            if not right.requested:
+                right.requested = bool
+                right.save()
 
     def add_to_delete_list(self, instance, data):
         print("in add_to_delete_list")
@@ -1558,7 +1722,7 @@ class UserHatTblUserIDundNameSerializer(serializers.HyperlinkedModelSerializer):
                             for applied_gf in applied_af.applied_gfs.all():
                                 if applied_gf.model_gf_id.name_gf_neu == data['parent']:
                                     for applied_tf in applied_gf.applied_tfs.all():
-                                        if applied_tf.model_tf_id.tf == data['right_name']:
+                                        if applied_tf.model_tf_id.tf == data['right_name'].lower():
                                             rolle_found = False
                                             applied_tf.deleted = True
                                             applied_tf.save()
@@ -1670,7 +1834,7 @@ class TblAppliedTfSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'id', 'model_tf_id', 'userHatUserID_id', 'applied_rolle_id',
                   'applied_af_id', 'applied_gf_id', 'deleted', 'transfered', 'requested')
 
-    model_tf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:gesamt-detail')
+    model_tf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:tf-detail')
     userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,
                                                            view_name='myRDBNS:userhatuseridundname-detail')
     applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:appliedrole-detail')
@@ -1680,7 +1844,7 @@ class TblAppliedTfSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         print("in appliedTfSerializer-create")
-        tf = TblGesamt.objects.get(id=self.initial_data['model_tf_id'])
+        tf = TblTf.objects.get(id=self.initial_data['model_tf_id'])
         applied_gf = TblAppliedGf.objects.get(id=self.initial_data['applied_gf_id'])
         validated_data = {'model_tf_id': tf, 'applied_gf_id': applied_gf, 'applied_af_id': applied_gf.applied_af_id,
                           'userHatUserID_id': applied_gf.userHatUserID_id
@@ -1764,7 +1928,7 @@ class FullRightsTblAppliedTfSerializer(TblAppliedTfSerializer):
                   'transfered', 'requested')  # ,'userHatUserID_id','applied_rolle_id','applied_af_id','applied_gf_id'
 
     url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:appliedtf-detail')
-    model_tf_id = TblGesamtSerializer()
+    model_tf_id = FullTblTfsSerializer()
     '''
     userHatUserID_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:userhatuseridundname-detail')
     applied_rolle_id = serializers.HyperlinkedRelatedField(read_only=True,view_name='myRDBNS:appliedrole-detail')
@@ -1852,6 +2016,16 @@ class TblGfHatTfSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(read_only=True, view_name='myRDBNS:afhatgf-detail')
 
 
+class TblTfHatSchreibweiseSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = TblGfHatTf
+        fields = ('url', 'id', 'tf_id', 'schreibweise_id')
+
+    tf_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:tf-detail')
+    schreibweise_id = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:schreibweise-detail')
+    url = serializers.HyperlinkedIdentityField(read_only=True, view_name='myRDBNS:tfhatschreibweise-detail')
+
+
 class TblRollehatafSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TblRollehataf
@@ -1883,15 +2057,6 @@ class TblUserhatrolleSerializer(serializers.HyperlinkedModelSerializer):
     uid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:useridundname-detail')
     rollenid = serializers.HyperlinkedRelatedField(read_only=True, view_name='myRDBNS:rolle-detail',
                                                    lookup_field='rollenname')
-
-
-class TblPlattformSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = TblPlattform
-        fields = ('url', 'id', 'tf_technische_plattform', 'color')
-
-    url = serializers.HyperlinkedIdentityField(view_name='myRDBNS:plattform-detail')
-
 
 class TblGesamtHistorieSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

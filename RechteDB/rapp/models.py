@@ -134,6 +134,53 @@ class TblGesamt(models.Model):
         return reverse('gesamt-detail', args=[str(self.id)])
 
 
+class TblSchreibweisen(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)  # Field name made lowercase.
+    schreibweise = models.CharField(max_length=100)
+
+
+class TblTf(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)  # Field name made lowercase.
+    tf = models.CharField(db_column='tf', max_length=100, verbose_name='TF',
+                          db_index=True)  # Field name made lowercase.
+    tf_schreibweise = models.ManyToManyField(to='TblSchreibweisen', through='TblTfHatSchreibweise', default=None)
+
+    tf_beschreibung = models.CharField(db_column='tf_beschreibung', max_length=250, blank=True, null=True,
+                                       verbose_name='TF-Beschreibung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    tf_kritikalitaet = models.CharField(db_column='tf_kritikalitaet', max_length=64, blank=True, null=True,
+                                        verbose_name='TF-Kritikalität',
+                                        db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    tf_eigentuemer_org = models.CharField(db_column='tf_eigentuemer_org', max_length=64, blank=True, null=True,
+                                          verbose_name='TF-Eigentümer-orga',
+                                          db_index=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    plattform = models.ForeignKey('TblPlattform', db_column='plattform_id', on_delete=models.CASCADE,
+                                  verbose_name='Plattform', db_index=True)  # Field name made lowercase.
+    vip_kennzeichen = models.CharField(db_column='vip', max_length=32, blank=True, null=True,
+                                       verbose_name='VIP')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    zufallsgenerator = models.CharField(db_column='zufallsgenerator', max_length=32, blank=True, null=True,
+                                        verbose_name='Zufallsgenerator')  # Field name made lowercase.
+    direct_connect = models.CharField(db_column='direct_connect', max_length=100, blank=True, null=True,
+                                      verbose_name='Direktverbindung')  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    datum = models.DateTimeField(db_column='datum', verbose_name='Recht gefunden am',
+                                 db_index=True)  # Field name made lowercase.
+    geloescht = models.IntegerField(db_column='geloescht', blank=True, null=True, verbose_name='gelöscht',
+                                    db_index=True)
+    gefunden = models.IntegerField(blank=True, null=True, db_index=True)
+    wiedergefunden = models.DateTimeField(blank=True, null=True, db_index=True)
+    geaendert = models.IntegerField(db_column='geaendert', blank=True, null=True, verbose_name='AF geändert',
+                                    db_index=True)  # This field type is a guess.
+    nicht_ai = models.IntegerField(db_column='nicht_ai', blank=True,
+                                   null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters.
+    patchdatum = models.DateTimeField(db_column='patchdatum', blank=True, null=True,
+                                      db_index=True)  # Field name made lowercase.
+    wertmodellvorpatch = models.TextField(db_column='wert_modell_vor_patch', blank=True,
+                                          null=True)  # Field name made lowercase.
+    loeschdatum = models.DateTimeField(db_column='loeschdatum', blank=True, null=True, verbose_name='Löschdatum',
+                                       db_index=True)
+    letzte_aenderung = models.DateTimeField(auto_now=True, db_index=True)
+
+
+
 # Tabelle enthält die aktuell genehmigten (modellierten und in Modellierung befindlichen) AF + GF-Kombinationen
 class TblUebersichtAfGfs(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)  # Field name made lowercase.
@@ -159,7 +206,7 @@ class TblUebersichtAfGfs(models.Model):
     geloescht = models.IntegerField(db_column='geloescht', blank=True, null=True, db_index=True)
     kannweg = models.IntegerField(blank=True, null=True)
     modelliert = models.DateTimeField(blank=True, null=True)
-    tfs = models.ManyToManyField(to=TblGesamt,through='TblGfHatTF',related_name='model_gf_hat_tfs',default=None)
+    tfs = models.ManyToManyField(to=TblTf,through='TblGfHatTF',related_name='model_gf_hat_tfs',default=None)
 
     class Meta:
         managed = True
@@ -179,7 +226,13 @@ class TblUebersichtAfGfs(models.Model):
 class TblGfHatTF(models.Model):
     id = models.AutoField(db_column='id', primary_key=True)
     gf_id = models.ForeignKey('TblUebersichtAfGfs', db_column='gf_id', on_delete=models.CASCADE)
-    tf_id = models.ForeignKey('TblGesamt', db_column='tf_id', on_delete=models.CASCADE,default=None)
+    tf_id = models.ForeignKey('TblTf', db_column='tf_id', on_delete=models.CASCADE,default=None)
+
+
+class TblTfHatSchreibweise(models.Model):
+    id = models.AutoField(db_column='id', primary_key=True)
+    tf_id = models.ForeignKey('TblTf', db_column='tf_id', on_delete=models.CASCADE)
+    schreibweise_id = models.ForeignKey('TblSchreibweisen', db_column='schreibweise_id', on_delete=models.CASCADE,default=None)
 
 
 
@@ -225,7 +278,7 @@ class TblAfHatGF(models.Model):
 # Die Definition der Rollen
 class TblAppliedTf(models.Model):
     id = models.AutoField(primary_key=True)
-    model_tf_id = models.ForeignKey(to='TblGesamt', on_delete=models.PROTECT)
+    model_tf_id = models.ForeignKey(to='TblTf', on_delete=models.PROTECT)
     userHatUserID_id = models.ForeignKey(to='UserHatTblUserIDundName', on_delete=models.PROTECT)
     applied_rolle_id = models.ForeignKey(to='TblAppliedRolle', on_delete=models.PROTECT)
     applied_af_id = models.ForeignKey(to='TblAppliedAf', on_delete=models.PROTECT)

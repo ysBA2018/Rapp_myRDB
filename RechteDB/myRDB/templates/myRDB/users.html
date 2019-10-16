@@ -1,4 +1,5 @@
 {% extends 'myRDB/base.html' %}
+{% block title %}MyRDB - Nutzerliste{% endblock %}
 {% block content %}
 <h1>Users</h1>
 <form id=”search” method=”POST” action="{% url 'myRDB:users' %}">

@@ -11,11 +11,14 @@ from django.forms import Textarea
 
 # Die Datenbanken / Models
 from .models import *
+from .forms import *
 
 # Für den Im- und Export
 from import_export.admin import ImportExportModelAdmin
 from .resources import MeinCSVImporterModel, GesamtExporterModel, \
     ModellierungExporterModel, DirektverbindungenExporterModel
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 
 # Vorwärtsreferenzen gehen nicht in python :-(
@@ -45,6 +48,11 @@ class GesamtInline(admin.TabularInline):
 class UserIDundNameInline(admin.TabularInline):
     model = TblUserIDundName
     extra = 1
+
+
+class UserInline(admin.TabularInline):
+    model = User.userid_name.through
+    extra = 0
 
 
 class RollehatafInline(admin.TabularInline):
@@ -100,7 +108,7 @@ class GesamtAdmin(ImportExportModelAdmin):
     list_editable = ('tf', 'tf_beschreibung', 'enthalten_in_af', 'plattform', 'gf',)
     search_fields = ['id', 'userid_name__name', 'tf',
                      'tf_beschreibung',  # 'enthalten_in_af', 'plattform', 'gf',
-					 ]
+                     ]
 
     list_per_page = 50
 
@@ -136,6 +144,8 @@ class UserIDundNameAdmin(admin.ModelAdmin):
     # inlines += [GesamtInline]
 
     list_per_page = 25
+
+
 # inlines = [UserhatrolleInline]
 
 
@@ -162,11 +172,13 @@ class Orga(admin.ModelAdmin):
 class Plattform(admin.ModelAdmin):
     actions_on_top = True
     actions_on_bottom = True
-    list_display = ('id', 'tf_technische_plattform','color')
+    list_display = ('id', 'tf_technische_plattform', 'color')
     # list_filter = ('tf_technische_plattform',)
     # list_display_links = ('tf_technische_plattform')
-    list_editable = ('tf_technische_plattform','color')
-    search_fields = ['tf_technische_plattform','color' ]
+    list_editable = ('tf_technische_plattform', 'color')
+    search_fields = ['tf_technische_plattform', 'color']
+
+
 # Nette Idee, grottig lahm
 # inlines = [GesamtInline]
 
@@ -200,6 +212,7 @@ class UebersichtAfGfs(admin.ModelAdmin):
                      'af_ausschlussgruppen', 'af_einschlussgruppen', 'af_sonstige_vergabehinweise',)
 
     search_fields = ['name_af_neu', 'name_gf_neu', 'af_text', 'gf_text', 'af_langtext', ]
+
 
 # inlines = [GesamtInline]
 
@@ -414,17 +427,56 @@ class Direktverbindungen(ImportExportModelAdmin):
     resource_class = DirektverbindungenExporterModel
     sortable_by = ['entitlement', 'plattform', 'gf', 'af']
 
+
 @admin.register(UserHatTblUserIDundName)
 class UserHatTblUserIDundNameAdmin(admin.ModelAdmin):
-    list_display = ('user_name','userid_name_id')
+    list_display = ('user_name', 'userid_name_id')
 
-admin.site.register(User)
+
+class AdminUserCreationForm(CustomUserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'is_superuser', 'first_name', 'last_name', 'is_staff'
+                  , 'is_active', 'userid_name', 'deleted',)
+
+
+class AdminUserChangeForm(CustomUserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'is_superuser', 'first_name', 'last_name', 'is_staff'
+                  , 'is_active', 'userid_name', 'deleted', 'last_rights_update')
+
+    def clean_password(self):
+        return self.initial['password']
+
+
+class UserAdmin(BaseUserAdmin):
+    form = AdminUserChangeForm
+    add_form = AdminUserCreationForm
+
+    list_display = ('username', 'email', 'is_superuser', 'is_staff', 'is_active', 'deleted')
+
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'deleted')
+
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Permissions', {'fields': ('is_superuser', 'is_staff')}),
+        ('Other Info', {'fields': ('is_active', 'deleted', 'last_rights_update')}),
+    )
+
+    inlines = (UserInline,)
+
+
+admin.site.register(User, UserAdmin)
 admin.site.register(TblAfHatGF)
 admin.site.register(TblGfHatTF)
 admin.site.register(TblAppliedRolle)
 admin.site.register(TblAppliedAf)
 admin.site.register(TblAppliedGf)
 admin.site.register(TblAppliedTf)
+admin.site.register(TblTf)
+admin.site.register(TblSchreibweisen)
 '''
 admin.site.register(UserHatTblUserIDundName_Transferiert)
 admin.site.register(UserHatTblUserIDundName_Geloescht)

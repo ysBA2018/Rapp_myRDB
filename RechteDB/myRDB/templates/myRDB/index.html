@@ -1,12 +1,33 @@
 {% extends 'myRDB/base.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}MyRDB - Home{% endblock %}
 {% block content %}
-<h1>Wilkommen in der RechteDB</h1>
+    <h1 class="top-buffer"><b>Wilkommen in der RechteDB</b></h1>
 {% if user.is_authenticated %}
-Hi {{user.username}} !
-<p><a href="{% url 'myRDB:logout' %}">logout</a></p>
+    <p class="top-buffer"><b>Hi {{user.username}} !</b></p>
+    <p>Über den Menüpunkt <a href="{% url 'myRDB:profile' %}"> <i>Profil</i></a> gelangen Sie zu Ihrer Berechtigungsübersicht und allen von dort aus ausführbaren Aktionen.</p>
+    <p><a href="{% url 'myRDB:my_requests' %}"><i>Meine Anfragen</i></a> führt Sie zu einer Übersicht Ihrer gestellten Berechtigungsanfragen.</p>
+    {% if user.is_staff %}
+        <p>
+            Mit <a href="{% url 'myRDB:users' %}"><i>Nutzer</i></a> laden Sie eine Listung aller berechtigten Nutzer, über welche Sie auch auf deren Profile
+            zugreifen und dadurch Nutzer-Berechtigungsdaten ändern können.
+        </p>
+        <p>
+            <a target="_blank" href="{% url 'home' %}"><i>Suche (Rapp)</i></a> stellt eine Verlinkung zur <i><b>Rapp-Application</b></i> dar.
+        </p>
+        <p>
+            Im <a href="{% url 'myRDB:request_pool' %}"><i>Anfragen-Pool</i></a> finden Sie alle gestellten Anfragen der Nutzer und können diese Beantworten.
+        </p>
+    {% endif %}
+    <p>
+        <b>
+            Falls Sie Sich zum ersten Mal anmelden oder nach Ihrem letzten Besuch eine Datenaktualisierung stattgefunden hat,
+            benötigt das Aktualisieren einen Augenblick. Wir bitten um Verständnis!
+        </b>
+    </p>
+    <p><a href="{% url 'myRDB:logout' %}">logout</a></p>
 {% else %}
-<p>You are not logged in!</p>
+
+<p>Um Ihre Berechtigungsdaten anzuzeigen loggen Sie sich bitte ein!</p>
 <a href="{% url 'myRDB:login' %}">login</a>
 <a href="{% url 'myRDB:register' %}">sign up</a>
 {% endif %}

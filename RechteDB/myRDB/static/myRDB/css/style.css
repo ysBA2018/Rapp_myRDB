@@ -32,8 +32,8 @@ td.highlight{
     background-color: whitesmoke !important;
 }
 
-.darkgrey{
-    background-color: darkgrey!important;
+.yellow{
+    background-color: lightyellow;
 }
 .ui-tooltip, div.tooltip {
     position: absolute;

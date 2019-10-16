@@ -70,7 +70,7 @@ function remove_current_unanswered_card(form, card_id, collapse_id){
                         partnerList = window.unanswered_delete;
                         controll_id="#collapseUnansweredApplyButton"
                     }
-                    else if(card_id.includes('accepted_delete')){
+                    else if(card_id.includes('unanswered_delete')){
                         list = window.unanswered_delete;
                         partnerList = window.unanswered_apply;
                         controll_id="#collapseUnansweredDeleteButton"

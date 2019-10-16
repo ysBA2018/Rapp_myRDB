@@ -1,4 +1,5 @@
 {% extends 'myRDB/base.html' %}
+{% block title %}MyRDB - Profil - Vergleich{% endblock %}
 {% block content %}
     {% load asjson %}
     <script type="text/javascript">
@@ -9,13 +10,13 @@
         var current_site = "{{ current_site }}";
         var compare_user = "{{ compareUser.username }}";
         var user = "{{ identity_param }}";
-    </script>
-    <script type="text/javascript">
         var user_table_data = "{{ table_data }}";
+        var transfer_table_data = "{{ transfer_list_table_data }}";
+        var transferlistdata = {{ transferlist | asjson }};
         var compare_user_table_data = "{{ compareUser_table_data }}";
     </script>
 <div class="row top-buffer">
-    <div class="col-6" id="user_card">
+    <div class="col-sm-6" id="user_card">
         {% include 'myRDB/profile/profile_head.html' %}
         <div class="card top-buffer">
             {% if view_mode == "Graphische Ansicht" %}
@@ -25,7 +26,7 @@
             {% endif %}
         </div>
     </div>
-    <div class="col-6">
+    <div class="col-sm-6">
         {% include 'myRDB/compare/compare_profile_head.html' %}
         <div class="card top-buffer">
             {% if view_mode == "Graphische Ansicht" %}
@@ -48,7 +49,7 @@
                     <form>
                         {% csrf_token %}
                         <input name="user_identity" type="hidden" value="{{ user_identity }}">
-                        <input name="user_search" type="hidden" value="{{ compareUser.identity }}">
+                        <input name="user_search" type="hidden" value="{{ compareUser.username }}">
                         <select id="viewMode" name="view_mode" class="form-control" onchange="form.submit()">
                             {% if view_mode == "Graphische Ansicht"%}
                                 <option selected>Graphische Ansicht</option>
