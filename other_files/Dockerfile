@@ -5,7 +5,7 @@ WORKDIR /RechteDB
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       mysql-client \
+       mariadb-client \
        vim \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
