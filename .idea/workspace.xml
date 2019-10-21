@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="07bde36f-4587-4eb4-8bc0-de3e4ba813de" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RechteDB/uwsgi.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RechteDB/uwsgi_params" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other_files/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/other_files/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -84,7 +79,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/settings.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="153">
@@ -96,11 +91,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="19" column="35" selection-start-line="19" selection-start-column="35" selection-end-line="19" selection-end-column="35" />
+            <state relative-caret-position="153">
+              <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -204,11 +199,11 @@
         <option value="$PROJECT_DIR$/RechteDB/myRDB/views.py" />
         <option value="$PROJECT_DIR$/RechteDB/rapp/forms.py" />
         <option value="$PROJECT_DIR$/RechteDB/rapp/models.py" />
-        <option value="$PROJECT_DIR$/other_files/Dockerfile" />
         <option value="$PROJECT_DIR$/RechteDB/uwsgi.ini" />
         <option value="$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf" />
         <option value="$PROJECT_DIR$/RechteDB/.env" />
         <option value="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" />
+        <option value="$PROJECT_DIR$/other_files/Dockerfile" />
       </list>
     </option>
   </component>
@@ -445,7 +440,7 @@
       <workItem from="1571208163036" duration="722000" />
       <workItem from="1571306685741" duration="1388000" />
       <workItem from="1571318563997" duration="1726000" />
-      <workItem from="1571642037707" duration="2564000" />
+      <workItem from="1571642037707" duration="3186000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -545,11 +540,25 @@
       <option name="project" value="LOCAL" />
       <updated>1571234676829</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="uwsgi nginx config &#10;env for settings">
+      <created>1571663325791</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1571663325791</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Dockerfile edit for uwsgi-nginx">
+      <created>1571663677961</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1571663677961</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="869135000" />
+    <option name="totallyTimeSpent" value="869757000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -564,7 +573,7 @@
     <frame x="676" y="0" width="697" height="735" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.04709576" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.04709576" />
       <window_info id="Structure" order="1" sideWeight="0.50220263" side_tool="true" weight="0.14977308" />
       <window_info id="Favorites" order="2" sideWeight="0.50222224" side_tool="true" weight="0.17927383" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -578,8 +587,8 @@
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.7889561" weight="0.3289689" />
       <window_info anchor="bottom" id="Database Changes" order="9" weight="0.3289689" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.21104388" side_tool="true" weight="0.3289689" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.6913767" visible="true" weight="0.2707641" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.3289689" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.6913767" visible="true" weight="0.2707641" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32890365" />
       <window_info anchor="bottom" id="Database Console" order="13" sideWeight="0.8449319" weight="0.2667758" />
       <window_info anchor="bottom" id="Inspection Results" order="14" sideWeight="0.49924356" weight="0.3289689" />
       <window_info anchor="bottom" id="Messages" order="15" />
@@ -643,7 +652,9 @@
     <MESSAGE value=" Umbau von Pagination für schnelleres laden [ZURÜCKGESTELLT]&#10; RightsAnalysis [DONE]&lt;- Verbesserungswürdig (läd zu langsam)" />
     <MESSAGE value="Durch einführen von FullModelRights RightsAnalysis beschleunigt -&gt; weniger get-Requests" />
     <MESSAGE value="Merge branch 'master' of https://github.com/frickler24/RechteDB&#10;&#10;# Conflicts:&#10;#&#9;RechteDB/RechteDB/settings.py&#10;#&#9;RechteDB/RechteDB/urls.py&#10;#&#9;RechteDB/rapp/admin.py&#10;#&#9;RechteDB/rapp/forms.py&#10;#&#9;RechteDB/rapp/models.py&#10;#&#9;RechteDB/rapp/view_import.py&#10;#&#9;Testfabrik_init.csv&#10;#&#9;Testfabrik_run.csv" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/frickler24/RechteDB&#10;&#10;# Conflicts:&#10;#&#9;RechteDB/RechteDB/settings.py&#10;#&#9;RechteDB/RechteDB/urls.py&#10;#&#9;RechteDB/rapp/admin.py&#10;#&#9;RechteDB/rapp/forms.py&#10;#&#9;RechteDB/rapp/models.py&#10;#&#9;RechteDB/rapp/view_import.py&#10;#&#9;Testfabrik_init.csv&#10;#&#9;Testfabrik_run.csv" />
+    <MESSAGE value="uwsgi nginx config &#10;env for settings" />
+    <MESSAGE value="Dockerfile edit for uwsgi-nginx" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dockerfile edit for uwsgi-nginx" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1405,13 +1416,6 @@
     <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/wsgi.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="35" selection-start-line="19" selection-start-column="35" selection-end-line="19" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/urls.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1429,6 +1433,13 @@
           <folding>
             <element signature="e#307#316#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="36" selection-start-line="9" selection-start-column="36" selection-end-line="9" selection-end-column="36" />
         </state>
       </provider>
     </entry>
