@@ -11,39 +11,54 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import dj_database_url
 
+from decouple import config, Csv
+import environ
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-from decouple import config, Csv
 
-SECRET_KEY = config('SECRET_KEY', default="mySuperSecretKey")
-DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default="127.0.0.1", cast=Csv())
+# SECRET_KEY = config('SECRET_KEY', default="mySuperSecretKey")
+# DEBUG = config('DEBUG', default=False, cast=bool)
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default="127.0.0.1", cast=Csv())
 
 # Die internal_IPs sind für den Debugger. In Produktion läuft dieser nicht mit (DEBUG=False)
 # INTERNAL_IPS = config('INTERNAL_IPS')
+env = environ.Env(
+    DEBUG=(bool, True),
+    SECRET_KEY=(str, 'supersecretkey'),
+    ALLOWED_HOSTS=(list, ['127.0.0.1']),
+)
+root_path = environ.Path(__file__) - 2
+environ.Env.read_env(root_path('.env'))
 
-import dj_database_url
+DEBUG = env('DEBUG')
+# if DEBUG:
+#    SECRET_KEY = '9)%e4jg5_#xbrdf6^%1f#rnrdo6#-5szxn3&%^jr&zqb2ixvn2'
+# else:
+SECRET_KEY = env('SECRET_KEY')
+
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 DATABASES = {
     'default': {
-            # 'ENGINE': 'django.db.backends.sqlite3',
-            # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-            'ENGINE': 'django.db.backends.mysql',		# ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
-            # 'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
-            'NAME': 'Rapp_myRDB',
-            'USER': 'YannickSimchen',
-            'PASSWORD': 'BanepukBabe',
-            'HOST': 'localhost',
-            'PORT': '3306',
-            'default-character-set': 'utf8mb4_unicode_ci',
-            'OPTIONS': {
-                'init_command': 'SET storage_engine=InnoDB; \
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',  # ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
+        # 'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
+        'NAME': 'Rapp_myRDB',
+        'USER': 'YannickSimchen',
+        'PASSWORD': 'BanepukBabe',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'default-character-set': 'utf8mb4_unicode_ci',
+        'OPTIONS': {
+            'init_command': 'SET storage_engine=InnoDB; \
                                 SET GLOBAL max_connections = 100000'
-            },
+        },
     }
 }
 """'default': dj_database_url.config(
@@ -72,10 +87,10 @@ INSTALLED_APPS = [
     'django_filters',
     'debug_toolbar',
 
-	'widget_tweaks',
-	'django_tables2',
-	'import_export',
-	'mdeditor',
+    'widget_tweaks',
+    'django_tables2',
+    'import_export',
+    'mdeditor',
 ]
 
 MIDDLEWARE = [
@@ -91,14 +106,13 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly', ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.BasicAuthentication',
-                                      'rest_framework.authentication.SessionAuthentication',
-                                      'rest_framework.authentication.TokenAuthentication'),
+                                       'rest_framework.authentication.SessionAuthentication',
+                                       'rest_framework.authentication.TokenAuthentication'),
 }
-
 
 ROOT_URLCONF = 'RechteDB.urls'
 
@@ -120,7 +134,7 @@ TEMPLATES = [
     },
 ]
 
-#WSGI_APPLICATION = 'RechteDB.wsgi.application'
+# WSGI_APPLICATION = 'RechteDB.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -176,32 +190,32 @@ IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'add'
 SESSION_SAVE_EVERY_REQUEST = True
 # MDEditor-Settings
 MDEDITOR_CONFIGS = {
-	'default': {
-		'width': '90% ',  # Custom edit box width
-		'heigth': 500,  # Custom edit box height
-		'toolbar': ["undo", "redo", "|",
-					"bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
-					"h1", "h2", "h3", "h4", "h5", "h6", "|",
-					"list-ul", "list-ol", "hr", "|",
-					"link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "datetime"
-																										   "emoji",
-					"html-entities", "pagebreak", "goto-line", "|",
-					"help", "info",
-					"||", "preview", "watch", "fullscreen"],  # custom edit box toolbar
-		'upload_image_formats': ["jpg", "jpeg", "gif", "png", "bmp", "webp"],  # image upload format type
-		'image_folder': 'editor',  # image save the folder name
-		'theme': 'default',  # edit box theme, dark / default
-		'preview_theme': 'default',  # Preview area theme, dark / default
-		'editor_theme': 'default',  # edit area theme, pastel-on-dark / default
-		'toolbar_autofixed': True,  # Whether the toolbar capitals
-		'search_replace': True,  # Whether to open the search for replacement
-		'emoji': True,  # whether to open the expression function
-		'tex': True,  # whether to open the tex chart function
-		'flow_chart': True,  # whether to open the flow chart function
-		'sequence': True,  # Whether to open the sequence diagram function
-		'watch': True,  # Live preview
-		'lineWrapping': False,  # lineWrapping
-		'lineNumbers': True,  # lineNumbers
-		'language': 'de'
-	}
+    'default': {
+        'width': '90% ',  # Custom edit box width
+        'heigth': 500,  # Custom edit box height
+        'toolbar': ["undo", "redo", "|",
+                    "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
+                    "h1", "h2", "h3", "h4", "h5", "h6", "|",
+                    "list-ul", "list-ol", "hr", "|",
+                    "link", "reference-link", "image", "code", "preformatted-text", "code-block", "table", "datetime"
+                                                                                                           "emoji",
+                    "html-entities", "pagebreak", "goto-line", "|",
+                    "help", "info",
+                    "||", "preview", "watch", "fullscreen"],  # custom edit box toolbar
+        'upload_image_formats': ["jpg", "jpeg", "gif", "png", "bmp", "webp"],  # image upload format type
+        'image_folder': 'editor',  # image save the folder name
+        'theme': 'default',  # edit box theme, dark / default
+        'preview_theme': 'default',  # Preview area theme, dark / default
+        'editor_theme': 'default',  # edit area theme, pastel-on-dark / default
+        'toolbar_autofixed': True,  # Whether the toolbar capitals
+        'search_replace': True,  # Whether to open the search for replacement
+        'emoji': True,  # whether to open the expression function
+        'tex': True,  # whether to open the tex chart function
+        'flow_chart': True,  # whether to open the flow chart function
+        'sequence': True,  # Whether to open the sequence diagram function
+        'watch': True,  # Live preview
+        'lineWrapping': False,  # lineWrapping
+        'lineNumbers': True,  # lineNumbers
+        'language': 'de'
+    }
 }
