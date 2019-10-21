@@ -95,7 +95,7 @@
         <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="17">
-              <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
+              <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -440,7 +440,7 @@
       <workItem from="1571208163036" duration="722000" />
       <workItem from="1571306685741" duration="1388000" />
       <workItem from="1571318563997" duration="1726000" />
-      <workItem from="1571642037707" duration="3966000" />
+      <workItem from="1571642037707" duration="4088000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -568,11 +568,18 @@
       <option name="project" value="LOCAL" />
       <updated>1571664439424</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Dockerfile edit for uwsgi-nginx">
+      <created>1571664680275</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1571664680276</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="870537000" />
+    <option name="totallyTimeSpent" value="870659000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1453,7 +1460,7 @@
     <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
-          <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
+          <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
         </state>
       </provider>
     </entry>
