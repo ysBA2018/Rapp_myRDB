@@ -4,11 +4,11 @@ USER root
 WORKDIR /RechteDB
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       mysql-client \
-       vim \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
+    && apt-get install -y \
+       mysql-client \
+       vim \
     && pip install --upgrade pip \
     && pip install psycopg2 \
     && pip install uwsgi
