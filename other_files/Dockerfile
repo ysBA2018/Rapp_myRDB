@@ -21,4 +21,4 @@ COPY . /RechteDB
 WORKDIR /RechteDB
 
 EXPOSE 8000
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
+CMD ["uwsgi", "--ini", "/RechteDB/uwsgi.ini"]
