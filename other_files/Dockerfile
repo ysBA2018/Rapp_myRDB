@@ -9,7 +9,7 @@ RUN apt-get update \
     && apt-get install -y \
        mysql-client \
        vim \
-    && pip install --upgrade pip \
+RUN pip install --upgrade pip \
     && pip install psycopg2 \
     && pip install uwsgi
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="07bde36f-4587-4eb4-8bc0-de3e4ba813de" name="Default Changelist" comment="Dockerfile edit for uwsgi-nginx">
+    <list default="true" id="07bde36f-4587-4eb4-8bc0-de3e4ba813de" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/other_files/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/other_files/Dockerfile" afterDir="false" />
     </list>
@@ -94,8 +94,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
+            <state relative-caret-position="173">
+              <caret line="11" column="4" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -440,7 +440,7 @@
       <workItem from="1571208163036" duration="722000" />
       <workItem from="1571306685741" duration="1388000" />
       <workItem from="1571318563997" duration="1726000" />
-      <workItem from="1571642037707" duration="4088000" />
+      <workItem from="1571642037707" duration="4669000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -575,11 +575,25 @@
       <option name="project" value="LOCAL" />
       <updated>1571664680276</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Dockerfile edit for uwsgi-nginx">
+      <created>1571664803666</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1571664803666</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Dockerfile edit for uwsgi-nginx">
+      <created>1571665147794</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1571665147794</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="870659000" />
+    <option name="totallyTimeSpent" value="871240000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1459,8 +1473,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
+        <state relative-caret-position="173">
+          <caret line="11" column="4" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="4" />
         </state>
       </provider>
     </entry>
