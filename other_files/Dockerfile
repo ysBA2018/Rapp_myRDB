@@ -1,4 +1,5 @@
-FROM s390x/nginx:python3.7
+FROM s390x/nginx
+FROM python3.7
 USER root
 WORKDIR /RechteDB
 
