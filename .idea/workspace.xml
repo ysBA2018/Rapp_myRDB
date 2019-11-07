@@ -482,7 +482,7 @@
       <workItem from="1571318563997" duration="1726000" />
       <workItem from="1571642037707" duration="8806000" />
       <workItem from="1571732320968" duration="95000" />
-      <workItem from="1573114489697" duration="6267000" />
+      <workItem from="1573114489697" duration="6507000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -733,7 +733,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="881739000" />
+    <option name="totallyTimeSpent" value="881979000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -746,7 +746,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.15279879" />
       <window_info id="Structure" order="1" sideWeight="0.50220263" side_tool="true" weight="0.14977308" />
