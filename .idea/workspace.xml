@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="07bde36f-4587-4eb4-8bc0-de3e4ba813de" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/RechteDB/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/other_files/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/other_files/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -82,7 +83,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
+            <state relative-caret-position="221">
               <caret line="17" column="21" selection-start-line="17" selection-start-column="21" selection-end-line="17" selection-end-column="21" />
               <folding>
                 <element signature="e#307#316#0" expanded="true" />
@@ -92,10 +93,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
+        <entry file="file://$PROJECT_DIR$/RechteDB/Dockerfile">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="377">
-              <caret line="23" column="25" selection-start-line="23" selection-start-column="25" selection-end-line="23" selection-end-column="25" />
+            <state relative-caret-position="289">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
             </state>
           </provider>
         </entry>
@@ -153,7 +154,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_application.js" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/declined/myRequestsCirclePacking_declined_deletion.js" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_application.js" />
         <option value="$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/myRequests/accepted/myRequestsCirclePacking_accepted_deletion.js" />
@@ -200,14 +200,15 @@
         <option value="$PROJECT_DIR$/RechteDB/rapp/forms.py" />
         <option value="$PROJECT_DIR$/RechteDB/rapp/models.py" />
         <option value="$PROJECT_DIR$/RechteDB/uwsgi.ini" />
-        <option value="$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf" />
         <option value="$PROJECT_DIR$/RechteDB/.env" />
         <option value="$PROJECT_DIR$/RechteDB/RechteDB/settings.py" />
         <option value="$PROJECT_DIR$/other_files/Dockerfile" />
+        <option value="$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf" />
+        <option value="$PROJECT_DIR$/RechteDB/Dockerfile" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="676" />
     <option name="width" value="697" />
     <option name="height" value="735" />
@@ -245,7 +246,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="database.console.LAST_STATE" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/.PyCharm2018.3/config/jdbc-drivers/2.4.1/mariadb-java-client-2.4.1.jar" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/RechteDB" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -256,18 +257,18 @@
     <option name="mySaveCallSignatures" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB" />
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\mariadbconf.d" />
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\templates" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\myRDB" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp\migrations" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB" />
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\mariadbconf.d" />
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -430,6 +431,8 @@
       <workItem from="1571306685741" duration="1388000" />
       <workItem from="1571318563997" duration="1726000" />
       <workItem from="1571642037707" duration="8806000" />
+      <workItem from="1571732320968" duration="95000" />
+      <workItem from="1573114489697" duration="892000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -638,7 +641,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="875377000" />
+    <option name="totallyTimeSpent" value="876364000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -650,10 +653,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="676" y="0" width="697" height="735" extended-state="0" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.30298272" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.15279879" />
       <window_info id="Structure" order="1" sideWeight="0.50220263" side_tool="true" weight="0.14977308" />
       <window_info id="Favorites" order="2" sideWeight="0.50222224" side_tool="true" weight="0.17927383" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -667,7 +670,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.7889561" weight="0.3289689" />
       <window_info anchor="bottom" id="Database Changes" order="9" weight="0.3289689" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.21104388" side_tool="true" weight="0.3289689" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.6913767" visible="true" weight="0.2707641" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.6913767" visible="true" weight="0.2667758" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32890365" />
       <window_info anchor="bottom" id="Database Console" order="13" sideWeight="0.8449319" weight="0.2667758" />
       <window_info anchor="bottom" id="Inspection Results" order="14" sideWeight="0.49924356" weight="0.3289689" />
@@ -1151,13 +1154,6 @@
     <SUITE FILE_PATH="coverage/Rapp_myRDB$stored_procedures.coverage" NAME="stored_procedures Coverage Results" MODIFIED="1559739961039" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/RechteDB/rapp" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/templates/myRDB/profileRightsAnalysis/profile_rights_analysis.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="36" selection-start-line="15" selection-start-column="36" selection-end-line="15" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/myRDB/static/myRDB/js/circle_packing/right_analysis/analysisModelCirclePacking_unequal.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="11152">
@@ -1415,20 +1411,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Dockerfile">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/other_files/Dockerfile_full">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="386">
           <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/uwsgi.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
         </state>
       </provider>
     </entry>
@@ -1479,33 +1465,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="343">
-          <caret line="35" column="34" selection-start-line="35" selection-start-column="34" selection-end-line="35" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/wsgi.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/urls.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/.env">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
           <caret line="2" column="48" selection-start-line="2" selection-start-column="48" selection-end-line="2" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="17" column="21" selection-start-line="17" selection-start-column="21" selection-end-line="17" selection-end-column="21" />
-          <folding>
-            <element signature="e#307#316#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1516,10 +1482,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/urls.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Dockerfile">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/other_files/Dockerfile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="23" column="25" selection-start-line="23" selection-start-column="25" selection-end-line="23" selection-end-column="25" />
+        <state>
+          <caret column="16" lean-forward="true" selection-start-column="16" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="17" column="21" selection-start-line="17" selection-start-column="21" selection-end-line="17" selection-end-column="21" />
+          <folding>
+            <element signature="e#307#316#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/RechteDB_nginx.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="37" column="1" lean-forward="true" selection-start-line="37" selection-start-column="1" selection-end-line="37" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/uwsgi.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="11" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/RechteDB/Dockerfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>
