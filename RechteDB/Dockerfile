@@ -15,10 +15,9 @@ RUN pip install --upgrade pip \
     && pip install uwsgi
 
 COPY requirements.txt /RechteDB/requirements.txt
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 COPY . /RechteDB
-WORKDIR /RechteDB
 
 EXPOSE 8000
 CMD ["uwsgi", "--ini", "/RechteDB/uwsgi.ini"]
