@@ -9,7 +9,6 @@ __pycache__
 my3.6venv
 .idea/workspace.xml
 01\ Mitarbeiterberechtigungen\ ZI-AI-BA*.csv
-.env
 *.xmi
 *.mdj
 other_files/RechteDB 20180825 Erster Export der Neuimplementierung.sql.gz
@@ -49,4 +48,4 @@ other_files/RechteDB-20190726.sql
 other_files/RechteDB-20190908.sql
 other_files/0030_Direktverbindungen.py
 other_files/RechteDB-20190922.sql.gz
-
+venv/
