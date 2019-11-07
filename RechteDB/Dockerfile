@@ -14,9 +14,10 @@ RUN pip install --upgrade pip \
     && pip install psycopg2 \
     && pip install uwsgi
 
+COPY . /RechteDB
+
 RUN pip3 install -r requirements.txt
 
-COPY . /RechteDB
 
 EXPOSE 8000
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
