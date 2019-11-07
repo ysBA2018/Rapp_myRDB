@@ -1,6 +1,7 @@
 FROM s390x/nginx
 FROM python:3.7
 USER root
+WORKDIR /
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
