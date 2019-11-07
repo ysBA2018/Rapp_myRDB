@@ -19,12 +19,14 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls import include
 from rest_framework import routers
+from django.conf.urls import include
+from django.views.generic import RedirectView
+from django.conf.urls.static import static
 
 import myRDB.views as views
 from . import settings
 
 router = routers.DefaultRouter()
-
 
 router.register(r'users', views.UsersViewSet, 'user')
 router.register(r'useridundnamen', views.TblUserIDundNameViewSet, 'useridundname')
@@ -49,7 +51,8 @@ router.register(r'db2s', views.TblDb2ViewSet, 'db2')
 router.register(r'racfgruppen', views.TblRacfGruppenViewSet, 'racfgruppe')
 router.register(r'rechteneuvonimport', views.TblrechteneuvonimportViewSet, 'rechtneuvonimport')
 router.register(r'rechteamneu', views.TblrechteamneuViewSet, 'rechtamneu')
-router.register(r'qriesf3rechteneuvonimportduplikatfrei', views.Qryf3RechteneuvonimportduplikatfreiViewSet, 'qryf3rechteneuvonimportduplikatfrei')
+router.register(r'qriesf3rechteneuvonimportduplikatfrei', views.Qryf3RechteneuvonimportduplikatfreiViewSet,
+                'qryf3rechteneuvonimportduplikatfrei')
 router.register(r'RACF_Rechte', views.RACF_RechteViewSet, 'RACF_Recht')
 router.register(r'Orga_details', views.Orga_detailsViewSet, 'Orga_detail')
 router.register(r'letzte_imports', views.Letzter_importViewSet, 'letzter_import')
@@ -63,7 +66,8 @@ router.register(r'afhatgfs', views.TblAfHatGfViewSet, 'afhatgf')
 router.register(r'gfhattfs', views.TblGfHatTfViewSet, 'gfhattf')
 router.register(r'tfhatschreibweisen', views.TblTfHatSchreibweiseViewSet, 'tfhatschreibweise')
 
-router.register(r'fulluserhatuseridundnamen', views.FullRightsUserHatTblUserIDundNameViewSet, 'fulluserhatuseridundname')
+router.register(r'fulluserhatuseridundnamen', views.FullRightsUserHatTblUserIDundNameViewSet,
+                'fulluserhatuseridundname')
 router.register(r'fullappliedroles', views.FullRightsTblAppliedRolleViewSet, 'fullappliedrole')
 router.register(r'fullappliedafs', views.FullRightsTblAppliedAfsViewSet, 'fullappliedaf')
 router.register(r'fullappliedgfs', views.FullRightsTblAppliedGfsViewSet, 'fullappliedgf')
@@ -76,8 +80,6 @@ router.register(r'fulltfs', views.FullTblTfsViewSet, 'fulltf')
 
 router.register(r'changerequests', views.ChangeRequestsViewSet, 'changerequests')
 router.register(r'schreibweisen', views.TblSchreibweisenViewSet, 'schreibweise')
-from django.conf.urls.static import static
-
 
 admin.site.site_header = 'RechteDB - Adminseiten'
 admin.site.site_title = 'RechteDB - Administration'
@@ -89,16 +91,16 @@ urlpatterns = [
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
     ]
 
-from django.conf.urls import include
 # Use include() to add paths from the rapp application
 urlpatterns += [
-	path('accounts/', include('django.contrib.auth.urls')),
-	path('rapp/', include('rapp.urls')),
-	path('mdeditor/', include('mdeditor.urls'))
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('rapp/', include('rapp.urls')),
+    path('mdeditor/', include('mdeditor.urls'))
 ]
 
 if settings.DEBUG:
@@ -106,13 +108,12 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Das ist die wichtigste Zeile: / wird auf /rapp gemappt
-from django.views.generic import RedirectView
 urlpatterns += [
     path('', RedirectView.as_view(url='/rapp')),
 ]
 
 urlpatterns += [
-    url(r'^api/', include((router.urls,'api'), namespace='myRDBNS')),
+    url(r'^api/', include((router.urls, 'api'), namespace='myRDBNS')),
     path('', include('django.contrib.auth.urls')),
     path('myRDB/', include('myRDB.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
