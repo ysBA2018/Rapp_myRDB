@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="07bde36f-4587-4eb4-8bc0-de3e4ba813de" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RechteDB/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/RechteDB/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -94,8 +94,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RechteDB/Dockerfile">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="16" selection-start-line="16" selection-end-line="16" />
+            <state relative-caret-position="357">
+              <caret line="21" column="11" lean-forward="true" selection-start-line="21" selection-start-column="11" selection-end-line="21" selection-end-column="11" />
             </state>
           </provider>
         </entry>
@@ -226,11 +226,6 @@
             </path>
             <path>
               <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Rapp_myRDB" type="462c0819:PsiDirectoryNode" />
-              <item name="RechteDB" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Rapp_myRDB" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -264,9 +259,9 @@
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp\migrations" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\mariadbconf.d" />
-      <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB" />
       <recent name="C:\Users\Yannick Simchen\PycharmProjects\Rapp_myRDB\RechteDB\rapp" />
     </key>
   </component>
@@ -431,7 +426,7 @@
       <workItem from="1571318563997" duration="1726000" />
       <workItem from="1571642037707" duration="8806000" />
       <workItem from="1571732320968" duration="95000" />
-      <workItem from="1573114489697" duration="1350000" />
+      <workItem from="1573114489697" duration="1621000" />
     </task>
     <task id="LOCAL-00001" summary="first commit Rapp_myRDB">
       <created>1559566722671</created>
@@ -650,11 +645,25 @@
       <option name="project" value="LOCAL" />
       <updated>1573115822439</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Dockerfile edit for uwsgi-nginx">
+      <created>1573115862019</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1573115862019</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Dockerfile edit for uwsgi-nginx">
+      <created>1573115965013</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1573115965013</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="876822000" />
+    <option name="totallyTimeSpent" value="877093000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -669,7 +678,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.15279879" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4977778" visible="true" weight="0.15279879" />
       <window_info id="Structure" order="1" sideWeight="0.50220263" side_tool="true" weight="0.14977308" />
       <window_info id="Favorites" order="2" sideWeight="0.50222224" side_tool="true" weight="0.17927383" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -683,7 +692,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.7889561" weight="0.3289689" />
       <window_info anchor="bottom" id="Database Changes" order="9" weight="0.3289689" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.21104388" side_tool="true" weight="0.3289689" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.6913767" visible="true" weight="0.2667758" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.6913767" visible="true" weight="0.2667758" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32890365" />
       <window_info anchor="bottom" id="Database Console" order="13" sideWeight="0.8449319" weight="0.2667758" />
       <window_info anchor="bottom" id="Inspection Results" order="14" sideWeight="0.49924356" weight="0.3289689" />
@@ -1488,7 +1497,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
+    <entry file="file://$PROJECT_DIR$/RechteDB/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="124">
           <caret line="18" column="14" lean-forward="true" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
@@ -1534,8 +1543,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/RechteDB/Dockerfile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        <state relative-caret-position="357">
+          <caret line="21" column="11" lean-forward="true" selection-start-line="21" selection-start-column="11" selection-end-line="21" selection-end-column="11" />
         </state>
       </provider>
     </entry>
