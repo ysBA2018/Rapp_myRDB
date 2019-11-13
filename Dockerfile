@@ -13,11 +13,12 @@ RUN apt-get update \
 RUN pip install --upgrade pip \
     && pip install psycopg2 \
     && pip install uwsgi
-
-COPY requirements.txt /RechteDB/requirements.txt
+COPY . /RechteDB
+WORKDIR /RechteDB
 RUN pip3 install -r requirements.txt
 
-COPY . /RechteDB
+CMD ["python", "manage.py", "makemigrations"]
+CMD ["python", "manage.py", "migrate"]
 
 EXPOSE 8000
 CMD ["uwsgi", "--ini", "uwsgi.ini"]

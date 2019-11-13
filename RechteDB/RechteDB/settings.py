@@ -33,7 +33,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, ['127.0.0.1']),
 )
 root_path = environ.Path(__file__) - 2
-environ.Env.read_env(root_path('.env'))
+environ.Env.read_env(root_path('../.env'))
 
 DEBUG = env('DEBUG')
 # if DEBUG:
@@ -44,7 +44,7 @@ SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 DATABASES = {
-    'default': {
+    'docker': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',  # ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
@@ -52,14 +52,30 @@ DATABASES = {
         'NAME': 'Rapp_myRDB',
         'USER': 'YannickSimchen',
         'PASSWORD': 'BanepukBabe',
-        'HOST': 'localhost',
+        'HOST': '172.17.0.2', # server_development
         'PORT': '3306',
         'default-character-set': 'utf8mb4_unicode_ci',
         'OPTIONS': {
             'init_command': 'SET storage_engine=InnoDB; \
                                 SET GLOBAL max_connections = 100000'
         },
-    }
+    },
+    'default': {
+            # 'ENGINE': 'django.db.backends.sqlite3',
+            # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.mysql',  # ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
+            # 'read_default_file': os.path.join(BASE_DIR, 'my.cnf'),
+            'NAME': 'Rapp_myRDB',
+            'USER': 'YannickSimchen',
+            'PASSWORD': 'BanepukBabe',
+            'HOST': 'localhost', # local_development - 'localhost'
+            'PORT': '3306',
+            'default-character-set': 'utf8mb4_unicode_ci',
+            'OPTIONS': {
+                'init_command': 'SET storage_engine=InnoDB; \
+                                    SET GLOBAL max_connections = 100000'
+            }
+    },
 }
 """'default': dj_database_url.config(
     #default=config('DATABASE_URL'),
