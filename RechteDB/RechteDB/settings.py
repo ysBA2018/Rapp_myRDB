@@ -44,7 +44,7 @@ SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 DATABASES = {
-    'docker': {
+    'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',  # ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
@@ -52,7 +52,7 @@ DATABASES = {
         'NAME': 'Rapp_myRDB',
         'USER': 'YannickSimchen',
         'PASSWORD': 'BanepukBabe',
-        'HOST': '172.17.0.2', # server_development
+        'HOST': '172.17.0.4', # server_development
         'PORT': '3306',
         'default-character-set': 'utf8mb4_unicode_ci',
         'OPTIONS': {
@@ -60,7 +60,7 @@ DATABASES = {
                                 SET GLOBAL max_connections = 100000'
         },
     },
-    'default': {
+    'local': {
             # 'ENGINE': 'django.db.backends.sqlite3',
             # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
             'ENGINE': 'django.db.backends.mysql',  # ToDo Remote MySQL DB anbinden / Config anpassen über meinNetz
@@ -150,7 +150,7 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'RechteDB.wsgi.application'
+WSGI_APPLICATION = 'RechteDB.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -186,9 +186,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    #,
 ]
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 MEDIA_URL = '/media/'
