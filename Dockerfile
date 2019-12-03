@@ -21,6 +21,7 @@ RUN pip3 install -r requirements.txt
 
 CMD ["python", "manage.py", "makemigrations"]
 CMD ["python", "manage.py", "migrate"]
+
 CMD ["python", "manage.py", "collectstatic"]
 
 EXPOSE 8000 80

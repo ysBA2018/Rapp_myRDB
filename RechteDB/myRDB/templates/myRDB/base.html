@@ -6,25 +6,24 @@
 <head>
     <meta charset="UTF-8">
     <script type="text/javascript" src="{% static 'myRDB/js/jquery-3.3.1.min.js' %}"></script>
-
     <script type="text/javascript" src="{% static 'myRDB/js/popper.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'myRDB/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'myRDB/js/d3.v4.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'myRDB/js/datatables.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'myRDB/js/jquery-ui.js' %}"></script>
     <script type="text/javascript" src="{% static 'myRDB/js/bootbox.min.js' %}"></script>
 
     <title>{% block title %}MyRDB{% endblock %}</title>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'myRDB/css/datatables.min.css'%}">
     <link rel="stylesheet" type="text/css" href="{% static 'myRDB/css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'myRDB/css/jquery-ui.css' %}">
 
     <link rel="stylesheet" type="text/css" href="{% static 'myRDB/css/circle_packing/circlePacking.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'myRDB/css/scatter_plot/scatterPlot_fromJSON.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'myRDB/css/style.css' %}">
-
-
+    {% if view_mode == "Tabellarische Ansicht" %}
+        <script type="text/javascript" src="{% static 'myRDB/js/datatables.min.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'myRDB/css/datatables.min.css'%}">
+    {% endif %}
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">

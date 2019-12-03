@@ -35,7 +35,7 @@ env = environ.Env(
 root_path = environ.Path(__file__) - 2
 environ.Env.read_env(root_path('../.env'))
 
-DEBUG = env('DEBUG')
+DEBUG = env('DEBUG')  #True
 # if DEBUG:
 #    SECRET_KEY = '9)%e4jg5_#xbrdf6^%1f#rnrdo6#-5szxn3&%^jr&zqb2ixvn2'
 # else:
@@ -52,7 +52,7 @@ DATABASES = {
         'NAME': 'Rapp_myRDB',
         'USER': 'YannickSimchen',
         'PASSWORD': 'BanepukBabe',
-        'HOST': '172.17.0.4', # server_development
+        'HOST': '172.17.0.2',  # 'localhost',#server_development
         'PORT': '3306',
         'default-character-set': 'utf8mb4_unicode_ci',
         'OPTIONS': {
@@ -186,7 +186,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATICFILES_DIRS = [
-    #,
+    os.path.join(BASE_DIR, 'myRDB/static'),
 ]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

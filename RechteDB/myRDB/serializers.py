@@ -7,7 +7,8 @@ import copy
 from .models import *
 import re
 
-docker_container_ip = "http://127.0.0.1:8000"
+#docker_container_ip = "http://127.0.0.1:8000"
+docker_container_ip = "http://0.0.0.0:8000"
 
 class TblGesamtSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

@@ -36,8 +36,8 @@ from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, 
 User = get_user_model()
 # docker_container_ip = "http://148.100.245.159:8000"
 # proxies = {'http':"http://172.17.0.3:8000"}
-# docker_container_ip = "http://0.0.0.0:8000"
-docker_container_ip = "http://127.0.0.1:8000"
+docker_container_ip = "http://0.0.0.0:8000"
+# docker_container_ip = "http://127.0.0.1:8000"
 
 
 class CSVtoMongoDB(generic.FormView):
